@@ -1,0 +1,28 @@
+How to make new blocks:
+
+Documentation on defining:
+    https://code.google.com/p/blockly/wiki/DefiningBlocks
+
+Documentation on generating code:
+    https://code.google.com/p/blockly/wiki/GeneratingCode
+
+BrickPi Block Definitions/Generators:
+    /blockytalky/blockly/static/generators/python/brickpi.js
+    
+    Definitions at the top of the file, generators at the bottom 
+    below the "//DEFINE GENERATORS" comment
+
+Blockly Webpage:
+    /blockytalky/blockly/static/apps/code/en2.html
+
+Page Templates:
+     /blockytalky/blockly/static/apps/code/template.soy
+     /blockytalky/blockly/static/apps/code/template2.soy
+
+Procedure:
+    1. Open en2.html in FIREFOX (chrome has issues locally)
+    2. Add new definition/generator to brickpi.js
+    3. Add new block to template.soy, compile with command copied from top
+    4. Add new block to template2.soy, compile with command copied from top
+    NOTE: YOU MUST DO BOTH, AND ACTUALLY USE THE RIGHT COMMAND FOR EACH FILE
+    NOTE: for now put things under the BrickPi category
