@@ -9,7 +9,7 @@ page.onConsoleMessage = function(msg) {
     console.log(msg);
 };
 
-var url = 'file:///home/pi/blockytalky/blockly/static/apps/code/code2.html';
+var url = '../blockly/static/apps/code/code2.html';
 
 // read xml from file, set 'data' to be the string of xml
 var fs = require('fs');
@@ -49,9 +49,10 @@ page.open(url, function () {
     start = new Date().getTime();
 
     // builds structure of run function for usercode.py
-    converted = 'def run(self, ws):\nprint ""\n' + converted;
-    tabbed = '\n  '
+    converted = '\n' + converted;
+    tabbed = '\n    '
     converted = converted.replace(/\n/g, tabbed);
+    converted = 'def run(self, ws):\n  while True:\n' + converted;
     converted = 'from message import *\nimport time\nimport RPi.GPIO as GPIO\nimport pyttsx\n\n' + converted;
 
     end = new Date().getTime();
