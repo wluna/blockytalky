@@ -37,12 +37,12 @@ cd ~
 wget https://github.com/aeberhardo/phantomjs-linux-armv6l/archive/master.zip
 unzip master.zip
 mv phantomjs-linux-armv6l-master/ phantomjs/
-cd phantomjs/phantomjs-linux-armv6l-master/
+cd phantomjs/
 bunzip2 *.bz2 && tar xf *.tar
-cd phantomjs-linux-armv6l-master/
-cp -r * .
+cd phantomjs-1.9.0-linux-armv6l/
+cp -r * ..
 cd ..
-rm -r -f phantomjs-linux-armv6l-master/
+rm -r -f phantomjs-1.9.0-linux-armv6l/
 
 cd ~
 git clone git://git.drogon.net/wiringPi
