@@ -59,6 +59,8 @@ sudo echo i2c-dev >> /etc/modules
 
 echo "Installing customizations..."
 sudo sed -i -e 's/XKBLAYOUT="gb"/XKBLAYOUT="us"/g' /etc/default/keyboard
+sudo sed -i -e 's,exit 0,sh /home/pi/blockytalky/start.sh,' /etc/rc.local
+sudo echo exit 0 >> /etc/rc.local
 if [ "$setup" == "y" ] || [ "$setup" == "Y" ]; then    
     if [ -n "$password" ]; then
 	sudo echo "network={" >> /etc/wpa_supplicant/wpa_supplicant.conf
