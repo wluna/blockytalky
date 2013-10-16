@@ -1,15 +1,18 @@
+BlockyTalky
+=====
 BlockyTalky is a low-cost, extensible, open source, programmable, networked toolkit for tangible creations.
 
-To install the system, run chmod 777 ./build && ./build to install all dependencies.
-To start or restart the system, run sudo sh start.sh
+## Getting Started
+To install the system, run ./build to install all dependencies.
+To start or restart the system, run sh start.sh from the blockytalky directory
 
 
-Links:
-BlockyTalky: http://sites.tufts.edu/blockytalky/
+## Links
+**BlockyTalky**: 	http://sites.tufts.edu/blockytalky/
 
-Blockly: https://code.google.com/p/blockly/
+**Blockly**: 		https://code.google.com/p/blockly/
 
-BrickPi: http://www.dexterindustries.com/BrickPi/
-	 https://github.com/DexterInd/BrickPi
-	 https://github.com/DexterInd/BrickPi_Python
+**BrickPi**: 		http://www.dexterindustries.com/BrickPi/
+	 				https://github.com/DexterInd/BrickPi
+	 				https://github.com/DexterInd/BrickPi_Python
          

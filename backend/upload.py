@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 _log('info', 'Server starting...')
 
-#app.debug = True
+app.debug = True
 
 @app.route("/blockly", methods = ["GET","POST"])
 def blockly():
@@ -28,6 +28,7 @@ def upload():
         data1 = data.copy()
         data2 = data1.get('<xml xmlns')
         _log('info', 'Blockly code received')
+        print os.getcwd()
         toWrite = "<xml xmlns = " + data2
 
         startTime = time.time()
