@@ -13,6 +13,6 @@ To start or restart the system, run sh start.sh from the blockytalky directory
 **Blockly**: 		https://code.google.com/p/blockly/
 
 **BrickPi**: 		http://www.dexterindustries.com/BrickPi/
-	 				https://github.com/DexterInd/BrickPi
-	 				https://github.com/DexterInd/BrickPi_Python
+	 				... https://github.com/DexterInd/BrickPi
+	 				... https://github.com/DexterInd/BrickPi_Python
          
