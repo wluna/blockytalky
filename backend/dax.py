@@ -16,21 +16,26 @@ class DaxRouter(tornado.websocket.WebSocketHandler):
     bots = {}
 
     def open(self):
+        print self
         logging.debug(">>> Method called: open")
         logging.info("New connection.")
 
     def on_message(self, encodedMessage):
-        logging.debug(">>> Method called: on_message")
-        message = Message.decode(encodedMessage)
+        print self
+    logging.debug(">>> Method called: on_message")
+        logging.debug(str(self.bots))
+    message = Message.decode(encodedMessage)
         destination = message.getDestination()
         if destination == "dax":
             # Register into Dax's "database".
+        print self
             DaxRouter.bots[message.getSource()] = self
         else:
             try:
                 # Forward it to the final destination.
                 DaxRouter.bots[destination].write_message(encodedMessage)
-            except NameError:
+                logging.debug(destination)
+        except NameError:
                 logging.error("Message destination not available: " +
                               str(destination))
 
@@ -51,9 +56,9 @@ if __name__ == "__main__":
         # Set the logging level.
         logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                             # filename = "dax.log",
-                            level = logging.INFO)
+                            level = logging.DEBUG)
         # Start the server.
         logging.info("Dax Router (WebSocket server) starting ...")
         http_server = tornado.httpserver.HTTPServer(application)
-        http_server.listen(8887)
+        http_server.listen(8005)
         tornado.ioloop.IOLoop.instance().start()

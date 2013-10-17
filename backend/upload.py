@@ -13,7 +13,9 @@ app = Flask(__name__)
 
 _log('info', 'Server starting...')
 
-app.debug = True
+#app.debug = True
+
+os.chdir("/home/pi/blockytalky")
 
 @app.route("/blockly", methods = ["GET","POST"])
 def blockly():
