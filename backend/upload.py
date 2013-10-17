@@ -30,7 +30,7 @@ def upload():
         data1 = data.copy()
         data2 = data1.get('<xml xmlns')
         _log('info', 'Blockly code received')
-        print os.getcwd()
+
         toWrite = "<xml xmlns = " + data2
 
         startTime = time.time()

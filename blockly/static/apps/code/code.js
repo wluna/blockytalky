@@ -311,6 +311,9 @@ function init(blockly) {
   }
 
   tabClick('tab_' + selected);
+  document.getElementById('tab_xml').style.display = 'none';
+  document.getElementById('tab_python').style.display = 'none';
+
 }
 
 /**
@@ -435,6 +438,8 @@ function stopRobot() {
 	    console.log(response);
 	}
     });
+
+  document.getElementById('tab_xml').style.display = 'none';
 
     
 }
