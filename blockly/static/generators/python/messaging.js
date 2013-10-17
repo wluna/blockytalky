@@ -140,7 +140,9 @@ Blockly.Python.facebook_msg= function() {
 
 
 Blockly.Python.send_osc= function() {
-    var code = 'OSC code'+'\n';
+    var target = this.getTitleValue('target')
+    var value = this.getTitleValue('value')
+    var code = 'client.send(OSCMessage("'+target+'", '+value+'))'+'\n';
     return code;
 };
 
