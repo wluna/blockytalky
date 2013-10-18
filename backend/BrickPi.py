@@ -21,7 +21,7 @@ ser.baudrate = 500000
 # ser.writeTimeout = 0.0005		
 # ser.timeout = 0.0001
 
-DEBUG = 1	# Remove to hide errors 
+DEBUG = 0	# Remove to hide errors 
 
 PORT_A = 0
 PORT_B = 1
@@ -337,7 +337,7 @@ def BrickPiUpdateValues():
 
         if (result or (Array[BYTE_MSG_TYPE] != MSG_TYPE_VALUES)):
             if 'DEBUG' in globals():
-                if DEBUG == 0:
+                if DEBUG == 1:
                     print "BrickPiRx Error :", result
             
             if Retried < 2 :
@@ -363,9 +363,9 @@ def BrickPiUpdateValues():
             Temp_EncoderVal = GetBits(1,0, Temp_BitsUsed[ii])
             if Temp_EncoderVal & 0x01 :
                 Temp_EncoderVal /= 2
-                BrickPi.Encoder[ii + i*2] = Temp_EncoderVal*(-1)
+                BrickPi.Encoder[ii + i*2] = (Temp_EncoderVal*(-1))%360
             else:
-                BrickPi.Encoder[ii + i*2] = Temp_EncoderVal / 2
+                BrickPi.Encoder[ii + i*2] = (Temp_EncoderVal / 2)%360
 
 
         for ii in range(2):

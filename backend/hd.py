@@ -53,8 +53,8 @@ class HardwareDaemon(object):
                        valuesChanged = True
 
             for index, encoder in enumerate(encoders):
-               if abs(encoder - self.robot["encoders"][index]) > 10:
-                   self.robot["encoders"][index] = encoder%360
+               if abs((encoder) - (self.robot["encoders"][index])) > 10:
+                   self.robot["encoders"][index] = encoder
                    if not valuesChanged:
                        valuesChanged = True
 
@@ -64,8 +64,6 @@ class HardwareDaemon(object):
                 content = Message.createImage(
                                                 encoder1 = encoders[0],
                                                 encoder2 = encoders[1],
-                                                encoder3 = encoders[2],
-                                                encoder4 = encoders[3],
                                                 sensor1 = sensors[0],
                                                 sensor2 = sensors[1],
                                                 sensor3 = sensors[2],
@@ -81,7 +79,7 @@ class HardwareDaemon(object):
         ws.send(self.handshake)
 
     def onError(self, ws, error):
-        logging.error("A WebSocket error has occured.")
+        logging.debug("A WebSocket error has occured.")
 
     def onMessage(self, ws, message):
         hwDict = Message.decode(message).getContent()
