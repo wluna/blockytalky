@@ -1,1 +1,1 @@
-../../blockly/static/javscript_compressed.js
+../../blockly/static/javascript_compressed.js
