@@ -34,26 +34,26 @@ Blockly.Language.motor_set= {
     category: 'Motors',
     helpUrl: 'http://www.google.com',
     init: function() {
-	this.setColour(300);
-	this.appendDummyInput("")
-	    .appendTitle("Set");
-	this.appendDummyInput("")
-	    .appendTitle("Motor")
+    this.setColour(300);
+    this.appendDummyInput("")
+        .appendTitle("Set");
+    this.appendDummyInput("")
+        .appendTitle("Motor")
             .appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], 
-				["3","3"],["4","4"],["All","All"]]), 'motor_num');
-	  /*this.appendDummyInput()
-	    .appendTitle(' MotorPower')
+                ["3","3"],["4","4"],["All","All"]]), 'motor_num');
+      /*this.appendDummyInput()
+        .appendTitle(' MotorPower')
             .appendTitle(new Blockly.FieldTextInput('100',
             Blockly.Language.math_number.validator), 'motor_power');*/
-	this.appendDummyInput("")
+    this.appendDummyInput("")
             .appendTitle(" to Power");
-	this.appendValueInput('motor_power')
+    this.appendValueInput('motor_power')
             .setCheck('Number');
-	this.setInputsInline(true);
-	this.setOutput(false);
-	this.setPreviousStatement(true);
-	this.setNextStatement(true);
-	this.setTooltip('Motor 1-4, Power -255 to 255');
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip('Motor 1-4, Power -255 to 255');
     }
 };
 
@@ -61,15 +61,15 @@ Blockly.Language.motor_get_encoder= {
     category: 'Motors',
     helpUrl: '',
     init: function() {
-	this.setColour(300);
-	this.appendDummyInput("")
-	    .appendTitle("Encoder Value");
-	this.appendDummyInput("")
-	    .appendTitle("Motor")
+    this.setColour(300);
+    this.appendDummyInput("")
+        .appendTitle("Encoder Value");
+    this.appendDummyInput("")
+        .appendTitle("Motor")
             .appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], ["3","3"], ["4","4"]]), 'enc');
-	this.setInputsInline(true);
-	this.setOutput(true,'Number');
-	this.setTooltip('Returns absolute rotation of specified motor');
+    this.setInputsInline(true);
+    this.setOutput(true,'Number');
+    this.setTooltip('Returns absolute rotation of specified motor');
     }
 };
 
@@ -77,15 +77,15 @@ Blockly.Language.motor_get_encoder= {
     category: 'Motors',
     helpUrl: '',
     init: function() {
-	this.setColour(300);
-	this.appendDummyInput("")
-	    .appendTitle("Encoder Value");
-	this.appendDummyInput("")
-	    .appendTitle("Motor")
+    this.setColour(300);
+    this.appendDummyInput("")
+        .appendTitle("Encoder Value");
+    this.appendDummyInput("")
+        .appendTitle("Motor")
             .appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], ["3","3"], ["4","4"]]), 'enc');
-	this.setInputsInline(true);
-	this.setOutput(true,'Number');
-	this.setTooltip('Returns absolute rotation of specified motor');
+    this.setInputsInline(true);
+    this.setOutput(true,'Number');
+    this.setTooltip('Returns absolute rotation of specified motor');
     }
 };
 
@@ -93,17 +93,17 @@ Blockly.Language.pin_in= {
     category: 'GPIO',
     helpUrl: '',
     init: function() {
-	this.setColour(300);
-	this.appendDummyInput("")
-	    .appendTitle("GPIO In Pin:")
-	    .appendTitle(new Blockly.FieldDropdown([["12", "12"], ["16", "16"],
-						    ["18", "18"],["22", "22"]]), 'gpio_in_pin');
-	this.appendDummyInput("")
-	    .appendTitle("Value:")
+    this.setColour(300);
+    this.appendDummyInput("")
+        .appendTitle("GPIO In Pin:")
+        .appendTitle(new Blockly.FieldDropdown([["12", "12"], ["16", "16"],
+                            ["18", "18"],["22", "22"]]), 'gpio_in_pin');
+    this.appendDummyInput("")
+        .appendTitle("Value:")
             .appendTitle(new Blockly.FieldDropdown([["HIGH", "1"], ["LOW", "0"]]), 'gpio_in_value');
-	this.setInputsInline(true);
-	this.setOutput(false);
-	this.setPreviousStatement(true);
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true);
         this.setNextStatement(true);
     }
 };
@@ -112,17 +112,17 @@ Blockly.Language.pin_out= {
     category: 'GPIO',
     helpUrl: '',
     init: function() {
-	this.setColour(300);
-	this.appendDummyInput("")
-	    .appendTitle("GPIO Out Pin:")
-	    .appendTitle(new Blockly.FieldDropdown([["7", "7"], ["11", "11"],
-						    ["13","13"],["15","15"]]), 'gpio_out_pin');
-	this.appendDummyInput("")
-	    .appendTitle("Value:")
+    this.setColour(300);
+    this.appendDummyInput("")
+        .appendTitle("GPIO Out Pin:")
+        .appendTitle(new Blockly.FieldDropdown([["7", "7"], ["11", "11"],
+                            ["13","13"],["15","15"]]), 'gpio_out_pin');
+    this.appendDummyInput("")
+        .appendTitle("Value:")
             .appendTitle(new Blockly.FieldDropdown([["HIGH", "1"], ["LOW", "0"]]), 'gpio_out_value');
-	this.setInputsInline(true);
-	this.setOutput(false);
-	this.setPreviousStatement(true);
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true);
         this.setNextStatement(true);
     }
 };
@@ -132,23 +132,23 @@ Blockly.Language.sensor_new_val= {
     category: 'Sensors',
     helpUrl: '',
     init: function() {
-	this.setColour(300)
-	this.appendDummyInput("")
-	    .appendTitle("Unread Data On:");
-	this.appendDummyInput("")
-	    .appendTitle(new Blockly.FieldDropdown([["Sensor 1", "sensor1"], 
-						    ["Sensor 2", "sensor2"],
+    this.setColour(300)
+    this.appendDummyInput("")
+        .appendTitle("Unread Data On:");
+    this.appendDummyInput("")
+        .appendTitle(new Blockly.FieldDropdown([["Sensor 1", "sensor1"], 
+                            ["Sensor 2", "sensor2"],
                                                     ["Sensor 3", "sensor3"],
-						    ["Sensor 4", "sensor4"],
-						    ["Sensor 5", "sensor5"],
-						    ["Encoder 1", "encoder1"],
-						    ["Encoder 2", "encoder2"],
-						    ["Encoder 3", "encoder3"],
-						    ["Encoder 4", "encoder4"]]
-						  ), 'port');
-	this.setInputsInline(true);
-	this.setOutput(true, 'Boolean');
-	this.setTooltip('Returns true if there is unread data on the specified port');
+                            ["Sensor 4", "sensor4"],
+                            ["Sensor 5", "sensor5"],
+                            ["Encoder 1", "encoder1"],
+                            ["Encoder 2", "encoder2"],
+                            ["Encoder 3", "encoder3"],
+                            ["Encoder 4", "encoder4"]]
+                          ), 'port');
+    this.setInputsInline(true);
+    this.setOutput(true, 'Boolean');
+    this.setTooltip('Returns true if there is unread data on the specified port');
     }
 
 }
@@ -159,12 +159,12 @@ category: 'LED',
   init: function() {
     this.setColour(300);
     this.appendDummyInput("")
-	.appendTitle("Set LEDs:");
+    .appendTitle("Set LEDs:");
     this.appendDummyInput("")
-	.appendTitle("LED1")
+    .appendTitle("LED1")
         .appendTitle(new Blockly.FieldDropdown([["On", "On"], ["Off", "Off"]]), 'led1');
     this.appendDummyInput("")
-	.appendTitle("LED2")
+    .appendTitle("LED2")
         .appendTitle(new Blockly.FieldDropdown([["On", "On"], ["Off", "Off"]]), 'led2');
     this.setInputsInline(true);
     this.setOutput(false);
@@ -185,7 +185,7 @@ category: 'Time',
         .appendTitle(new Blockly.FieldTextInput('1000',
           Blockly.Language.math_number.validator), 'time_sleep');
     this.appendDummyInput("")
-	.appendTitle('ms');
+    .appendTitle('ms');
     this.setInputsInline(true);
     this.setOutput(false);
     this.setPreviousStatement(true);
@@ -236,19 +236,19 @@ Blockly.Python.motor_set = function() {
     var value_motor_number= this.getTitleValue('motor_num');
     //var value_motor_power = parseInt(this.getTitleValue('motor_power'));
     if(value_motor_number=="All") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor1=' +value_motor_power+ ', motor2=' + value_motor_power + ', motor3=' + value_motor_power + '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor1=' +value_motor_power+ ', motor2=' + value_motor_power + ', motor3=' + value_motor_power + '))'+'\n'
     }
     else if(value_motor_number=="1") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor1=' +value_motor_power+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor1=' +value_motor_power+ '))'+'\n'
     }
     else if(value_motor_number=="2") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor2=' +value_motor_power+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor2=' +value_motor_power+ '))'+'\n'
     }
     else if(value_motor_number=="3") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor3=' +value_motor_power+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor3=' +value_motor_power+ '))'+'\n'
     }
     else if(value_motor_number=="4") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor4=' +value_motor_power+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor4=' +value_motor_power+ '))'+'\n'
     }
     code= code + 'ws.send(Message.encode(toSend))'+'\n'
     return code;
@@ -263,16 +263,16 @@ Blockly.Python.pin_in = function() {
     var code;
     var value_pin_number= this.getTitleValue('gpio_in_pin');
     if(value_pin_number=="12") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin12=' +pin_value+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin12=' +pin_value+ '))'+'\n'
     }
     else if(value_pin_number=="16") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin16=' +pin_value+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin16=' +pin_value+ '))'+'\n'
     }
     else if(value_pin_number=="18") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin18=' +pin_value+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin18=' +pin_value+ '))'+'\n'
     }
     else if(value_pin_number=="22") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin22=' +pin_value+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin22=' +pin_value+ '))'+'\n'
     }
     code= code + 'ws.send(Message.encode(toSend))'+'\n'
     return code;
@@ -287,16 +287,16 @@ Blockly.Python.pin_out = function() {
     var code;
     var value_pin_number= this.getTitleValue('gpio_out_pin');    
     if(value_pin_number=="7") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin7=' +pin_value+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin7=' +pin_value+ '))'+'\n'
     }
     else if(value_pin_number=="11") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin11=' +pin_value+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin11=' +pin_value+ '))'+'\n'
     }
     else if(value_pin_number=="13") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin13=' +pin_value+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin13=' +pin_value+ '))'+'\n'
     }
     else if(value_pin_number=="15") {
-	code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin15=' +pin_value+ '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin15=' +pin_value+ '))'+'\n'
     }
     code= code + 'ws.send(Message.encode(toSend))'+'\n'
     return code;

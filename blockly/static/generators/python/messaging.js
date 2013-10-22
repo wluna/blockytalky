@@ -156,7 +156,7 @@ Blockly.Python.messaging_tell= function() {
     var target= this.getTitleValue('target');
     var command= this.getTitleValue('command');
     var code= 'toSend = Message(self.hostname, "'+target+'", "Message", "'+command+'")'+'\n'+
-	'ws.send(Message.encode(toSend))'+'\n';
+	'ws.send(Message.encode(toSend))'+'\n' + 'time.sleep(.05)' + '\n';
     return code;
 };
 

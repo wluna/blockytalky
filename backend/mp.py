@@ -35,7 +35,8 @@ class MessagePasser(tornado.websocket.WebSocketHandler):
         message = Message.decode(encodedMessage)
         logging.info("Message received.")
         logging.debug(str(message))
-
+        #logging.debug("Prev: " + str(self.prevMessage))
+        #logging.debug("Cur: " + str(message))
         channel = message.getChannel()
         if channel == "Subs":
             self.handshake(message)
@@ -44,8 +45,15 @@ class MessagePasser(tornado.websocket.WebSocketHandler):
                 self.forwardMessage("MsgIn", encodedMessage)
             else:
                 self.forwardMessage("MsgOut", encodedMessage)
+        elif channel == "HwCmd":
+            if message == self.prevMessage:
+                # Message is the same, do nothing
+                logging.info("MESSAGE SAME!")
+            else:
+                self.forwardMessage(channel, encodedMessage)
         else:
             self.forwardMessage(channel, encodedMessage)
+        self.prevMessage = message
 
     def on_close(self):
         """
