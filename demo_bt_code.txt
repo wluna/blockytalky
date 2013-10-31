@@ -1,4 +1,4 @@
-BTU Sound:
+aBTU Sound:
 <xml>
   <block type="controls_inf_loop" x="51" y="92">
     <statement name="DO">
