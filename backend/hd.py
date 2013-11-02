@@ -102,7 +102,7 @@ if __name__ == "__main__":
     # Set the logging level.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "hd.log",
-                        level = logging.ERROR)
+                        level = logging.DEBUG)
     hd = HardwareDaemon()
     ws = websocket.WebSocketApp("ws://localhost:8886/mp",
                                 on_open = hd.onOpen,

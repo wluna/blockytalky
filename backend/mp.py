@@ -46,7 +46,9 @@ class MessagePasser(tornado.websocket.WebSocketHandler):
             else:
                 self.forwardMessage("MsgOut", encodedMessage)
         elif channel == "HwCmd":
-            if message == self.prevMessage:
+            if message.source == "killa":
+                self.forwardMessage(channel, encodedMessage)    
+	    elif message == self.prevMessage:
                 # Message is the same, do nothing
                 logging.info("MESSAGE SAME!")
             else:

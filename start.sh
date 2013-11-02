@@ -33,11 +33,11 @@ if [ `ps -ef | grep cm.py | grep -v grep | awk '{print $2}'` ]
 fi
 
 
-python ~/blockytalky/backend/upload.py &>/dev/null
+python /home/pi/blockytalky/backend/upload.py &>/dev/null
 
-python ~/blockytalky/backend/mp.py &>/dev/null
-sleep 3
-sudo python ~/blockytalky/backend/hd.py &>/dev/null
-python ~/blockytalky/backend/cm.py &>/dev/null
+python /home/pi/blockytalky/backend/mp.py &>/dev/null
+sleep 4
+sudo python /home/pi/blockytalky/backend/hd.py &>/dev/null
+python /home/pi/blockytalky/backend/cm.py &>/dev/null
 
 echo BlockyTalky running.

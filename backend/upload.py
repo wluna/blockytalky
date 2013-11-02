@@ -40,7 +40,7 @@ def upload():
         endTime = time.time()
         print 'File took ' + str(endTime - startTime) + ' s'
 
-        cmd = "cd ~/blockytalky/code && " \
+        cmd = "cd /home/pi/blockytalky/code && " \
             "../../phantomjs/bin/phantomjs pjsblockly.js"
 
         startTime = time.time()
@@ -62,14 +62,14 @@ def upload():
 def stop():
     _log('info', 'Issuing kill command')
     subprocess.call(["sudo pkill -9 -f us.py"], shell = True)
-    commands.getstatusoutput('python ~blockytalky/code/kill.py')
+    commands.getstatusoutput('python /home/pi/blockytalky/code/kill.py')
     return 'OK'
 
 @app.route("/run", methods = ["GET", "POST"])
 def start():
     _log('info', 'Executing code on robot')
     # commands.getstatusoutput('python /home/pi/code/test.py')
-    cmd = ['sudo python ~/blockytalky/backend/us.py']
+    cmd = ['sudo python /home/pi/blockytalky/backend/us.py']
     p = subprocess.Popen(cmd, shell = True)
     return 'OK'
 
