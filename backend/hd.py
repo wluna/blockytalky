@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Blocky Talky - Hardware Daemon (hd.py, WebSocket client)
+Blocky Talky - Hardware Daemon (hd.py, RabbitMQ client)
 
 This module keeps the userscript on the Pi updated with sensor values and it
 also directly controls the hardware.
@@ -9,17 +9,17 @@ import time
 import threading
 import logging
 import socket
-import websocket           # Install via "pip install websocket-client"
+import pika
 from message import *
 from BrickPi import *
 
+channel = None
+
 class HardwareDaemon(object):
+    # Init hardware status and name, declare queues for the hardware, inits hardware
     def __init__(self):
         self.hostname = socket.gethostname()
         self.robot = Message.initStatus()
-        # Startup message to subscribe to hwCmd channel.
-        self.handshake = Message(self.hostname, None, "Subs", ("HwCmd",))
-        self.handshake = Message.encode(self.handshake)
         initPins()
         BrickPiSetup()
         BrickPi.MotorEnable[PORT_A] = 1
@@ -29,12 +29,15 @@ class HardwareDaemon(object):
 
         BrickPiSetupSensors()
 
-    def checkStatus(self, ws):
+    def checkStatus(self):
         """
         Applies the changes made to LEDs and motors and sends a message to HwVal
         channel every time a hardware value changes on the robot.
         """
         valuesChanged = False
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        channel = connection.channel()
+        channel.queue_declare(queue="HwVal")
         while True:
             BrickPi.Led = self.robot["leds"]
             BrickPi.MotorSpeed = self.robot["motors"]
@@ -50,19 +53,16 @@ class HardwareDaemon(object):
 
             #Check to see if sensor or encoder status has changed.
             for index, sensor in enumerate(sensors):
-               if abs(int(sensor) - self.robot["sensors"][index]) > 10:
+               if abs(int(sensor) - self.robot["sensors"][index]) > 15:
                    self.robot["sensors"][index] = sensor
                    if not valuesChanged:
                        valuesChanged = True
 
             for index, encoder in enumerate(encoders):
-               if abs((encoder) - (self.robot["encoders"][index])) > 10:
+               if abs((encoder) - (self.robot["encoders"][index])) > 15:
                    self.robot["encoders"][index] = encoder
                    if not valuesChanged:
                        valuesChanged = True
-                       print "VALUES CHANGED!"
-                       print str(encoder)
-                       print str(index)
 
             #valuesChanged = True
             if valuesChanged:
@@ -77,39 +77,42 @@ class HardwareDaemon(object):
                                              )
                 statusMessage = Message(self.hostname, None, "HwVal", content)
                 statusMessage = Message.encode(statusMessage)
-                ws.send(statusMessage)
+                #print str(statusMessage)
+                channel.basic_publish(exchange='', routing_key='HwVal', body=statusMessage)
                 valuesChanged = False
 
-    def onOpen(self, ws):
-        logging.info("Connection opened.")
-        ws.send(self.handshake)
+    def on_connected(self, connection):
+        connection.channel(hd.on_channel_open)
 
-    def onError(self, ws, error):
-        logging.debug("A WebSocket error has occured.")
+    def on_channel_open(self, new_channel):
+        global channel
+        channel = new_channel
+        self.channel = new_channel
+        channel.queue_declare(queue="HwCmd", callback=hd.on_queue_declared)
 
-    def onMessage(self, ws, message):
-        hwDict = Message.decode(message).getContent()
+    def on_queue_declared(self, frame):
+        channel.basic_consume(hd.handle_delivery, queue='HwCmd', no_ack=True)
+
+    def handle_delivery(self, channel, method, header, body):
+        hwDict = Message.decode(body).getContent()
+        #print hwDict
         for key, valueList in hwDict.iteritems():
-            for index, value in enumerate(valueList):
-                if value is not None:
-                    self.robot[key][index] = value
+             for index, value in enumerate(valueList):
+                 if value is not None:
+                     self.robot[key][index] = value
         logging.debug("Command: " + str(hwDict))
 
-    def onClose(self, ws):
-        logging.info("Connection closed.")
 
 if __name__ == "__main__":
     # Set the logging level.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "hd.log",
-                        level = logging.DEBUG)
+                        level = logging.INFO)
     hd = HardwareDaemon()
-    ws = websocket.WebSocketApp("ws://localhost:8886/mp",
-                                on_open = hd.onOpen,
-                                on_message = hd.onMessage,
-                                on_error = hd.onError,
-                                on_close = hd.onClose)
-    checkStatusThread = threading.Thread(target = hd.checkStatus, args = (ws,))
+    checkStatusThread = threading.Thread(target = hd.checkStatus, args = ())
     checkStatusThread.daemon = True
     checkStatusThread.start()
-    ws.run_forever()
+
+    parameters = pika.ConnectionParameters()
+    hd.connection = pika.SelectConnection(parameters, hd.on_connected)
+    hd.connection.ioloop.start()
