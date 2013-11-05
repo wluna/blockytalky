@@ -15,7 +15,7 @@ _log('info', 'Server starting...')
 
 #app.debug = True
 
-os.chdir("/home/pi/blockytalky")
+os.chdir("/Users/joe/blockytalky")
 
 @app.route("/blockly", methods = ["GET","POST"])
 def blockly():
@@ -40,7 +40,7 @@ def upload():
         endTime = time.time()
         print 'File took ' + str(endTime - startTime) + ' s'
 
-        cmd = "cd /home/pi/blockytalky/code && " \
+        cmd = "cd /Users/joe/blockytalky/code && " \
             "../../phantomjs/bin/phantomjs pjsblockly.js"
 
         startTime = time.time()

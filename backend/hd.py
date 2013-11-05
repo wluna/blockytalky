@@ -94,13 +94,20 @@ class HardwareDaemon(object):
         channel.basic_consume(hd.handle_delivery, queue='HwCmd', no_ack=True)
 
     def handle_delivery(self, channel, method, header, body):
-        hwDict = Message.decode(body).getContent()
-        #print hwDict
-        for key, valueList in hwDict.iteritems():
-             for index, value in enumerate(valueList):
-                 if value is not None:
-                     self.robot[key][index] = value
-        logging.debug("Command: " + str(hwDict))
+        message = Message.decode(body)
+        hwDict = message.getContent()
+        if message == self.prevMessage:
+            # Message is the same, do nothing
+            logging.info("MESSAGE SAME!")
+            pass
+        else:
+            #print hwDict
+            for key, valueList in hwDict.iteritems():
+                for index, value in enumerate(valueList):
+                    if value is not None:
+                        self.robot[key][index] = value
+            logging.debug("Command: " + str(hwDict))
+        self.prevMessage = message
 
 
 if __name__ == "__main__":
