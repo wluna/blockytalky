@@ -320,7 +320,8 @@ Blockly.Python.motor_set = function() {
     else if(value_motor_number=="4") {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor4=' +value_motor_power+ '))'+'\n'
     }
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwVal", body=toSend)'+'\n'+'time.sleep(.05)'+'\n'
+    code = code + 'toSend = Message.encode(toSend)' + '\n'
+    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
     return code;
 };
 
@@ -344,7 +345,8 @@ Blockly.Python.pin_in = function() {
     else if(value_pin_number=="22") {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin22=' +pin_value+ '))'+'\n'
     }
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwVal", body=toSend)'+'\n'+'time.sleep(.05)'+'\n'
+    code = code + 'toSend = Message.encode(toSend)' + '\n'
+    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
     return code;
 };
 
@@ -368,12 +370,13 @@ Blockly.Python.pin_out = function() {
     else if(value_pin_number=="15") {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin15=' +pin_value+ '))'+'\n'
     }
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwVal", body=toSend)'+'\n'+'time.sleep(.05)'+'\n'
+    code = code + 'toSend = Message.encode(toSend)' + '\n'
+    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
     return code;
 };
 
 Blockly.Python.motor_all_stop= function() {
-    var code= 'toSend= Message(self.hostname, None, "HwCmd", Message.createImage(motor1=0, motor2=0, motor3=0))'+'\n'+ 'channel.basic_publish(exchange="", routing_key="HwVal", body=toSend)'+'\n'+'time.sleep(.05)'+'\n';
+    var code= 'toSend= Message(self.hostname, None, "HwCmd", Message.createImage(motor1=0, motor2=0, motor3=0))'+'\n' + 'Message.encode(toSend)' + '\n' + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n';
     return code;
 };
 
@@ -405,7 +408,7 @@ Blockly.Python.led_set= function() {
   else {
     value_led2= 0;
   }
-    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(led1=' +value_led1+ ', led2=' +value_led2+ '))'+'\n'+'channel.basic_publish(exchange="", routing_key="HwVal", body=toSend)'+'\n'+'time.sleep(.05)'+'\n';
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(led1=' +value_led1+ ', led2=' +value_led2+ '))'+'\n'+'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n';
   return code;
 };
 

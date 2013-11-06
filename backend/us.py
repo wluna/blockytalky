@@ -113,7 +113,7 @@ if __name__ == "__main__":
     # Set the logging level.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "us.log",
-                        level = logging.INFO)
+                        level = logging.ERROR)
     us = UserScript()
     thread.start_new(us.executeScript, ())
 

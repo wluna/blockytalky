@@ -96,25 +96,24 @@ class HardwareDaemon(object):
     def handle_delivery(self, channel, method, header, body):
         message = Message.decode(body)
         hwDict = message.getContent()
-        if message == self.prevMessage:
-            # Message is the same, do nothing
-            logging.info("MESSAGE SAME!")
-            pass
-        else:
-            #print hwDict
-            for key, valueList in hwDict.iteritems():
-                for index, value in enumerate(valueList):
-                    if value is not None:
-                        self.robot[key][index] = value
-            logging.debug("Command: " + str(hwDict))
-        self.prevMessage = message
+        # if message == self.prevMessage:
+        #     # Message is the same, do nothing
+        #     logging.info("MESSAGE SAME!")
+        #     pass
+        # else:
+        for key, valueList in hwDict.iteritems():
+            for index, value in enumerate(valueList):
+                if value is not None:
+                    self.robot[key][index] = value
+        logging.debug("Command: " + str(hwDict))
+        #self.prevMessage = message
 
 
 if __name__ == "__main__":
     # Set the logging level.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "hd.log",
-                        level = logging.INFO)
+                        level = logging.ERROR)
     hd = HardwareDaemon()
     checkStatusThread = threading.Thread(target = hd.checkStatus, args = ())
     checkStatusThread.daemon = True

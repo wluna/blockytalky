@@ -52,7 +52,7 @@ page.open(url, function () {
     converted = '\n' + converted;
     tabbed = '\n    '
     converted = converted.replace(/\n/g, tabbed);
-    converted = 'def run(self, ws):\n  while True:\n' + converted;
+    converted = 'def run(self, channel):\n  while True:\n' + converted;
     converted = 'from message import *\nimport time\nimport RPi.GPIO as GPIO\nimport pyttsx\n\n' + converted;
 
     end = new Date().getTime();

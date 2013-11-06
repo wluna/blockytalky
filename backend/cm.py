@@ -9,6 +9,7 @@ import socket
 import threading
 import time
 import websocket
+import pika
 from collections import deque
 from message import *
 
@@ -16,18 +17,22 @@ class Communicator(object):
     hostname = socket.gethostname()     # Sender specific constant
     recipients = {}                     # Filled by "createWebSocket"
     restartQueue = deque()
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+    channel.queue_declare(queue="HwCmd")
+
 
     @staticmethod
     def onOpen(ws):
         logging.debug(">>> Method called: onOpen")
-        if Communicator.recipients["MP"] == ws:
-            logging.info("Connection opened: MP")
-            msg = Message(Communicator.hostname, "mp", "Subs",("MsgOut",))
-            msg = Message.encode(msg)
-        else:
-            logging.info("Connection opened: DAX")
-            msg = Message(Communicator.hostname, "dax", "Subs", ())
-            msg = Message.encode(msg)
+        # if Communicator.recipients["MP"] == ws:
+        #     logging.info("Connection opened: MP")
+        #     msg = Message(Communicator.hostname, "mp", "Subs",("MsgOut",))
+        #     msg = Message.encode(msg)
+        # else:
+        logging.info("Connection opened: DAX")
+        msg = Message(Communicator.hostname, "dax", "Subs", ())
+        msg = Message.encode(msg)
         ws.send(msg)
 
     @staticmethod
@@ -54,11 +59,12 @@ class Communicator(object):
     def onRemoteMessage(ws, encodedMessage):
         """ This method handles messages coming from DAX. """
         logging.debug(">>> Method called: onRemoteMessage")
-        if "MP" in Communicator.recipients.keys():
-            Communicator.recipients["MP"].send(encodedMessage)
-        else:
-            raise WebSocketException("MP WebSocket address is unknown!")
-        logging.info("Remote message received. Forwarded it to: MP (local)")
+        channel.basic_publish(exchange='', routing_key='HwVal', body=encodedMessage)
+        # if "MP" in Communicator.recipients.keys():
+            # Communicator.recipients["MP"].send(encodedMessage)
+        # else:
+        #     raise WebSocketException("MP WebSocket address is unknown!")
+        logging.info("Remote message received. Forwarded locally")
 
     @staticmethod
     def createWebSocket(webSocketName, webSocketAddress, onMessageMethod):
@@ -112,12 +118,12 @@ if __name__ == "__main__":
     # Set the logging level and start the client.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "cm.log",
-                        level = logging.ERROR)
+                        level = logging.DEBUG)
     logging.info("Communicator Module (WebSocket client) starting ...")
     # MP WebSocket (local component)
-    Communicator.createWebSocket("MP",
-                                 "ws://localhost:8886/mp",
-                                 Communicator.onLocalMessage)
+    # Communicator.createWebSocket("MP",
+    #                              "ws://localhost:8886/mp",
+    #                              Communicator.onLocalMessage)
 
     # DAX WebSocket (remote component)
     Communicator.createWebSocket("DAX",

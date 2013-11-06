@@ -7,18 +7,35 @@ This script is needed for the Blocky code to run on the Pi.
 import os
 from flask import Flask, request, redirect, url_for, render_template
 from werkzeug._internal import _log
-import time, commands, subprocess
+from message import *
+import time, commands, subprocess, pika
 
 app = Flask(__name__)
 
-_log('info', 'Server starting...')
+#_log('info', 'Server starting...')
 
 #app.debug = True
 
-os.chdir("/Users/joe/blockytalky")
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+channel = connection.channel()
+
+channel.queue_declare(queue="HwCmd")
+toSend = Message("name", None, "HwCmd", Message.createImage(motor1=0, motor2=0, motor3=0, motor4=0, pin13=0))
+toSend = Message.encode(toSend)
+
+upMsg = Message("name", None, "HwCmd", Message.createImage(pin13=1))
+upMsg = Message.encode(upMsg)
+channel.basic_publish(exchange="", routing_key="HwCmd", body=upMsg)
+
+
+os.chdir("/home/pi/blockytalky")
 
 @app.route("/blockly", methods = ["GET","POST"])
 def blockly():
+    startMsg = Message("name", None, "HwCmd", Message.createImage(pin13=0))
+    startMsg = Message.encode(startMsg)
+    channel.basic_publish(exchange="", routing_key="HwCmd", body=startMsg)
+
     return render_template('code.html')
 
 @app.route("/upload", methods = ["GET", "POST"])
@@ -40,7 +57,7 @@ def upload():
         endTime = time.time()
         print 'File took ' + str(endTime - startTime) + ' s'
 
-        cmd = "cd /Users/joe/blockytalky/code && " \
+        cmd = "cd /home/pi/blockytalky/code && " \
             "../../phantomjs/bin/phantomjs pjsblockly.js"
 
         startTime = time.time()
@@ -62,7 +79,8 @@ def upload():
 def stop():
     _log('info', 'Issuing kill command')
     subprocess.call(["sudo pkill -9 -f us.py"], shell = True)
-    commands.getstatusoutput('python /home/pi/blockytalky/code/kill.py')
+    #commands.getstatusoutput('python /home/pi/blockytalky/code/kill.py')
+    channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)
     return 'OK'
 
 @app.route("/run", methods = ["GET", "POST"])
