@@ -382,7 +382,6 @@ function finishUpload()
 }
 
 function runRobot() {
-    $("#status").val("Code running on robot...");
     var xml = "a";
     var url = getIP()+"run";   
     $.ajax({
@@ -396,6 +395,8 @@ function runRobot() {
 	    console.log(response);
 	}
     });
+
+  $("#status").val("Code running on robot...");
 }
 
 function getIP() {
@@ -421,6 +422,29 @@ function getXML() {
     }
     var plainxml= removeWhite(xmlText);
     return plainxml;
+}
+
+
+function updateSensors(){
+  var sensor1 = document.getElementById('sensor1').value;
+  var sensor2 = document.getElementById('sensor2').value;
+  var sensor3 = document.getElementById('sensor3').value;
+  var sensor4 = document.getElementById('sensor4').value;
+
+  var url = getIP()+"update";
+  var data = sensor1 + "," + sensor2 + "," + sensor3 + "," + sensor4;
+  $.ajax({
+  type: 'POST',
+  url: url,
+  data: data,
+  success: function(response){
+      console.log(response);
+  },
+  error: function(response) {
+      console.log(response);
+  }
+    });
+
 }
 
 function stopRobot() {

@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 #_log('info', 'Server starting...')
 
-#app.debug = True
+app.debug = True
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
@@ -81,6 +81,15 @@ def stop():
     subprocess.call(["sudo pkill -9 -f us.py"], shell = True)
     #commands.getstatusoutput('python /home/pi/blockytalky/code/kill.py')
     channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)
+    return 'OK'
+
+@app.route("/update", methods = ["GET", "POST"])
+def update():
+    upMsg = Message("name", None, "HwCmd", Message.createImage(pin13=1))
+    upMsg = Message.encode(upMsg)
+    channel.basic_publish(exchange="", routing_key="HwCmd", body=upMsg)
+    #sensors = request.form
+    #channel.basic_publish(exchange="", routing_key="HwCmd", body=sensors)
     return 'OK'
 
 @app.route("/run", methods = ["GET", "POST"])

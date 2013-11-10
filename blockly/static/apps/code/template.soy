@@ -30,6 +30,10 @@
     <tr>
       <td>
          <img src="/static/media/bt.png" id="btimg">
+         <table>
+         <tr><td>Port 1:</td><td>Port 2:</td><td>Port 3:</td><td>Port 4:</td></tr>
+         <tr>
+         <td><select id="sensor1"><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light">Light</option></select></td><td>  <select id="sensor2"><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light">Light</option></select>  </td><td><select id="sensor3"><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light">Light</option></select> </td><td> <select id="sensor4"><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light">Light</option></select>  </td><td> <button value="Update Sensors" title="Update Sensors" id="sensorsButton" onclick="updateSensors();">Update Sensors</button></tr></table>
       </td>
       <td class="farSide">
         <form name="statusform" method="POST">
