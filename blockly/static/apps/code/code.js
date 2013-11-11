@@ -432,7 +432,12 @@ function updateSensors(){
   var sensor4 = document.getElementById('sensor4').value;
 
   var url = getIP()+"update";
-  var data = sensor1 + "," + sensor2 + "," + sensor3 + "," + sensor4;
+  var data = {"sensor1":sensor1,
+              "sensor2":sensor2,
+              "sensor3":sensor3,
+              "sensor4":sensor4}
+  //var json_string = JSON.stringify(data)
+  //console.log(data);
   $.ajax({
   type: 'POST',
   url: url,

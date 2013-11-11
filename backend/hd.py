@@ -65,7 +65,7 @@ class HardwareDaemon(object):
                        valuesChanged = True
 
             #valuesChanged = True
-            if valuesChanged:
+            if valuesChanged:   
                 # Send a status message with the updated values.
                 content = Message.createImage(
                                                 encoder1 = encoders[0],
@@ -88,30 +88,46 @@ class HardwareDaemon(object):
         global channel
         channel = new_channel
         self.channel = new_channel
+        self.prevMessage = Message("none", None, "HwCmd", Message.createImage(pin11=2))
         channel.queue_declare(queue="HwCmd", callback=hd.on_queue_declared)
 
     def on_queue_declared(self, frame):
         channel.basic_consume(hd.handle_delivery, queue='HwCmd', no_ack=True)
 
     def handle_delivery(self, channel, method, header, body):
-        print str(body)
-        if len(body) < 50:
-            print "OK"
-
-        else:
-            message = Message.decode(body)
-            hwDict = message.getContent()
-            # if message == self.prevMessage:
-            #     # Message is the same, do nothing
-            #     logging.info("MESSAGE SAME!")
-            #     pass
-            # else:
-            for key, valueList in hwDict.iteritems():
+        command = Message.decode(body)
+        print str(command)
+        if command.channel == "Sensor":
+            port = None
+            newType = None
+            sensorDict = command.getContent()
+            for key, valueList in sensorDict.iteritems():
                 for index, value in enumerate(valueList):
                     if value is not None:
-                        self.robot[key][index] = value
-            logging.debug("Command: " + str(hwDict))
-            #self.prevMessage = message
+                        if value == "touch":
+                            newType = TYPE_SENSOR_TOUCH
+                        elif value == "ultra":
+                            newType = TYPE_SENSOR_ULTRASONIC_CONT
+                        elif value == "sound":
+                            newType = TYPE_SENSOR_RAW
+                        elif value == "light":
+                            newType = TYPE_SENSOR_LIGHT_ON
+
+                        BrickPi.SensorType[index] = newType
+            BrickPiSetupSensors()
+
+        else:
+            hwDict = command.getContent()
+            if command == self.prevMessage:
+                # Message is the same, do nothing
+                pass
+            else:
+                for key, valueList in hwDict.iteritems():
+                    for index, value in enumerate(valueList):
+                        if value is not None:
+                            self.robot[key][index] = value
+                logging.debug("Command: " + str(hwDict))
+            self.prevMessage = command
 
 
 if __name__ == "__main__":

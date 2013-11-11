@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 #_log('info', 'Server starting...')
 
-app.debug = True
+#app.debug = True
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
@@ -85,11 +85,15 @@ def stop():
 
 @app.route("/update", methods = ["GET", "POST"])
 def update():
-    upMsg = Message("name", None, "HwCmd", Message.createImage(pin13=1))
-    upMsg = Message.encode(upMsg)
-    channel.basic_publish(exchange="", routing_key="HwCmd", body=upMsg)
-    #sensors = request.form
-    #channel.basic_publish(exchange="", routing_key="HwCmd", body=sensors)
+    sensors = request.form
+    sensorMsg = Message("name", None, "Sensor", 
+                Message.createImage(sensor1=request.form['sensor1'],
+                sensor2=request.form['sensor2'],
+                sensor3=request.form['sensor3'],
+                sensor4=request.form['sensor4'],
+                ))
+    sensorMsg = Message.encode(sensorMsg)
+    channel.basic_publish(exchange="", routing_key="HwCmd", body=sensorMsg)
     return 'OK'
 
 @app.route("/run", methods = ["GET", "POST"])

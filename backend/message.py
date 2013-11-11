@@ -16,7 +16,8 @@ class Message(object):
                         "MsgIn",    # Incoming remote messages (invisible, within mp.py)
                         "MsgOut",   # Outgoing remote messages (invisible, within mp.py)
                         "Message",  # Visible channel for all messages
-                        "Logging"   # Data logging of user
+                        "Logging",   # Data logging of user
+                        "Sensor"
                     )
 
     def __init__(self, source, destination, channel, content = None):
@@ -109,7 +110,11 @@ class Message(object):
                     pin12 = None,
                     pin16 = None,
                     pin18 = None,
-                    pin22 = None
+                    pin22 = None,
+                    type1 = None,
+                    type2 = None,
+                    type3 = None,
+                    type4 = None
                    ):
         """
         Returns a dictionary containing the values of hardware elements that
@@ -120,7 +125,8 @@ class Message(object):
                 "motors": [motor1, motor2, motor3, motor4],
                 "encoders": [encoder1, encoder2, encoder3, encoder4],
                 "sensors": [sensor1, sensor2, sensor3, sensor4],
-                "pins": [pin7, pin11, pin13, pin15, pin12, pin16, pin18, pin22]
+                "pins": [pin7, pin11, pin13, pin15, pin12, pin16, pin18, pin22],
+                "types": [type1, type2, type3, type4]
                }
 
     @staticmethod
@@ -150,7 +156,11 @@ class Message(object):
                                    pin12 = None,
                                    pin16 = None,
                                    pin18 = None,
-                                   pin22 = None
+                                   pin22 = None,
+                                   type1 = "Raw",
+                                   type2 = "Raw",
+                                   type3 = "Raw",
+                                   type4 = "Raw"
                                  )
     @staticmethod
     def createSensorStatus():       
