@@ -58,7 +58,7 @@ function getScript(url, success) {
     };
     head.appendChild(script);
 }
-getScript('http://code.jquery.com/jquery-latest.min.js',function() {})
+getScript('/static/jquery.js',function() {})
 
 
 document.write('<link rel="stylesheet" type="text/css" href="/static/hopscotch-0.1.1.css">')
