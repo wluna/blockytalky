@@ -66,7 +66,7 @@ def upload():
         print 'Subprocess pt1 took '+ str(endTime - startTime) + ' s'
 
         startTime = time.time()
-        subprocess.call(["sudo pkill -9 -f us.py"], shell = True)
+        subprocess.call(["sudo pkill -9 -f user_script.py"], shell = True)
         endTime = time.time()
         print 'Subprocess pt2 took '+ str(endTime - startTime) + ' s'
 
@@ -78,7 +78,7 @@ def upload():
 @app.route("/stop", methods = ["GET", "POST"])
 def stop():
     _log('info', 'Issuing kill command')
-    subprocess.call(["sudo pkill -9 -f us.py"], shell = True)
+    subprocess.call(["sudo pkill -9 -f user_script.py"], shell = True)
     #commands.getstatusoutput('python /home/pi/blockytalky/code/kill.py')
     channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)
     return 'OK'
@@ -100,7 +100,7 @@ def update():
 def start():
     _log('info', 'Executing code on robot')
     # commands.getstatusoutput('python /home/pi/code/test.py')
-    cmd = ['sudo python /home/pi/blockytalky/backend/us.py']
+    cmd = ['sudo python /home/pi/blockytalky/backend/user_script.py']
     p = subprocess.Popen(cmd, shell = True)
     return 'OK'
 
