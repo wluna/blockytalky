@@ -59,7 +59,7 @@ TYPE_MOTOR_SPEED             = 1
 TYPE_MOTOR_POSITION          = 2
 
 TYPE_SENSOR_RAW              = 0 # - 31
-TYPE_SENSOR_LIGHT_OFF        = 0
+TYPE_SENSOR_LIGHT_OFF        = 50
 TYPE_SENSOR_LIGHT_ON         = (MASK_D0_M | MASK_D0_S)
 TYPE_SENSOR_TOUCH            = 32
 TYPE_SENSOR_ULTRASONIC_CONT  = 33
@@ -72,6 +72,7 @@ TYPE_SENSOR_COLOR_BLUE       = 39
 TYPE_SENSOR_COLOR_NONE       = 40
 TYPE_SENSOR_I2C              = 41
 TYPE_SENSOR_I2C_9V           = 42
+TYPE_SENSOR_SOUND            = 51
 
 BIT_I2C_MID  = 0x01  # Do one of those funny clock pulses between writing and reading. defined for each device.
 BIT_I2C_SAME = 0x02  # The transmit data, and the number of bytes to read and write isn't going to change. defined for each device.

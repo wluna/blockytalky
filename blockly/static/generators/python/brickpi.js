@@ -106,9 +106,7 @@ Blockly.Language.motor_set= {
     init: function() {
     this.setColour(300);
     this.appendDummyInput("")
-        .appendTitle("Set");
-    this.appendDummyInput("")
-        .appendTitle("Motor")
+        .appendTitle("Set motor")
             .appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], 
                 ["3","3"],["4","4"],["All","All"]]), 'motor_num');
       /*this.appendDummyInput()
@@ -116,14 +114,14 @@ Blockly.Language.motor_set= {
             .appendTitle(new Blockly.FieldTextInput('100',
             Blockly.Language.math_number.validator), 'motor_power');*/
     this.appendDummyInput("")
-            .appendTitle(" to Power");
+            .appendTitle(" to power");
     this.appendValueInput('motor_power')
             .setCheck('Number');
     this.setInputsInline(true);
     this.setOutput(false);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip('Motor 1-4, Power -255 to 255');
+    this.setTooltip('Motor 1-4, Power -100 to 100');
     }
 };
 

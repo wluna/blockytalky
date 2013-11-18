@@ -20,12 +20,13 @@ class HardwareDaemon(object):
     def __init__(self):
         self.hostname = socket.gethostname()
         self.robot = Message.initStatus()
+        self.sensorList = [0,0,0,0]
         initPins()
         BrickPiSetup()
         BrickPi.MotorEnable[PORT_A] = 1
         BrickPi.MotorEnable[PORT_B] = 1
         BrickPi.MotorEnable[PORT_C] = 1
-        BrickPi.MotorEnable[PORT_D] = 1
+        BrickPi.MotorEnable[PORT_D] = 1    
 
         BrickPiSetupSensors()
 
@@ -40,7 +41,10 @@ class HardwareDaemon(object):
         channel.queue_declare(queue="HwVal")
         while True:
             BrickPi.Led = self.robot["leds"]
-            BrickPi.MotorSpeed = self.robot["motors"]
+            BrickPi.MotorSpeed[0] = int(float(self.robot["motors"][0]) * 2.55)
+            BrickPi.MotorSpeed[1] = int(float(self.robot["motors"][1]) * 2.55)
+            BrickPi.MotorSpeed[2] = int(float(self.robot["motors"][2]) * 2.55)
+            BrickPi.MotorSpeed[3] = int(float(self.robot["motors"][3]) * 2.55)
             BrickPi.Gpio = self.robot["pins"]
             BrickPiUpdateValues()
 
@@ -53,32 +57,61 @@ class HardwareDaemon(object):
 
             #Check to see if sensor or encoder status has changed.
             for index, sensor in enumerate(sensors):
-               if abs(int(sensor) - self.robot["sensors"][index]) > 15:
-                   self.robot["sensors"][index] = sensor
-                   if not valuesChanged:
-                       valuesChanged = True
+                if (self.sensorList[index] == 32) or (self.sensorList[index] == 33):
+                    if abs(int(sensor) - self.robot["sensors"][index]) > 0: 
+                        self.robot["sensors"][index] = sensor
+                        if not valuesChanged:
+                            valuesChanged = True
+        
+                if abs(int(sensor) - self.robot["sensors"][index]) > 5:
+                    self.robot["sensors"][index] = sensor
+                    if not valuesChanged:
+                        valuesChanged = True
 
             for index, encoder in enumerate(encoders):
-               if abs((encoder) - (self.robot["encoders"][index])) > 15:
-                   self.robot["encoders"][index] = encoder
-                   if not valuesChanged:
-                       valuesChanged = True
+                if abs((encoder) - (self.robot["encoders"][index])) > 5:
+                    self.robot["encoders"][index] = encoder
+                    if not valuesChanged:
+                        valuesChanged = True
 
             #valuesChanged = True
-            if valuesChanged:   
+            if valuesChanged:
+                s1 = sensors[0]
+                s2 = sensors[1]
+                s3 = sensors[2]
+                s4 = sensors[3]
+                if self.sensorList[0] == 50:
+                    value1 = int(-0.0003 * (s1 * s1) + 0.0489 * s1 + 95.997)
+                elif self.sensorList[0] == 51:
+                    value1 = int(-0.0006 * (s1 * s1) + 0.2797 * s1 + 65.617)
+                elif self.sensorList[0] == 9:
+                    value1 = int(-0.1659 * s1 + 128.55)
+                else:
+                    value1 = s1
+
+                if self.sensorList[0] == 50:
+                    value1 = int(-0.0003 * (s1 * s1) + 0.0489 * s1 + 95.997)
+                elif self.sensorList[0] == 51:
+                    value1 = int(-0.0006 * (s1 * s1) + 0.2797 * s1 + 65.617)
+                elif self.sensorList[0] == 9:
+                    value1 = int(-0.1659 * s1 + 128.55)
+                else:
+                    value1 = s1
+
                 # Send a status message with the updated values.
                 content = Message.createImage(
                                                 encoder1 = encoders[0],
                                                 encoder2 = encoders[1],
-                                                sensor1 = sensors[0],
-                                                sensor2 = sensors[1],
-                                                sensor3 = sensors[2],
-                                                sensor4 = sensors[3]
+                                                sensor1 = value1,
+                                                sensor2 = s2,
+                                                sensor3 = s3,
+                                                sensor4 = s4
                                              )
                 statusMessage = Message(self.hostname, None, "HwVal", content)
                 statusMessage = Message.encode(statusMessage)
-                #print str(statusMessage)
+                #print str(sensors[0]) + " " + str(sensors[1]) + " " + str(sensors[2]) + " " + str(sensors[3])
                 channel.basic_publish(exchange='', routing_key='HwVal', body=statusMessage)
+                channel.basic_publish(exchange='', routing_key='HwVal2', body=statusMessage)
                 valuesChanged = False
 
     def on_connected(self, connection):
@@ -96,7 +129,7 @@ class HardwareDaemon(object):
 
     def handle_delivery(self, channel, method, header, body):
         command = Message.decode(body)
-        print str(command)
+        #print str(command.getContent())
         if command.channel == "Sensor":
             port = None
             newType = None
@@ -104,16 +137,22 @@ class HardwareDaemon(object):
             for key, valueList in sensorDict.iteritems():
                 for index, value in enumerate(valueList):
                     if value is not None:
+                        if value == "none":
+                            newType = TYPE_SENSOR_RAW
                         if value == "touch":
                             newType = TYPE_SENSOR_TOUCH
-                        elif value == "ultra":
+                        if value == "ultra":
                             newType = TYPE_SENSOR_ULTRASONIC_CONT
-                        elif value == "sound":
-                            newType = TYPE_SENSOR_RAW
-                        elif value == "light":
+                        if value == "sound":
+                            newType = TYPE_SENSOR_SOUND
+                        if value == "light_on":
                             newType = TYPE_SENSOR_LIGHT_ON
+                        if value == "light_off":
+                            newType = TYPE_SENSOR_LIGHT_OFF
 
-                        BrickPi.SensorType[index] = newType
+                        BrickPi.SensorType[index] = newType 
+                        self.sensorList[index] = newType
+                        print str(newType)     
             BrickPiSetupSensors()
 
         else:

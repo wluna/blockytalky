@@ -31,9 +31,12 @@
       <td>
          <img src="/static/media/bt.png" id="btimg">
          <table>
-         <tr><td>Port 1:</td><td>Port 2:</td><td>Port 3:</td><td>Port 4:</td></tr>
+         <tr><td>Port 1:<input name="sensor1" id="sensorval1" size="3"></td><td>Port 2:<input name="sensor2" id="sensorval2" size="3"></td><td>Port 3:<input name="sensor3" id="sensorval3" size="3"></td><td>Port 4:<input name="sensor4" id="sensorval4" size="3"></td></tr>
          <tr>
-         <td><select id="sensor1"><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light">Light</option></select></td><td>  <select id="sensor2"><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light">Light</option></select>  </td><td><select id="sensor3"><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light">Light</option></select> </td><td> <select id="sensor4"><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light">Light</option></select>  </td><td> <button value="Update Sensors" title="Update Sensors" id="sensorsButton" onclick="updateSensors();">Update Sensors</button></tr></table>
+         <td><select id="sensor1"><option value="none">None</option><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light_on">Light (Reflective)</option><option value="light_off">Light (Ambient)</option></select></td><td><select id="sensor2"><option value="none">None</option><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light_on">Light (Reflective)</option><option value="light_off">Light (Ambient)</option> </select> </td><td><select id="sensor3"><option value="none">None</option><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light_on">Light (Reflective)</option><option value="light_off">Light (Ambient)</option></select> </td><td> <select id="sensor4"><option value="none">None</option><option value="touch">Touch</option><option value="ultra">Ultrasonic</option><option value="sound">Sound</option><option value="light_on">Light (Reflective)</option><option value="light_off">Light (Ambient)</option></select>  </td><td> <button value="Update Sensors" title="Update Sensors" id="sensorsButton" onclick="updateSensors();">Update Sensors</button></tr>
+
+
+      </table>
       </td>
       <td class="farSide">
         <form name="statusform" method="POST">
@@ -160,7 +163,7 @@
       <block type="motor_set">
         <value name="motor_power">
           <block type="math_number">
-            <title name="NUM">255</title>
+            <title name="NUM">0</title>
           </block>
         </value>
       </block>

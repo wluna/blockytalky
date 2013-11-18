@@ -34,8 +34,8 @@ class UserScript(object):
         logging.info("Running usercode.py ...")
         connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
         channel = connection.channel()
-
         channel.queue_declare(queue="HwCmd")
+        usercode.run(self, channel)
 
     def getSensorValue(self, sensorType, port):
         key = sensorType + str(port+1)

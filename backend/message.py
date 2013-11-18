@@ -157,10 +157,10 @@ class Message(object):
                                    pin16 = None,
                                    pin18 = None,
                                    pin22 = None,
-                                   type1 = "Raw",
-                                   type2 = "Raw",
-                                   type3 = "Raw",
-                                   type4 = "Raw"
+                                   type1 = 0,
+                                   type2 = 0,
+                                   type3 = 0,
+                                   type4 = 0
                                  )
     @staticmethod
     def createSensorStatus():       

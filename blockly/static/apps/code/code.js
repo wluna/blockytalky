@@ -61,8 +61,11 @@ function getScript(url, success) {
 getScript('/static/jquery.js',function() {})
 
 
-document.write('<link rel="stylesheet" type="text/css" href="/static/hopscotch-0.1.1.css">')
-document.write("<script src='/static/hopscotch-0.1.1.js' type='text/javascript'></script>");
+document.writeln('<link rel="stylesheet" type="text/css" href="/static/hopscotch-0.1.1.css">')
+document.writeln("<script src='/static/hopscotch-0.1.1.js' type='text/javascript'></script>");
+document.writeln("<script src='/static/stomp.js' type='text/javascript'></script>");
+document.writeln("<script src='/static/sockjs.js' type='text/javascript'></script>");
+
 
 // Blockly tour (with hopscotch)
 var tour = {
@@ -293,6 +296,73 @@ function init(blockly) {
   // Add to reserved word list: Local variables in execution evironment (runJS)
   // and the infinite loop detection function.
   Blockly.JavaScript.addReservedWords('code,timeouts,checkTimeout');
+  var ws = new SockJS('http://' + window.location.hostname + ':55674/stomp');
+  var client = Stomp.over(ws);
+  client.heartbeat.outgoing = 0;
+  client.heartbeat.incoming = 0;
+
+var d = new Date();
+var previousTime = d.getTime();
+
+var on_connect = function() {
+        client.subscribe("/queue/HwVal2", on_message);
+        console.log('connected');
+    };
+var on_error =  function() {
+        console.log('error');
+    };
+var on_message = function(m) {
+        values = JSON.parse(m.body);
+        var s1 = document.getElementById("sensor1").value
+        var s2 = document.getElementById("sensor2").value
+        var s3 = document.getElementById("sensor3").value
+        var s4 = document.getElementById("sensor4").value
+        console.log(s4);
+        var d = new Date();
+
+        currentTime = d.getTime();
+        if((currentTime - previousTime) > 1){
+        
+        if(s1 == "none"){
+          $("#sensorval1").val("-");}
+        else if(s1 == "sound"){
+          var value = values.content.sensors[0];
+          var set = -0.0006 * (value * value) + 0.2797 * value + 65.617;
+          $("#sensorval1").val(parseInt(set));
+        }
+        else if (s1 == "light_off"){
+          var value = values.content.sensors[0];
+          console.log(value);
+          var set = -0.0003 * (value * value) + 0.0489 * value + 95.997;
+          console.log(set);
+          $("#sensorval1").val(parseInt(set));
+        }
+        else if (s1 == "light_on"){
+          var value = values.content.sensors[0];
+          console.log(value);
+          var set = -0.1659 * value + 128.55;
+          console.log(set);
+          $("#sensorval1").val(parseInt(set));
+        }
+        // if(s1 != "none"){
+        //   $("#sensorval1").val(values.content.sensors[0]);}
+        if(s2 == "none"){
+          $("#sensorval2").val("-");}
+        if(s2 != "none"){
+          $("#sensorval2").val(values.content.sensors[1]);}
+        if(s3 == "none"){
+          $("#sensorval3").val("-");}
+        if(s3 != "none"){
+          $("#sensorval3").val(values.content.sensors[2]);}
+        if(s4 == "none"){
+          $("#sensorval4").val("-");}
+        if(s4 != "none"){
+          $("#sensorval4").val(values.content.sensors[3]);}
+        previousTime = d.getTime(); }
+
+}
+
+client.connect('guest', 'guest', on_connect, on_error, '/');
 
   // Make the 'Blocks' tab line up with the toolbox.
   window.setTimeout(function() {
