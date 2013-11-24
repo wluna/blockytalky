@@ -83,29 +83,47 @@ class HardwareDaemon(object):
                 if self.sensorList[0] == 50:
                     value1 = int(-0.0003 * (s1 * s1) + 0.0489 * s1 + 95.997)
                 elif self.sensorList[0] == 51:
-                    value1 = int(-0.0006 * (s1 * s1) + 0.2797 * s1 + 65.617)
+                    value1 = int(-0.0004 * (s1 * s1) + 0.1103 * s1 + 99.2576)
                 elif self.sensorList[0] == 9:
                     value1 = int(-0.1659 * s1 + 128.55)
                 else:
                     value1 = s1
 
-                if self.sensorList[0] == 50:
-                    value1 = int(-0.0003 * (s1 * s1) + 0.0489 * s1 + 95.997)
-                elif self.sensorList[0] == 51:
-                    value1 = int(-0.0006 * (s1 * s1) + 0.2797 * s1 + 65.617)
-                elif self.sensorList[0] == 9:
-                    value1 = int(-0.1659 * s1 + 128.55)
+                if self.sensorList[1] == 50:
+                    value2 = int(-0.0003 * (s2 * s2) + 0.0489 * s2 + 95.997)
+                elif self.sensorList[1] == 51:
+                    value2 = int(-0.0004 * (s2 * s2) + 0.1103 * s2 + 99.2576)
+                elif self.sensorList[1] == 9:
+                    value2 = int(-0.1659 * s2 + 128.55)
                 else:
-                    value1 = s1
+                    value2 = s2
+
+                if self.sensorList[2] == 50:
+                    value3 = int(-0.0003 * (s3 * s3) + 0.0489 * s3 + 95.997)
+                elif self.sensorList[2] == 51:
+                    value3 = int(-0.0004 * (s3 * s3) + 0.1103 * s3 + 99.2576)
+                elif self.sensorList[2] == 9:
+                    value3 = int(-0.1659 * s3 + 128.55)
+                else:
+                    value3 = s3
+
+                if self.sensorList[3] == 50:
+                    value4 = int(-0.0003 * (s4 * s4) + 0.0489 * s4 + 95.997)
+                elif self.sensorList[3] == 51:
+                    value4 = int(-0.0004 * (s4 * s4) + 0.1103 * s4 + 99.2576)
+                elif self.sensorList[3] == 9:
+                    value4 = int(-0.1659 * s4 + 128.55)
+                else:
+                    value4 = s4
 
                 # Send a status message with the updated values.
                 content = Message.createImage(
                                                 encoder1 = encoders[0],
                                                 encoder2 = encoders[1],
                                                 sensor1 = value1,
-                                                sensor2 = s2,
-                                                sensor3 = s3,
-                                                sensor4 = s4
+                                                sensor2 = value2,
+                                                sensor3 = value3,
+                                                sensor4 = value4
                                              )
                 statusMessage = Message(self.hostname, None, "HwVal", content)
                 statusMessage = Message.encode(statusMessage)
@@ -151,8 +169,7 @@ class HardwareDaemon(object):
                             newType = TYPE_SENSOR_LIGHT_OFF
 
                         BrickPi.SensorType[index] = newType 
-                        self.sensorList[index] = newType
-                        print str(newType)     
+                        self.sensorList[index] = newType   
             BrickPiSetupSensors()
 
         else:

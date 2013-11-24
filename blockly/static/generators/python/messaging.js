@@ -155,8 +155,8 @@ Blockly.Python.facebook_poke= function() {
 Blockly.Python.messaging_tell= function() {
     var target= this.getTitleValue('target');
     var command= this.getTitleValue('command');
-    var code= 'toSend = Message(self.hostname, "'+target+'", "Message", "'+command+'")'+'\n'+
-	'ws.send(Message.encode(toSend))'+'\n' + 'time.sleep(.05)' + '\n';
+    var code= 'toSend = Message(self.hostname, "'+target+'", "Message", "'+command+'")'+'\n'+ 'toSend = Message.encode(toSend)' + '\n' +
+	'channel.basic_publish(exchange="US", routing_key="Message", body=toSend)'+'\n'+'time.sleep(.01)'+'\n';
     return code;
 };
 

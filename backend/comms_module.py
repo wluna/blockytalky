@@ -25,11 +25,6 @@ class Communicator(object):
     @staticmethod
     def onOpen(ws):
         logging.debug(">>> Method called: onOpen")
-        # if Communicator.recipients["MP"] == ws:
-        #     logging.info("Connection opened: MP")
-        #     msg = Message(Communicator.hostname, "mp", "Subs",("MsgOut",))
-        #     msg = Message.encode(msg)
-        # else:
         logging.info("Connection opened: DAX")
         msg = Message(Communicator.hostname, "dax", "Subs", ())
         msg = Message.encode(msg)
@@ -46,24 +41,9 @@ class Communicator(object):
         Communicator.restartQueue.append(ws)
 
     @staticmethod
-    def onLocalMessage(ws, encodedMessage):
-        """ This method handles messages coming from the Pi. """
-        logging.debug(">>> Method called: onLocalMessage")
-        if "DAX" in Communicator.recipients.keys():
-            Communicator.recipients["DAX"].send(encodedMessage)
-        else:
-            raise WebSocketException("DAX WebSocket address is unknown!")
-        logging.info("Local message received. Forwarded it to: DAX (remote)")
-
-    @staticmethod
     def onRemoteMessage(ws, encodedMessage):
         """ This method handles messages coming from DAX. """
         logging.debug(">>> Method called: onRemoteMessage")
-        channel.basic_publish(exchange='', routing_key='HwVal', body=encodedMessage)
-        # if "MP" in Communicator.recipients.keys():
-            # Communicator.recipients["MP"].send(encodedMessage)
-        # else:
-        #     raise WebSocketException("MP WebSocket address is unknown!")
         logging.info("Remote message received. Forwarded locally")
 
     @staticmethod
@@ -120,10 +100,6 @@ if __name__ == "__main__":
                         # filename = "cm.log",
                         level = logging.ERROR)
     logging.info("Communicator Module (WebSocket client) starting ...")
-    # MP WebSocket (local component)
-    # Communicator.createWebSocket("MP",
-    #                              "ws://localhost:8886/mp",
-    #                              Communicator.onLocalMessage)
 
     # DAX WebSocket (remote component)
     Communicator.createWebSocket("DAX",
@@ -132,4 +108,17 @@ if __name__ == "__main__":
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
     logging.info("Communicator Module (WebSocket client) started.")
+
+    cm = Communicator()
+    connection = pika.BlockingConnection(pika.ConnectionParameters(
+        host='localhost'))
+    channel = connection.channel()
+    channel.exchange_declare(exchange='US', type='direct')
+    result = channel.queue_declare(exclusive=True)
+    queue_name = result.method.queue
+    channel.queue_bind(exchange='US', queue=queue_name, routing_key='Message')
+    def handle_delivery(ch, method, properties, body):
+        Communicator.recipients["DAX"].send(body)
+    channel.basic_consume(handle_delivery, queue=queue_name, no_ack=True)
+    channel.start_consuming()
     Communicator.startAgent()

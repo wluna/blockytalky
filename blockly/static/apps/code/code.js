@@ -322,30 +322,10 @@ var on_message = function(m) {
 
         currentTime = d.getTime();
         if((currentTime - previousTime) > 1){
-        
         if(s1 == "none"){
           $("#sensorval1").val("-");}
-        else if(s1 == "sound"){
-          var value = values.content.sensors[0];
-          var set = -0.0006 * (value * value) + 0.2797 * value + 65.617;
-          $("#sensorval1").val(parseInt(set));
-        }
-        else if (s1 == "light_off"){
-          var value = values.content.sensors[0];
-          console.log(value);
-          var set = -0.0003 * (value * value) + 0.0489 * value + 95.997;
-          console.log(set);
-          $("#sensorval1").val(parseInt(set));
-        }
-        else if (s1 == "light_on"){
-          var value = values.content.sensors[0];
-          console.log(value);
-          var set = -0.1659 * value + 128.55;
-          console.log(set);
-          $("#sensorval1").val(parseInt(set));
-        }
-        // if(s1 != "none"){
-        //   $("#sensorval1").val(values.content.sensors[0]);}
+        if(s1 != "none"){
+          $("#sensorval1").val(values.content.sensors[0]);}
         if(s2 == "none"){
           $("#sensorval2").val("-");}
         if(s2 != "none"){

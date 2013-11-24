@@ -28,8 +28,8 @@ fi
 
 
 python /home/pi/blockytalky/backend/blockly_webserver.py &>/dev/null
-
-sudo python /home/pi/blockytalky/backend/hardware_daemon.py &>/dev/null
 python /home/pi/blockytalky/backend/comms_module.py &>/dev/null
+sudo python /home/pi/blockytalky/backend/hardware_daemon.py &>/dev/null
+#python /home/pi/blockytalky/backend/comms_module.py &>/dev/null
 
 echo BlockyTalky running.
