@@ -201,7 +201,7 @@ steps: [
 	title: "Status Bar",
 	content: "Shows the current status of your BTU.",
 	target: "status",
-	placement: "bottom"
+	placement: "left"
     },
     {
 	title: "That's it!",
