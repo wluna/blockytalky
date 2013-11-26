@@ -184,6 +184,7 @@ class HardwareDaemon(object):
                             self.robot[key][index] = value
                 logging.debug("Command: " + str(hwDict))
             self.prevMessage = command
+        BrickPiSetupSensors()
 
 
 if __name__ == "__main__":

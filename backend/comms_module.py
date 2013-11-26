@@ -17,10 +17,10 @@ class Communicator(object):
     hostname = socket.gethostname()     # Sender specific constant
     recipients = {}                     # Filled by "createWebSocket"
     restartQueue = deque()
+    global channelOut
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-    channel = connection.channel()
-    channel.queue_declare(queue="HwCmd")
-
+    channelOut = connection.channel()
+    channelOut.queue_declare(queue="HwVal")
 
     @staticmethod
     def onOpen(ws):
@@ -40,11 +40,12 @@ class Communicator(object):
         logging.info("Connection closed.")
         Communicator.restartQueue.append(ws)
 
-    @staticmethod
+    @staticmethod    
     def onRemoteMessage(ws, encodedMessage):
         """ This method handles messages coming from DAX. """
         logging.debug(">>> Method called: onRemoteMessage")
         logging.info("Remote message received. Forwarded locally")
+        channelOut.basic_publish(exchange="", routing_key="HwVal", body=encodedMessage)
 
     @staticmethod
     def createWebSocket(webSocketName, webSocketAddress, onMessageMethod):
@@ -94,6 +95,22 @@ class Communicator(object):
                 webSocket = Communicator.restartQueue.popleft()
                 Communicator.startWebSocket(webSocket)
 
+
+    def on_connected(self, connection):
+        connection.channel(cm.on_channel_open)
+
+    def on_channel_open(self, new_channel):
+        self.channel = new_channel
+        self.prevMessage = Message("none", None, "HwCmd", Message.createImage(pin11=2))
+        channel.queue_declare(queue="HwVal", callback=cm.on_queue_declared)
+
+    def on_queue_declared(self, frame):
+        channel.basic_consume(cm.handle_delivery, queue='HwVal', no_ack=True)
+
+    def handle_delivery(self, channel, method, header, body):
+        command = Message.decode(body)
+        print str(command.getContent())
+
 if __name__ == "__main__":
     # Set the logging level and start the client.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
@@ -108,17 +125,9 @@ if __name__ == "__main__":
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
     logging.info("Communicator Module (WebSocket client) started.")
+    Communicator.startAgent()
 
     cm = Communicator()
-    connection = pika.BlockingConnection(pika.ConnectionParameters(
-        host='localhost'))
-    channel = connection.channel()
-    channel.exchange_declare(exchange='US', type='direct')
-    result = channel.queue_declare(exclusive=True)
-    queue_name = result.method.queue
-    channel.queue_bind(exchange='US', queue=queue_name, routing_key='Message')
-    def handle_delivery(ch, method, properties, body):
-        Communicator.recipients["DAX"].send(body)
-    channel.basic_consume(handle_delivery, queue=queue_name, no_ack=True)
-    channel.start_consuming()
-    Communicator.startAgent()
+    parameters = pika.ConnectionParameters()
+    cm.connection = pika.SelectConnection(parameters, cm.on_connected)
+    cm.connection.ioloop.start()
