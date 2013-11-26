@@ -97,25 +97,28 @@ class Communicator(object):
 
 
     def on_connected(self, connection):
+        print "connected"
         connection.channel(cm.on_channel_open)
 
     def on_channel_open(self, new_channel):
-        self.channel = new_channel
-        self.prevMessage = Message("none", None, "HwCmd", Message.createImage(pin11=2))
-        channel.queue_declare(queue="HwVal", callback=cm.on_queue_declared)
+        print "declaring exchange"
+        global channel
+        channel = new_channel
+        channel.queue_declare(queue='Message', callback=cm.on_queue_declared)
 
     def on_queue_declared(self, frame):
-        channel.basic_consume(cm.handle_delivery, queue='HwVal', no_ack=True)
+        channel.basic_consume(cm.handle_delivery, queue='Message', no_ack=True)
 
     def handle_delivery(self, channel, method, header, body):
-        command = Message.decode(body)
-        print str(command.getContent())
+        # command = Message.decode(body)
+        # print str(command.getContent())
+        Communicator.recipients["DAX"].send(body)
 
 if __name__ == "__main__":
     # Set the logging level and start the client.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "cm.log",
-                        level = logging.ERROR)
+                        level = logging.INFO)
     logging.info("Communicator Module (WebSocket client) starting ...")
 
     # DAX WebSocket (remote component)
@@ -125,9 +128,10 @@ if __name__ == "__main__":
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
     logging.info("Communicator Module (WebSocket client) started.")
-    Communicator.startAgent()
-
+    
     cm = Communicator()
     parameters = pika.ConnectionParameters()
     cm.connection = pika.SelectConnection(parameters, cm.on_connected)
     cm.connection.ioloop.start()
+    Communicator.startAgent()
+
