@@ -128,10 +128,11 @@ if __name__ == "__main__":
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
     logging.info("Communicator Module (WebSocket client) started.")
+    Communicator.startAgent()
     
     cm = Communicator()
     parameters = pika.ConnectionParameters()
     cm.connection = pika.SelectConnection(parameters, cm.on_connected)
     cm.connection.ioloop.start()
-    Communicator.startAgent()
+    
 

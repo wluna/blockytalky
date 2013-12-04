@@ -170,12 +170,14 @@ class HardwareDaemon(object):
 
                         BrickPi.SensorType[index] = newType 
                         self.sensorList[index] = newType   
+            time.sleep(.01)
             BrickPiSetupSensors()
 
         else:
             hwDict = command.getContent()
             if command == self.prevMessage:
                 # Message is the same, do nothing
+                logging.info("Message same!")
                 pass
             else:
                 for key, valueList in hwDict.iteritems():
@@ -191,7 +193,7 @@ if __name__ == "__main__":
     # Set the logging level.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "hd.log",
-                        level = logging.ERROR)
+                        level = logging.INFO)
     hd = HardwareDaemon()
     checkStatusThread = threading.Thread(target = hd.checkStatus, args = ())
     checkStatusThread.daemon = True
