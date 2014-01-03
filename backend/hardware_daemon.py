@@ -179,7 +179,7 @@ class HardwareDaemon(object):
                 #logging.info("Message same!")
                 pass
             else:
-                print "new stuff!"
+                #print "new stuff!"
                 for key, valueList in hwDict.iteritems():
                     for index, value in enumerate(valueList):
                         if value is not None:

@@ -97,11 +97,10 @@ class Communicator(object):
 
 
     def on_connected(self, connection):
-        print "connected"
+        #print "connected"
         connection.channel(cm.on_channel_open)
 
     def on_channel_open(self, new_channel):
-        print "declaring exchange"
         global channel
         channel = new_channel
         channel.queue_declare(queue='Message', callback=cm.on_queue_declared)
@@ -118,17 +117,17 @@ if __name__ == "__main__":
     # Set the logging level and start the client.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "cm.log",
-                        level = logging.INFO)
+                        level = logging.ERROR)
     logging.info("Communicator Module (WebSocket client) starting ...")
 
     # DAX WebSocket (remote component)
     Communicator.createWebSocket("DAX",
-                                 "ws://btconnect.dax.getdown.org/dax",
+                                 "ws://joesanford.endofinternet.net:8005/dax",
                                   # "ws://25.193.190.132:8887/dax",
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
     logging.info("Communicator Module (WebSocket client) started.")
-    Communicator.startAgent()
+    #Communicator.startAgent()
     
     cm = Communicator()
     parameters = pika.ConnectionParameters()
