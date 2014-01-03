@@ -293,6 +293,8 @@ function init(blockly) {
   window.Blockly = blockly;
   BlocklyApps.init();
 
+  loadCode();
+
   // Add to reserved word list: Local variables in execution evironment (runJS)
   // and the infinite loop detection function.
   Blockly.JavaScript.addReservedWords('code,timeouts,checkTimeout');
