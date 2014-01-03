@@ -147,7 +147,6 @@ class HardwareDaemon(object):
 
     def handle_delivery(self, channel, method, header, body):
         command = Message.decode(body)
-        #print str(command.getContent())
         if command.channel == "Sensor":
             port = None
             newType = None
@@ -177,16 +176,16 @@ class HardwareDaemon(object):
             hwDict = command.getContent()
             if command == self.prevMessage:
                 # Message is the same, do nothing
-                logging.info("Message same!")
+                #logging.info("Message same!")
                 pass
             else:
+                print "new stuff!"
                 for key, valueList in hwDict.iteritems():
                     for index, value in enumerate(valueList):
                         if value is not None:
                             self.robot[key][index] = value
                 logging.debug("Command: " + str(hwDict))
             self.prevMessage = command
-        BrickPiSetupSensors()
 
 
 if __name__ == "__main__":

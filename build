@@ -32,6 +32,12 @@ sudo pip install jsonpickle
 sudo pip install pyttsx
 sudo pip install pyOSC
 sudo pip install websocket-client
+sudo pip install pika
+wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.2.2/rabbitmq-server_3.2.2-1_all.deb
+sudo dpkg -i rabbitmq-server_3.2.2-1_all.deb
+sudo rabbitmq-plugins enable rabbitmq_web_stomp
+sudo rabbitmqctl set_policy TTL ".*" '{"message-ttl":3000}' --apply-to queues
+
 
 cd ~
 wget https://github.com/aeberhardo/phantomjs-linux-armv6l/archive/master.zip

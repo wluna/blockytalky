@@ -296,7 +296,7 @@ function init(blockly) {
   // Add to reserved word list: Local variables in execution evironment (runJS)
   // and the infinite loop detection function.
   Blockly.JavaScript.addReservedWords('code,timeouts,checkTimeout');
-  var ws = new SockJS('http://' + window.location.hostname + ':5673/stomp');
+  var ws = new SockJS('http://' + window.location.hostname + ':15674/stomp');
   var client = Stomp.over(ws);
   client.heartbeat.outgoing = 0;
   client.heartbeat.incoming = 0;
