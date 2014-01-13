@@ -117,12 +117,12 @@ if __name__ == "__main__":
     # Set the logging level and start the client.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "cm.log",
-                        level = logging.ERROR)
+                        level = logging.DEBUG)
     logging.info("Communicator Module (WebSocket client) starting ...")
 
     # DAX WebSocket (remote component)
     Communicator.createWebSocket("DAX",
-                                 "ws://joesanford.endofinternet.net:8005/dax",
+                                 "ws://btrouter.getdown.org:8005/dax",
                                   # "ws://25.193.190.132:8887/dax",
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
