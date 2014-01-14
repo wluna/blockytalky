@@ -170,9 +170,9 @@ Blockly.Language.pin_in= {
         .appendTitle("Value:")
             .appendTitle(new Blockly.FieldDropdown([["HIGH", "1"], ["LOW", "0"]]), 'gpio_in_value');
     this.setInputsInline(true);
-    this.setOutput(false);
-    this.setPreviousStatement(true);
-        this.setNextStatement(true);
+    this.setOutput(true, 'Boolean');
+    this.setPreviousStatement(false);
+    this.setNextStatement(false);
     }
 };
 
@@ -332,19 +332,18 @@ Blockly.Python.pin_in = function() {
     var code;
     var value_pin_number= this.getTitleValue('gpio_in_pin');
     if(value_pin_number=="12") {
-    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin12=' +pin_value+ '))'+'\n'
+    code= 'self.robot["pins"][4] == 1'
     }
     else if(value_pin_number=="16") {
-    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin16=' +pin_value+ '))'+'\n'
+    code= 'self.robot["pins"][5] == 1'
     }
     else if(value_pin_number=="18") {
-    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin18=' +pin_value+ '))'+'\n'
+    code= 'self.robot["pins"][6] == 1'
     }
     else if(value_pin_number=="22") {
-    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin22=' +pin_value+ '))'+'\n'
+    code= 'self.robot["pins"][7] == 1'
     }
-    code = code + 'toSend = Message.encode(toSend)' + '\n'
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
+
     return code;
 };
 
@@ -437,9 +436,9 @@ Blockly.Python.sensor_touch=function() {
     var b=this.getTitleValue("port");
     var a=this.getTitleValue("status");
     if (a == 1){
-        return['self.robot["sensors"]['+(b-1)+'] < 200',Blockly.Python.ORDER_ATOMIC];}
+        return['self.robot["sensors"]['+(b-1)+'] == 1',Blockly.Python.ORDER_ATOMIC];}
     if (a == 0){
-        return['self.robot["sensors"]['+(b-1)+'] > 200',Blockly.Python.ORDER_ATOMIC];}
+        return['self.robot["sensors"]['+(b-1)+'] == 0',Blockly.Python.ORDER_ATOMIC];}
 };
 
 Blockly.Python.sensor_light=function() {

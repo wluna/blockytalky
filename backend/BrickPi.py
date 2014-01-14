@@ -413,6 +413,23 @@ def BrickPiUpdateValues():
     else:
         GPIO.output(15, False)
 
+    if GPIO.input(12):
+        BrickPi.Gpio[4] = 1
+    else:
+        BrickPi.Gpio[4] = 0
+    if GPIO.input(16):
+        BrickPi.Gpio[5] = 1
+    else:
+        BrickPi.Gpio[5] = 0
+    if GPIO.input(18):
+        BrickPi.Gpio[6] = 1
+    else:
+        BrickPi.Gpio[6] = 0
+    if GPIO.input(22):
+        BrickPi.Gpio[7] = 1
+    else:
+        BrickPi.Gpio[7] = 0
+
     return 0
 
 
