@@ -76,8 +76,8 @@ class HardwareDaemon(object):
 
             for index, pin in enumerate(pins):
                 self.robot["pins"][index] = pin
-                    if not valuesChanged:
-                        valuesChanged = True
+                if not valuesChanged:
+                    valuesChanged = True
 
             #valuesChanged = True
             if valuesChanged:
