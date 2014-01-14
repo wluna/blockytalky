@@ -81,6 +81,7 @@ def stop():
     subprocess.call(["sudo pkill -9 -f user_script.py"], shell = True)
     #commands.getstatusoutput('python /home/pi/blockytalky/code/kill.py')
     toSend = Message("name", None, "HwCmd", Message.createImage(motor1=0, motor2=0, motor3=0, motor4=0, pin13=0))
+    toSend = Message.encode(toSend)
     channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)
     return 'OK'
 
