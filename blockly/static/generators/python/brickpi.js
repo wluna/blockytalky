@@ -437,9 +437,9 @@ Blockly.Python.sensor_touch=function() {
     var b=this.getTitleValue("port");
     var a=this.getTitleValue("status");
     if (a == 1){
-        return['self.robot["sensors"]['+(b-1)+'] < 200',Blockly.Python.ORDER_ATOMIC];}
+        return['self.robot["sensors"]['+(b-1)+'] == 1',Blockly.Python.ORDER_ATOMIC];}
     if (a == 0){
-        return['self.robot["sensors"]['+(b-1)+'] > 200',Blockly.Python.ORDER_ATOMIC];}
+        return['self.robot["sensors"]['+(b-1)+'] == 0',Blockly.Python.ORDER_ATOMIC];}
 };
 
 Blockly.Python.sensor_light=function() {
