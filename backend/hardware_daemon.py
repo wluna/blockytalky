@@ -192,7 +192,7 @@ if __name__ == "__main__":
     # Set the logging level.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "hd.log",
-                        level = logging.ERROR)
+                        level = logging.INFO)
     hd = HardwareDaemon()
     checkStatusThread = threading.Thread(target = hd.checkStatus, args = ())
     checkStatusThread.daemon = True
