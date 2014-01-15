@@ -117,7 +117,7 @@ if __name__ == "__main__":
     # Set the logging level and start the client.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
                         # filename = "cm.log",
-                        level = logging.INFO)
+                        level = logging.ERROR)
     logging.info("Communicator Module (WebSocket client) starting ...")
 
     # DAX WebSocket (remote component)
