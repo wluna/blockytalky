@@ -26,6 +26,10 @@ if [ `ps -ef | grep comms_module.py | grep -v grep | awk '{print $2}'` ]
 	echo "Communications Module killed"
 fi
 
+if [ ! -f /etc/blocklyId ]; then
+    #16 bytes of random hex
+    xxd -l 10 -p /dev/random | sudo tee /etc/blocklyId > /dev/null
+fi
 
 python /home/pi/blockytalky/backend/blockly_webserver.py &>/dev/null
 python /home/pi/blockytalky/backend/comms_module.py &>/dev/null
