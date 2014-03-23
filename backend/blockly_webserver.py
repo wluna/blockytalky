@@ -47,36 +47,39 @@ def upload():
     endTime = None
     if request.method == "POST":
         data = request.form
-        data1 = data.copy()
-        data2 = data1.get('<xml xmlns')
-        _log('info', 'Blockly code received')
-
-        toWrite = "<xml xmlns = " + data2
-
-        startTime = time.time()
-        fo = open("code/rawxml.txt", "wb")
-        fo.write(toWrite)
-        fo.close()
-        endTime = time.time()
-        print 'File took ' + str(endTime - startTime) + ' s'
-
-        cmd = "cd /home/pi/blockytalky/code && " \
-            "../../phantomjs/bin/phantomjs pjsblockly.js"
-
-        startTime = time.time()
-        subprocess.call(cmd, shell = True)
-        endTime = time.time()
-        print 'Subprocess pt1 took '+ str(endTime - startTime) + ' s'
-
-        startTime = time.time()
-        subprocess.call(["sudo pkill -9 -f user_script.py"], shell = True)
-        endTime = time.time()
-        print 'Subprocess pt2 took '+ str(endTime - startTime) + ' s'
-
-
-        _log('info', 'Python written!')
-        print 'Upload took '+ str(time.time() - startTime) + ' s'
+        upload_code(data)
         return 'OK'
+
+def upload_code(data):
+    data1 = data.copy()
+    data2 = data1.get('<xml xmlns')
+    _log('info', 'Blockly code received')
+
+    toWrite = "<xml xmlns = " + data2
+
+    startTime = time.time()
+    fo = open("code/rawxml.txt", "wb")
+    fo.write(toWrite)
+    fo.close()
+    endTime = time.time()
+    print 'File took ' + str(endTime - startTime) + ' s'
+
+    cmd = "cd /home/pi/blockytalky/code && " \
+        "../../phantomjs/bin/phantomjs pjsblockly.js"
+
+    startTime = time.time()
+    subprocess.call(cmd, shell = True)
+    endTime = time.time()
+    print 'Subprocess pt1 took '+ str(endTime - startTime) + ' s'
+
+    startTime = time.time()
+    subprocess.call(["sudo pkill -9 -f user_script.py"], shell = True)
+    endTime = time.time()
+    print 'Subprocess pt2 took '+ str(endTime - startTime) + ' s'
+
+
+    _log('info', 'Python written!')
+    print 'Upload took '+ str(time.time() - startTime) + ' s'
 
 @app.route("/stop", methods = ["GET", "POST"])
 def stop():
