@@ -11,6 +11,8 @@ import time
 import websocket
 import pika
 import blockly_webserver
+import urllib
+import json
 from collections import deque
 from message import *
 
@@ -59,19 +61,22 @@ class Communicator(object):
     def respondToServerMessage(message):
         content = message.getContent()
         action = content["action"]
-        if action == "run_code":
-            logging.error("Running the code from server command")
-            blockly_webserver.start()
-        elif action == "stop_code":
-            logging.error("Stopping the code from server command")
+        if action == "stop_code":
+            logging.info("Stopping the code from server command")
             blockly_webserver.stop()
         elif action == "upload_code":
             url = content["url"]
-            logging.error("Uploading code from the server command to " + url)
-            #code = urllib.urlopen(url).read()
-            #if code:
-            #    #TODO: check recently updated
-            #    blockly_webserver.upload_code(code.codetext)
+            logging.info("Uploading code from the server command to " + url)
+            code = urllib.urlopen(url).read()
+            if code:
+                code = json.loads(code)
+                #TODO: check recently updated
+                logging.info("About to upload code")
+                blockly_webserver.upload_code(code["codetext"])
+                logging.info("Done uploading code")
+                blockly_webserver.start()
+            else:
+                logging.error("Unable to retrieve code from url: " + url)
         else:
             logging.error("Unknown server command: " + action)
 

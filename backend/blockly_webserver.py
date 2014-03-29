@@ -5,6 +5,7 @@ Blocky Talky - Upload (upload.py)
 This script is needed for the Blocky code to run on the Pi.
 """
 import os
+import sys
 from flask import Flask, request, redirect, url_for, render_template
 from werkzeug._internal import _log
 from message import *
@@ -47,19 +48,18 @@ def upload():
     endTime = None
     if request.method == "POST":
         data = request.form
-        upload_code(data)
+        data1 = data.copy()
+        data2 = data1.get('<xml xmlns')
+        _log('info', 'Blockly code received')
+
+        toWrite = "<xml xmlns = " + data2
+        upload_code(toWrite)
         return 'OK'
 
-def upload_code(data):
-    data1 = data.copy()
-    data2 = data1.get('<xml xmlns')
-    _log('info', 'Blockly code received')
-
-    toWrite = "<xml xmlns = " + data2
-
+def upload_code(code):
     startTime = time.time()
     fo = open("code/rawxml.txt", "wb")
-    fo.write(toWrite)
+    fo.write(code)
     fo.close()
     endTime = time.time()
     print 'File took ' + str(endTime - startTime) + ' s'
