@@ -16,7 +16,7 @@ def luhn_checksum(card_number):
     checksum = 0
     checksum += sum(odd_digits)
     for d in even_digits:
-        checksum += sum(digits_of(d*2))
+        checksum += sum(digits_of(hex(d*2)[2:]))
     return checksum % 16
  
 def is_luhn_valid(card_number):
