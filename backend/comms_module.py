@@ -26,6 +26,8 @@ class Communicator(object):
     channelOut = connection.channel()
     channelOut.queue_declare(queue="HwVal")
 
+    mostRecentCode = None
+
     @staticmethod
     def onOpen(ws):
         logging.debug(">>> Method called: onOpen")
@@ -70,10 +72,17 @@ class Communicator(object):
             logging.info("Uploading code from the server command to " + url)
             code = urllib.urlopen(url).read()
             if code:
-                #TODO: check recently updated
-                logging.info("About to upload code")
-                blockly_webserver.upload_code(code)
-                logging.info("Done uploading code")
+                if code == Communicator.mostRecentCode:
+                    logging.info("Duplicate code upload detected. Ignoring")
+                    print "Duplicate: "
+                    print code
+                else:
+                    print "Upload: "
+                    print code
+                    logging.info("About to upload code")
+                    blockly_webserver.upload_code(code)
+                    logging.info("Done uploading code")
+                    Communicator.mostRecentCode = code
                 blockly_webserver.start()
             else:
                 logging.error("Unable to retrieve code from url: " + url)
