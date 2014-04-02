@@ -70,10 +70,9 @@ class Communicator(object):
             logging.info("Uploading code from the server command to " + url)
             code = urllib.urlopen(url).read()
             if code:
-                code = json.loads(code)
                 #TODO: check recently updated
                 logging.info("About to upload code")
-                blockly_webserver.upload_code(code["codetext"])
+                blockly_webserver.upload_code(code)
                 logging.info("Done uploading code")
                 blockly_webserver.start()
             else:
