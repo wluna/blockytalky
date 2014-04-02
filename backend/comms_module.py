@@ -14,10 +14,11 @@ import blockly_webserver
 import urllib
 import json
 from collections import deque
+from blocklyId import *
 from message import *
 
 class Communicator(object):
-    hostname = socket.gethostname()     # Sender specific constant
+    hostname = blocklyId()
     recipients = {}                     # Filled by "createWebSocket"
     restartQueue = deque()
     global channelOut
