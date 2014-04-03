@@ -153,3 +153,7 @@ button.disabled {
 .run {
   background-position: -42px 0px;
 }
+
+#status{
+  font-size: 20px;
+}

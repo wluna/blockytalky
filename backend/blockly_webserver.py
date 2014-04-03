@@ -34,7 +34,10 @@ os.chdir("/home/pi/blockytalky")
 def blockly():
     startMsg = Message("name", None, "HwCmd", Message.createImage(pin13=0))
     startMsg = Message.encode(startMsg)
-    channel.basic_publish(exchange="", routing_key="HwCmd", body=startMsg)
+    try:    
+	channel.basic_publish(exchange="", routing_key="HwCmd", body=startMsg)
+    except:
+	pass
 
     return render_template('code.html')
 

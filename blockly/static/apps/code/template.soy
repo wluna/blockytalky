@@ -39,8 +39,7 @@
       </table>
       </td>
       <td class="farSide">
-        <form name="statusform" method="POST">
-	<input name="status" type="text" id="status" size="18"></form>  
+	<p name="status" id="status" size="18"></p>
       </td>
     </tr>
     <tr>
@@ -169,6 +168,15 @@
       </block>
       <block type="motor_get_encoder"></block>
       <block type="motor_all_stop"></block>
+    </category>
+    <category name="Lights" id="lights">
+      <block type="light_set">
+        <value name="motor_power">
+          <block type="math_number">
+             <title name="NUM">100</title>
+          </block>
+        </value>      
+</block>
     </category>
     <category name="Sensors" id="SLED">
       <block type="sensor_touch"></block>

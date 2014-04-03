@@ -407,7 +407,7 @@ function discard() {
  */
 
 function uploadToRobot() {
-    $("#status").val("Uploading code...");
+    $("#status").text("Uploading code...");
     setTimeout(finishUpload, 1)
     
     //alert("Code uploaded to robot");
@@ -430,7 +430,7 @@ function finishUpload()
 	}
     });
     
-    $("#status").val("Code uploaded to robot.");
+    $("#status").text("Code uploaded to robot");
 }
 
 function runRobot() {
@@ -448,7 +448,7 @@ function runRobot() {
 	}
     });
 
-  $("#status").val("Code running on robot...");
+  $("#status").text("Code running on robot...");
 }
 
 function getIP() {
@@ -505,7 +505,7 @@ function updateSensors(){
 }
 
 function stopRobot() {
-    $("#status").val("Robot stopped.");
+    $("#status").text("Robot stopped");
     var url = getIP()+"stop";
    var xml = "a"
     $.ajax({
@@ -549,7 +549,7 @@ function removeWhite(data) {
 }
 
 function loadCode() {
-    $("#status").val("Code loaded from robot.");
+    $("#status").text("Code loaded from robot");
 
     $.get('/load', function(data) {
 	$("#tab_xml").click();
