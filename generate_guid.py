@@ -1,7 +1,6 @@
 #!/usr/bin/python
-import os
-import binascii
 import sys
+import random
 
 #Don't use O so that it isn't confused with 0
 numerals35 = "0123456789abcdefghijklmnpqrstuvwxyz"
@@ -39,7 +38,9 @@ def calculate_luhn(partial_card_number):
     return check_digit if check_digit == 0 else base - check_digit
 
 def generate_guid():
-    randomBytes = baseN(int(binascii.hexlify(os.urandom(8)), 16), base - 1, numerals35)
+    randomGen = random.SystemRandom()
+    #13 characters gives around 64 bits of entropy
+    randomBytes = ''.join([randomGen.choice(numerals35) for i in range(13)])
     checkDigit = numerals36[calculate_luhn(randomBytes)]
     randomBytes += checkDigit
     #The checkDigit could be a O, so redo the process.
