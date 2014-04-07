@@ -9,7 +9,7 @@ To connect to BlockyTalky, point your browser at 'hostname.local:5000/blockly' w
 
 
 ## Links
-**BlockyTalky**: 	http://sites.tufts.edu/blockytalky/
+**BlockyTalky**: 	http://lpc.cs.tufts.edu/blockytalky/
 
 **Blockly**: 		https://code.google.com/p/blockly/
 
