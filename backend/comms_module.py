@@ -10,17 +10,23 @@ import threading
 import time
 import websocket
 import pika
+import blockly_webserver
+import urllib
+import json
 from collections import deque
+from blockytalky_id import *
 from message import *
 
 class Communicator(object):
-    hostname = socket.gethostname()     # Sender specific constant
+    hostname = BlockyTalkyID()
     recipients = {}                     # Filled by "createWebSocket"
     restartQueue = deque()
     global channelOut
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
     channelOut = connection.channel()
     channelOut.queue_declare(queue="HwVal")
+
+    mostRecentCode = None
 
     @staticmethod
     def onOpen(ws):
@@ -45,7 +51,43 @@ class Communicator(object):
         """ This method handles messages coming from DAX. """
         logging.debug(">>> Method called: onRemoteMessage")
         logging.info("Remote message received. Forwarded locally")
-        channelOut.basic_publish(exchange="", routing_key="HwVal", body=encodedMessage)
+        logging.info(encodedMessage)
+        decoded = Message.decode(encodedMessage)
+        if decoded.getChannel() == "Server":
+            logging.info("Received server command")
+            Communicator.respondToServerMessage(decoded)
+        else:
+            channelOut.basic_publish(exchange="", routing_key="HwVal", body=encodedMessage)
+
+    #Respond to a command originating from the main server (rails, not dax)
+    @staticmethod
+    def respondToServerMessage(message):
+        content = message.getContent()
+        action = content["action"]
+        if action == "stop_code":
+            logging.info("Stopping the code from server command")
+            blockly_webserver.stop()
+        elif action == "upload_code":
+            url = content["url"]
+            logging.info("Uploading code from the server command to " + url)
+            code = urllib.urlopen(url).read()
+            if code:
+                if code == Communicator.mostRecentCode:
+                    logging.info("Duplicate code upload detected. Ignoring")
+                    print "Duplicate: "
+                    print code
+                else:
+                    print "Upload: "
+                    print code
+                    logging.info("About to upload code")
+                    blockly_webserver.upload_code(code)
+                    logging.info("Done uploading code")
+                    Communicator.mostRecentCode = code
+                blockly_webserver.start()
+            else:
+                logging.error("Unable to retrieve code from url: " + url)
+        else:
+            logging.error("Unknown server command: " + action)
 
     @staticmethod
     def createWebSocket(webSocketName, webSocketAddress, onMessageMethod):
@@ -116,14 +158,14 @@ class Communicator(object):
 if __name__ == "__main__":
     # Set the logging level and start the client.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
-                        # filename = "cm.log",
+                        filename = "/home/pi/cm.log",
                         level = logging.INFO)
     logging.info("Communicator Module (WebSocket client) starting ...")
 
     # DAX WebSocket (remote component)
     Communicator.createWebSocket("DAX",
                                  "ws://btrouter.getdown.org:8005/dax",
-                                  # "ws://25.193.190.132:8887/dax",
+                                 #"ws://130.64.134.179:8005/dax",
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
     logging.info("Communicator Module (WebSocket client) started.")

@@ -10,6 +10,7 @@ import threading
 import logging
 import socket
 import pika
+from blockytalky_id import *
 from message import *
 from BrickPi import *
 
@@ -18,7 +19,7 @@ channel = None
 class HardwareDaemon(object):
     # Init hardware status and name, declare queues for the hardware, inits hardware
     def __init__(self):
-        self.hostname = socket.gethostname()
+        self.hostname = BlockyTalkyID()
         self.robot = Message.initStatus()
         self.sensorList = [0,0,0,0]
         initPins()

@@ -10,11 +10,13 @@ import logging
 import socket
 import usercode
 import pika
+from blockytalky_id import *
 from message import *
+import urllib2
 
 class UserScript(object):
     def __init__(self):
-        self.hostname = socket.gethostname()
+        self.hostname = BlockyTalkyID()
         self.msgQueue = []
         self.robot = Message.initStatus()
         
@@ -114,7 +116,7 @@ class UserScript(object):
 if __name__ == "__main__":
     # Set the logging level.
     logging.basicConfig(format = "%(levelname)s:\t%(message)s",
-                        # filename = "us.log",
+                        filename = "/home/pi/blockytalky/logs/user_script.log",
                         level = logging.ERROR)
     us = UserScript()
     thread.start_new(us.executeScript, ())

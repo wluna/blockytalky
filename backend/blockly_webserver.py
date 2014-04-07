@@ -5,6 +5,7 @@ Blocky Talky - Upload (upload.py)
 This script is needed for the Blocky code to run on the Pi.
 """
 import os
+import sys
 from flask import Flask, request, redirect, url_for, render_template
 from werkzeug._internal import _log
 from message import *
@@ -52,31 +53,33 @@ def upload():
         _log('info', 'Blockly code received')
 
         toWrite = "<xml xmlns = " + data2
-
-        startTime = time.time()
-        fo = open("code/rawxml.txt", "wb")
-        fo.write(toWrite)
-        fo.close()
-        endTime = time.time()
-        print 'File took ' + str(endTime - startTime) + ' s'
-
-        cmd = "cd /home/pi/blockytalky/code && " \
-            "../../phantomjs/bin/phantomjs pjsblockly.js"
-
-        startTime = time.time()
-        subprocess.call(cmd, shell = True)
-        endTime = time.time()
-        print 'Subprocess pt1 took '+ str(endTime - startTime) + ' s'
-
-        startTime = time.time()
-        subprocess.call(["sudo pkill -9 -f user_script.py"], shell = True)
-        endTime = time.time()
-        print 'Subprocess pt2 took '+ str(endTime - startTime) + ' s'
-
-
-        _log('info', 'Python written!')
-        print 'Upload took '+ str(time.time() - startTime) + ' s'
+        upload_code(toWrite)
         return 'OK'
+
+def upload_code(code):
+    startTime = time.time()
+    fo = open("code/rawxml.txt", "wb")
+    fo.write(code)
+    fo.close()
+    endTime = time.time()
+    print 'File took ' + str(endTime - startTime) + ' s'
+
+    cmd = "cd /home/pi/blockytalky/code && " \
+        "../../phantomjs/bin/phantomjs pjsblockly.js"
+
+    startTime = time.time()
+    subprocess.call(cmd, shell = True)
+    endTime = time.time()
+    print 'Subprocess pt1 took '+ str(endTime - startTime) + ' s'
+
+    startTime = time.time()
+    subprocess.call(["sudo pkill -9 -f user_script.py"], shell = True)
+    endTime = time.time()
+    print 'Subprocess pt2 took '+ str(endTime - startTime) + ' s'
+
+
+    _log('info', 'Python written!')
+    print 'Upload took '+ str(time.time() - startTime) + ' s'
 
 @app.route("/stop", methods = ["GET", "POST"])
 def stop():

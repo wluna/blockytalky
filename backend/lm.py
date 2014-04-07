@@ -12,10 +12,11 @@ import socket
 import datetime
 import websocket           # Install via "pip install websocket-client"
 from message import *
+from blockytalky_id import *
 
 class LoggingModule(object):
     def __init__(self):
-        self.hostname = socket.gethostname()
+        self.hostname = BlockyTalkyID()
         self.robot = Message.initStatus()
         # Startup message to subscribe to Logging channel.
         self.handshake = Message(self.hostname, None, "Subs", ("Logging",))

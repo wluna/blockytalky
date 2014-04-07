@@ -17,7 +17,8 @@ class Message(object):
                         "MsgOut",   # Outgoing remote messages (invisible, within mp.py)
                         "Message",  # Visible channel for all messages
                         "Logging",   # Data logging of user
-                        "Sensor"
+                        "Sensor",
+                        "Server"    # Data coming from the central server
                     )
 
     def __init__(self, source, destination, channel, content = None):
