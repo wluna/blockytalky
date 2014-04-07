@@ -26,8 +26,8 @@ if [ `ps -ef | grep comms_module.py | grep -v grep | awk '{print $2}'` ]
 	echo "Communications Module killed"
 fi
 
-if [ ! -f /etc/blocklyId ]; then
-    python /home/pi/blockytalky/generate_guid.py | sudo tee /etc/blocklyId > /dev/null
+if [ ! -f /etc/BlockyTalkyID ]; then
+    python /home/pi/blockytalky/generate_guid.py | sudo tee /etc/BlockyTalkyID > /dev/null
 fi
 
 python /home/pi/blockytalky/backend/blockly_webserver.py &>/dev/null

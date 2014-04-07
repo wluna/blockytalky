@@ -10,13 +10,13 @@ import threading
 import logging
 import socket
 import websocket           # Install via "pip install websocket-client"
-from blocklyId import *
+from blockytalky_id import *
 from message import *
 from BrickPi import *
 
 class HardwareDaemon(object):
     def __init__(self):
-        self.hostname = blocklyId()
+        self.hostname = BlockyTalkyID()
         self.robot = Message.initStatus()
         # Startup message to subscribe to hwCmd channel.
         self.handshake = Message(self.hostname, None, "Subs", ("HwCmd",))

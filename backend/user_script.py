@@ -10,13 +10,13 @@ import logging
 import socket
 import usercode
 import pika
-from blocklyId import *
+from blockytalky_id import *
 from message import *
 import urllib2
 
 class UserScript(object):
     def __init__(self):
-        self.hostname = blocklyId()
+        self.hostname = BlockyTalkyID()
         self.msgQueue = []
         self.robot = Message.initStatus()
         
