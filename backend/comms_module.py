@@ -164,8 +164,8 @@ if __name__ == "__main__":
 
     # DAX WebSocket (remote component)
     Communicator.createWebSocket("DAX",
-                                 #"ws://btrouter.getdown.org:8005/dax",
-                                 "ws://130.64.134.179:8005/dax",
+                                 "ws://btrouter.getdown.org:8005/dax",
+                                 #"ws://130.64.134.179:8005/dax",
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
     logging.info("Communicator Module (WebSocket client) started.")
