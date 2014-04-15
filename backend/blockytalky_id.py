@@ -8,7 +8,7 @@ def BlockyTalkyID():
         f = open("/etc/BlockyTalkyID", 'r')
         _BlockyTalkyID = f.read()
         f.close()
-    return _BlockyTalkyID
+    return _BlockyTalkyID.strip()
 
 if __name__ == '__main__':
     print BlockyTalkyID()
