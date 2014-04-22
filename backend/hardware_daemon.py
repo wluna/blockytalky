@@ -58,22 +58,24 @@ class HardwareDaemon(object):
 
             #Check to see if sensor or encoder status has changed.
             for index, sensor in enumerate(sensors):
-                if (self.sensorList[index] == 32) or (self.sensorList[index] == 33):
-                    if abs(int(sensor) - self.robot["sensors"][index]) > 0: 
+                if sensor:
+                    if (self.sensorList[index] == 32) or (self.sensorList[index] == 33):
+                        if abs(int(sensor) - self.robot["sensors"][index]) > 0: 
+                            self.robot["sensors"][index] = sensor
+                            if not valuesChanged:
+                                valuesChanged = True
+            
+                    if abs(int(sensor) - self.robot["sensors"][index]) > 5:
                         self.robot["sensors"][index] = sensor
                         if not valuesChanged:
                             valuesChanged = True
-        
-                if abs(int(sensor) - self.robot["sensors"][index]) > 5:
-                    self.robot["sensors"][index] = sensor
-                    if not valuesChanged:
-                        valuesChanged = True
 
             for index, encoder in enumerate(encoders):
-                if abs((encoder) - (self.robot["encoders"][index])) > 5:
-                    self.robot["encoders"][index] = encoder
-                    if not valuesChanged:
-                        valuesChanged = True
+                if encoder:
+                    if abs((encoder) - (self.robot["encoders"][index])) > 5:
+                        self.robot["encoders"][index] = encoder
+                        if not valuesChanged:
+                            valuesChanged = True
 
             #valuesChanged = True
             if valuesChanged:
