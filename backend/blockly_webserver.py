@@ -91,17 +91,24 @@ def stop():
     channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)
     return 'OK'
 
-@app.route("/update", methods = ["GET", "POST"])
-def update():
-    sensors = request.form
+def update_sensors(sensors):
+    assert len(sensors) == 4
     sensorMsg = Message("name", None, "Sensor", 
-                Message.createImage(sensor1=request.form['sensor1'],
-                sensor2=request.form['sensor2'],
-                sensor3=request.form['sensor3'],
-                sensor4=request.form['sensor4'],
+                Message.createImage(sensor1=sensors[0],
+                sensor2=sensors[1],
+                sensor3=sensors[2],
+                sensor4=sensors[3]
                 ))
     sensorMsg = Message.encode(sensorMsg)
     channel.basic_publish(exchange="", routing_key="HwCmd", body=sensorMsg)
+
+@app.route("/update", methods = ["GET", "POST"])
+def update():
+    sensors = [request.form['sensor1'],
+               request.form['sensor2'],
+               request.form['sensor3'],
+               request.form['sensor4']]
+    update_sensors(sensors)
     return 'OK'
 
 @app.route("/run", methods = ["GET", "POST"])
@@ -118,4 +125,4 @@ def load():
     return redirect(url)
 
 if __name__ == "__main__":
-	app.run(host = "0.0.0.0")
+    app.run(host = "0.0.0.0")
