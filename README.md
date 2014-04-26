@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/tufts-lpc/blockytalky.png?label=ready&title=Ready)](https://waffle.io/tufts-lpc/blockytalky)
 BlockyTalky
 =====
 BlockyTalky is a low-cost, extensible, open source, programmable, networked toolkit for tangible creations.
