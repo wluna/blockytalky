@@ -18,7 +18,7 @@ from flaskext.bcrypt import Bcrypt
 from werkzeug._internal import _log
 from message import *
 import time, commands, subprocess, pika
-import json
+import jsonpickle
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -49,10 +49,8 @@ channel.basic_publish(exchange='', routing_key='HwCmd', body=upMsg)
 os.chdir('/home/pi/blockytalky')
 
 def load_device_settings():
-    print "load devices settings"
-    json_file = open('/home/coder/coder-dist/coder-base/device.json')
-    device_json = json.load(json_file)
-    print device_json
+    json_file = open('/home/coder/coder-dist/coder-base/device.json', 'r')
+    device_json = jsonpickle.decode(json_file.read())
     device_settings = {
             'password_hash': device_json['password_hash'],
             'device_name': device_json['device_name'],
@@ -61,30 +59,30 @@ def load_device_settings():
             'coder_color': device_json['coder_color']
             }
     json_file.close()
+    return device_settings
 
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not check_auth(auth.username, auth.password):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
             return authenticate()
         return f(*args, **kwargs)
     return decorated
 
 def check_auth(username, password):
-    return (username == device_settings.device_name and
-            bcrypt.check_password_hash(device_settings.password_hash, password))
+    return (username == device_settings['device_name'] and
+            bcrypt.check_password_hash(device_settings['password_hash'], password))
 
 @app.route('/blockly', methods = ['GET','POST'])
 @requires_auth
 def blockly():
-    print 'hello'
     startMsg = Message('name', None, 'HwCmd', Message.createImage(pin13=0))
     startMsg = Message.encode(startMsg)
     try:    
 	    channel.basic_publish(exchange='', routing_key='HwCmd', body=startMsg)
     except:
 	    pass
-    print 'got this far'
     return render_template('code.html')
 
 @app.route('/upload', methods = ['GET', 'POST'])
@@ -200,6 +198,5 @@ def authenticate():
                     {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 if __name__ == '__main__':
-    load_device_settings()
-    print device_settings
+    device_settings = load_device_settings()
     app.run(host = '0.0.0.0')
