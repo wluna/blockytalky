@@ -12,7 +12,7 @@ Authorization is based on:
 
 import os
 import sys
-from fucntools import wrap
+from functools import wraps
 from flask import Flask, request, Response, redirect, url_for, render_template
 from flaskext.bcrypt import Bcrypt
 from werkzeug._internal import _log
@@ -23,10 +23,10 @@ app = Flask(__name__)
 bcrypt = Bcrypt(app)
 
 device_settings = {
-        password_hash: '',
-        device_name: '',
-        hostname: '',
-        coder_owner: ''
+        'password_hash': '',
+        'device_name': '',
+        'hostname': '',
+        'coder_owner': ''
 }
 
 #_log('info', 'Server starting...')
@@ -46,6 +46,15 @@ channel.basic_publish(exchange='', routing_key='HwCmd', body=upMsg)
 
 
 os.chdir('/home/pi/blockytalky')
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
 
 @app.route('/blockly', methods = ['GET','POST'])
 @requires_auth
@@ -146,13 +155,22 @@ def load():
     url = url_for('static', filename='rawxml.txt', t=time.time())
     return redirect(url)
 
-@app.route('/login', methods = ['GET', 'POST'])
-def login():
-    pass
+# @app.route('/login', methods = ['GET'])
+# def login():
+    # return render_template('login.html')
+
+# @app.route('/api_login', methods = ['POST'])
+# def api_login():
+    # if request.values.password and request.values.password != '':
+        # authenticated = authenticate(request, request.values.password)
+    # if authenticated:
+        # return Response(status='success')
+    # pass
 
 @app.route('/logout', methods = ['GET', 'POST'])
 @requires_auth
 def logout():
+    # TODO
     pass
 
 def check_auth(username, password):
@@ -163,15 +181,6 @@ def authenticate():
     return Response('Oops! You need to login with the right username and'
                     ' password to access BlockyTalky.', 401,
                     {'WWW-Authenticate': 'Basic realm="Login Required"'})
-
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
-            return authenticate()
-        return f(*args, **kwargs)
-    return decorated
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0')
