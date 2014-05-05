@@ -91,39 +91,33 @@ def upload():
     startTime = None
     endTime = None
     if request.method == 'POST':
-        data = request.form
-        data1 = data.copy()
-        data2 = data1.get('<xml xmlns')
+        data = request.form.copy()
+        xml_data = data['xml']
+        python_data = data['python']
         _log('info', 'Blockly code received')
-
-        toWrite = '<xml xmlns = ' + data2
-        upload_code(toWrite)
+        upload_code(xml_data, python_data);
         return 'OK'
 
-def upload_code(code):
+def code_to_file(code, file_name, file_label):
     startTime = time.time()
-    fo = open('code/rawxml.txt', 'wb')
+    fo = open(file_name, 'wb')
     fo.write(code)
     fo.close()
     endTime = time.time()
-    print 'File took ' + str(endTime - startTime) + ' s'
+    print '%s file took %fs' % (file_label, endTime - startTime)
 
-    cmd = 'cd /home/pi/blockytalky/code && ' \
-        '../../phantomjs/bin/phantomjs pjsblockly.js'
-
-    startTime = time.time()
-    subprocess.call(cmd, shell = True)
-    endTime = time.time()
-    print 'Subprocess pt1 took '+ str(endTime - startTime) + ' s'
+def upload_code(xml_data, python_data):
+    uploadStart = time.time()
+    code_to_file(xml_data, 'code/rawxml.txt', 'XML')
+    code_to_file(python_data, 'backend/usercode.py', 'Python')
 
     startTime = time.time()
     subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
     endTime = time.time()
-    print 'Subprocess pt2 took '+ str(endTime - startTime) + ' s'
-
+    print 'Subprocess pt1 took '+ str(endTime - startTime) + ' s'
 
     _log('info', 'Python written!')
-    print 'Upload took '+ str(time.time() - startTime) + ' s'
+    print 'Upload took '+ str(time.time() - uploadStart) + ' s'
 
 @app.route('/stop', methods = ['GET', 'POST'])
 @requires_auth
