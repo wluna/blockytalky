@@ -414,13 +414,17 @@ function uploadToRobot() {
 
 function finishUpload()
 {
+   var python = getPython();
    var xml = getXML();
     var url = getIP()+"upload";
     $.ajax({
 	type: 'POST',
 	async: false,
 	url: url,
-	data: xml,
+	data: {
+        'python': python,
+        'xml': xml
+    },
 	success: function(response){
 	    console.log(response);
 	},
@@ -475,6 +479,9 @@ function getXML() {
     return plainxml;
 }
 
+function getPython() {
+    return Blockly.Generator.workspaceToCode('Python');
+}
 
 function updateSensors(){
   var sensor1 = document.getElementById('sensor1').value;
