@@ -68,6 +68,15 @@ class Communicator(object):
             logging.info("Stopping the code from server command")
             blockly_webserver.stop()
         elif action == "upload_code":
+            sensors = content["sensors"]
+            if isinstance(sensors, list):
+                if len(sensors) == 4:
+                    blockly_webserver.update_sensors(sensors)
+                    logging.info("Updating sensors: " + str(sensors))
+                else:
+                    logging.error("Unable to update sensors: " + str(sensors))
+            elif sensors is not None:
+                logging.error("Sensors is not a list: " + str(sensors))
             url = content["url"]
             logging.info("Uploading code from the server command to " + url)
             code = urllib.urlopen(url).read()
@@ -165,7 +174,7 @@ if __name__ == "__main__":
     # DAX WebSocket (remote component)
     Communicator.createWebSocket("DAX",
                                  "ws://btrouter.getdown.org:8005/dax",
-                                 #"ws://130.64.134.179:8005/dax",
+                                 #"ws://54.187.3.140:8005/dax",
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
     logging.info("Communicator Module (WebSocket client) started.")
