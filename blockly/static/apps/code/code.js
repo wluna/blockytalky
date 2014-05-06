@@ -294,6 +294,7 @@ function init(blockly) {
   BlocklyApps.init();
 
   loadCode();
+  updateSensors();
 
   // Add to reserved word list: Local variables in execution evironment (runJS)
   // and the infinite loop detection function.

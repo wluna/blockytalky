@@ -22,6 +22,7 @@ class HardwareDaemon(object):
         self.hostname = BlockyTalkyID()
         self.robot = Message.initStatus()
         self.sensorList = [0,0,0,0]
+        self.sensorsRequested = False
         initPins()
         BrickPiSetup()
         BrickPi.MotorEnable[PORT_A] = 1
@@ -37,6 +38,7 @@ class HardwareDaemon(object):
         channel every time a hardware value changes on the robot.
         """
         valuesChanged = False
+
         connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
         channel = connection.channel()
         channel.queue_declare(queue="HwVal")
@@ -84,6 +86,10 @@ class HardwareDaemon(object):
                             valuesChanged = True
                 except:
                     self.robot["encoders"][index] = None
+
+            if self.sensorsRequested:
+                valuesChanged = True
+                self.sensorsRequested = False
 
             if valuesChanged:
                 s1 = sensors[0]
@@ -181,6 +187,7 @@ class HardwareDaemon(object):
                         self.sensorList[index] = newType   
             time.sleep(.01)
             BrickPiSetupSensors()
+            self.sensorsRequested = True
 
         else:
             hwDict = command.getContent()
