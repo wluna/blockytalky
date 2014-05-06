@@ -109,7 +109,7 @@ def code_to_file(code, file_name, file_label):
 def upload_code(xml_data, python_data):
     uploadStart = time.time()
     code_to_file(xml_data, 'code/rawxml.txt', 'XML')
-    code_to_file(python_data, 'backend/usercode.py', 'Python')
+    code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
 
     startTime = time.time()
     subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
@@ -118,6 +118,19 @@ def upload_code(xml_data, python_data):
 
     _log('info', 'Python written!')
     print 'Upload took '+ str(time.time() - uploadStart) + ' s'
+
+def convert_usercode(python_code):
+    # Need to use two-space tabs for consistency with Blockly conversion
+    python_code = "\n%s" % python_code
+    usercode = ("from message import *\n"
+                "import time\n"
+                "import RPi.GPIO as GPIO\n"
+                "import pyttsx\n\n"
+                "def run(self, channel, channel2):\n"
+                "  while True:\n"
+                "%s" % python_code.replace("\n", "\n    "))
+    print usercode
+    return usercode
 
 @app.route('/stop', methods = ['GET', 'POST'])
 @requires_auth
