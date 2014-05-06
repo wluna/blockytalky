@@ -9,6 +9,7 @@ fi
 if [ ! -f /home/pi/blockytalky/code/rawxml.txt ]; then
     sudo touch /home/pi/blockytalky/code/rawxml.txt
     sudo chown pi /home/pi/blockytalky/code/rawxml.txt
+    sudo echo '<xml xmlns = "http://www.w3.org/1999/xhtml"></xml>' > /home/pi/blockytalky/code/rawxml.txt
 fi
 
 if [ ! -f /home/pi/blockytalky/code/usercode.py ]; then
@@ -16,7 +17,6 @@ if [ ! -f /home/pi/blockytalky/code/usercode.py ]; then
 fi
 
 sudo chmod 775 /home/pi/blockytalky/code/rawxml.txt
-sudo echo '<xml xmlns = "http://www.w3.org/1999/xhtml"></xml>' > /home/pi/blockytalky/code/rawxml.txt
 
 sudo chown pi /home/pi/blockytalky/code/usercode.py
 sudo chmod 775 /home/pi/blockytalky/code/usercode.py

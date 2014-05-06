@@ -129,7 +129,6 @@ def convert_usercode(python_code):
                 "def run(self, channel, channel2):\n"
                 "  while True:\n"
                 "%s" % python_code.replace("\n", "\n    "))
-    print usercode
     return usercode
 
 @app.route('/stop', methods = ['GET', 'POST'])
