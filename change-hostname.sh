@@ -14,6 +14,7 @@ sudo sed -i -e "s/ironman/$nhost/g" /home/coder/coder-dist/coder-base/device.jso
 
 sudo sed -i -e "s/$chost/$nhost/g" /etc/wpa_supplicant/wpa_supplicant.conf
 sudo sed -i -e "s/sentinel/$nhost/g" /etc/wpa_supplicant/wpa_supplicant.conf
+sudo hostname | tee /etc/BlockyTalkyID > /dev/null
 
 echo "Hostname change complete. Restarting your BlockyTalky unit. To cancel, press CTRL-C"
 echo "5..."
