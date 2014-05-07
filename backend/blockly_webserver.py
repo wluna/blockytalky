@@ -99,6 +99,7 @@ def upload():
         return 'OK'
 
 def code_to_file(code, file_name, file_label):
+    print 'Writing %s code:\n%s\n\n' % (file_name, code)
     startTime = time.time()
     fo = open(file_name, 'wb')
     fo.write(code)
