@@ -1,10 +1,12 @@
-#! /bin/bash
+#!/bin/sh
 
 echo Starting BlockyTalky...
 
-if [ ! -f /etc/BlockyTalkyID ]; then
-    python /home/pi/blockytalky/generate_guid.py | sudo tee /etc/BlockyTalkyID > /dev/null
-fi
+#if [ ! -f /etc/BlockyTalkyID ]; then
+#    python /home/pi/blockytalky/generate_guid.py | sudo tee /etc/BlockyTalkyID > /dev/null
+#fi
+
+hostname | sudo tee /etc/BlockyTalkyID > /dev/null
 
 if [ ! -f /home/pi/blockytalky/code/rawxml.txt ]; then
     sudo touch /home/pi/blockytalky/code/rawxml.txt
