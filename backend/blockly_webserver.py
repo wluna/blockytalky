@@ -229,10 +229,14 @@ def authenticate():
 if __name__ == '__main__':
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/blockly_ws.log',
                                                    maxBytes=5096, backupCount=3)
+    globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
+                                                         maxBytes=5096, backupCount=3)
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
+    globalHandler.setFormatter(formatter)
     logger.addHandler(handler)
+    logger.addHandler(globalHandler)
     logger.setLevel(logging.INFO)
 
     device_settings = load_device_settings()
