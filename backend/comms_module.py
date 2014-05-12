@@ -53,7 +53,6 @@ class Communicator(object):
         """ This method handles messages coming from DAX. """
         logger.debug(">>> Method called: onRemoteMessage")
         logger.info("Remote message received. Forwarded locally")
-        logger.info(encodedMessage)
         decoded = Message.decode(encodedMessage)
         if decoded.getChannel() == "Server":
             logger.info("Received server command")
