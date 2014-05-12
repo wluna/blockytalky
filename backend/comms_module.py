@@ -17,6 +17,8 @@ from collections import deque
 from blockytalky_id import *
 from message import *
 
+logger = logging.getLogger('comms_module')
+
 class Communicator(object):
     hostname = BlockyTalkyID()
     recipients = {}                     # Filled by "createWebSocket"
@@ -30,31 +32,31 @@ class Communicator(object):
 
     @staticmethod
     def onOpen(ws):
-        logging.debug(">>> Method called: onOpen")
-        logging.info("Connection opened: DAX")
+        logger.debug(">>> Method called: onOpen")
+        logger.info("Connection opened: DAX")
         msg = Message(Communicator.hostname, "dax", "Subs", ())
         msg = Message.encode(msg)
         ws.send(msg)
 
     @staticmethod
     def onError(ws, error):
-        logging.error("A WebSocket error has occured.")
+        logger.error("A WebSocket error has occured: %s" % str(error))
 
     @staticmethod
     def onClose(ws):
-        logging.debug(">>> Method called: onClose")
-        logging.info("Connection closed.")
+        logger.debug(">>> Method called: onClose")
+        logger.info("Connection closed.")
         Communicator.restartQueue.append(ws)
 
     @staticmethod    
     def onRemoteMessage(ws, encodedMessage):
         """ This method handles messages coming from DAX. """
-        logging.debug(">>> Method called: onRemoteMessage")
-        logging.info("Remote message received. Forwarded locally")
-        logging.info(encodedMessage)
+        logger.debug(">>> Method called: onRemoteMessage")
+        logger.info("Remote message received. Forwarded locally")
+        logger.info(encodedMessage)
         decoded = Message.decode(encodedMessage)
         if decoded.getChannel() == "Server":
-            logging.info("Received server command")
+            logger.info("Received server command")
             Communicator.respondToServerMessage(decoded)
         else:
             channelOut.basic_publish(exchange="", routing_key="HwVal", body=encodedMessage)
@@ -65,56 +67,53 @@ class Communicator(object):
         content = message.getContent()
         action = content["action"]
         if action == "stop_code":
-            logging.info("Stopping the code from server command")
+            logger.info("Stopping the code from server command")
             blockly_webserver.stop()
         elif action == "upload_code":
             sensors = content["sensors"]
             if isinstance(sensors, list):
                 if len(sensors) == 4:
                     blockly_webserver.update_sensors(sensors)
-                    logging.info("Updating sensors: " + str(sensors))
+                    logger.info("Updating sensors: " + str(sensors))
                 else:
-                    logging.error("Unable to update sensors: " + str(sensors))
+                    logger.error("Unable to update sensors: " + str(sensors))
             elif sensors is not None:
-                logging.error("Sensors is not a list: " + str(sensors))
+                logger.error("Sensors is not a list: " + str(sensors))
             url = content["url"]
-            logging.info("Uploading code from the server command to " + url)
+            logger.info("Uploading code from the server command to " + url)
             code = urllib.urlopen(url).read()
             if code:
                 if code == Communicator.mostRecentCode:
-                    logging.info("Duplicate code upload detected. Ignoring")
-                    print "Duplicate: "
-                    print code
+                    logger.info("Duplicate code upload detected. Ignoring")
                 else:
-                    print "Upload: "
-                    print code
-                    logging.info("About to upload code")
+                    logger.info("About to upload code")
                     blockly_webserver.upload_code(code)
-                    logging.info("Done uploading code")
+                    logger.info("Done uploading code")
                     Communicator.mostRecentCode = code
                 blockly_webserver.start()
             else:
-                logging.error("Unable to retrieve code from url: " + url)
+                logger.error("Unable to retrieve code from url: " + url)
         else:
-            logging.error("Unknown server command: " + action)
+            logger.error("Unknown server command: " + action)
 
     @staticmethod
     def createWebSocket(webSocketName, webSocketAddress, onMessageMethod):
         """ Creates a WebSocket and adds it to the recipient list. """
-        logging.debug(">>> Method called: createWebSocket")
+        logger.debug(">>> Method called: createWebSocket")
         tmp = websocket.WebSocketApp(webSocketAddress,
                                      on_open = Communicator.onOpen,
                                      on_error = Communicator.onError,
                                      on_close = Communicator.onClose,
                                      on_message = onMessageMethod)
         Communicator.recipients[webSocketName] = tmp
-        logging.info("Created new WebSocket: " + str(webSocketName))
+        logger.info("Created new WebSocket: " + str(webSocketName))
 
     @staticmethod
     def startWebSocket(webSocket):
         """
         Creates a
         """
+        logger.info('Starting a WebSocket')
         webSocketThread = threading.Thread(target = webSocket.run_forever)
         webSocketThread.daemon = True
         webSocketThread.start()
@@ -125,7 +124,7 @@ class Communicator(object):
         Starts the Communicator activities.
         A separate thread is created for each WebSocket.
         """
-        logging.debug(">>> Method called: start")
+        logger.debug(">>> Method called: start")
         # Starts a thread for each stored websocket.
         for webSocket in Communicator.recipients.values():
             Communicator.startWebSocket(webSocket)
@@ -137,12 +136,12 @@ class Communicator(object):
         reopens them. This makes it possible to disconnect Dax or MP and then
         reconnect them without restarting the CM.
         """
-        logging.info("Communicator Agent starting ...")
+        logger.info("Communicator Agent starting ...")
         while True:
             time.sleep(10)
-            logging.debug(">>> Checking the restartQueue ...")
+            logger.debug(">>> Checking the restartQueue ...")
             if Communicator.restartQueue:
-                logging.info("Restarting a closed WebSocket ...")
+                logger.info("Restarting a closed WebSocket ...")
                 webSocket = Communicator.restartQueue.popleft()
                 Communicator.startWebSocket(webSocket)
 
@@ -165,11 +164,15 @@ class Communicator(object):
         Communicator.recipients["DAX"].send(body)
 
 if __name__ == "__main__":
-    # Set the logging level and start the client.
-    logging.basicConfig(format = "%(levelname)s:\t%(message)s",
-                        filename = "/home/pi/cm.log",
-                        level = logging.INFO)
-    logging.info("Communicator Module (WebSocket client) starting ...")
+    handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/comms_module.log',
+                                                   maxBytes=5096, backupCount=3)
+    formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
+                                  datefmt='%H:%M:%S %d/%m')
+    handler.setFormatter(formatter)
+    handler.setLevel(logging.INFO)
+    logger.addHandler(handler)
+
+    logger.info("Communicator Module (WebSocket client) starting ...")
 
     # DAX WebSocket (remote component)
     Communicator.createWebSocket("DAX",
@@ -177,7 +180,7 @@ if __name__ == "__main__":
                                  #"ws://54.187.3.140:8005/dax",
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
-    logging.info("Communicator Module (WebSocket client) started.")
+    logger.info("Communicator Module (WebSocket client) started.")
     #Communicator.startAgent()
     
     cm = Communicator()
