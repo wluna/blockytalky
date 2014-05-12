@@ -20,7 +20,7 @@ logger = logging.getLogger('hardware_daemon')
 class HardwareDaemon(object):
     # Init hardware status and name, declare queues for the hardware, inits hardware
     def __init__(self):
-        logger.debug('Initializing hardware daemon')
+        logger.info('Initializing hardware daemon')
         self.hostname = BlockyTalkyID()
         self.robot = Message.initStatus()
         self.sensorList = [0,0,0,0]
@@ -81,7 +81,7 @@ class HardwareDaemon(object):
                             valuesChanged = True
 
                 except:
-                    logger.info('Sensor[\%d] not found' % index)
+                    logger.debug('Sensor[%d] not found' % index)
                     self.robot["sensors"][index] = None
 
             for index, encoder in enumerate(encoders):
@@ -92,7 +92,7 @@ class HardwareDaemon(object):
                         if not valuesChanged:
                             valuesChanged = True
                 except:
-                    logger.info('Sensor[\%d] not found' % index)
+                    logger.debug('Sensor[%d] not found' % index)
                     self.robot["encoders"][index] = None
 
             if self.sensorsRequested:
@@ -216,12 +216,12 @@ class HardwareDaemon(object):
 
 if __name__ == "__main__":
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/hardware_daemon.log',
-                                                   maxBytes=5096, backupCount=3)
+                                                   maxBytes=5096, backupCount=3, )
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
-    handler.setLevel(logging.INFO)
     logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
     hd = HardwareDaemon()
     checkStatusThread = threading.Thread(target = hd.checkStatus, args = ())

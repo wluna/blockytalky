@@ -169,8 +169,8 @@ if __name__ == "__main__":
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
-    handler.setLevel(logging.INFO)
     logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
     logger.info("Communicator Module (WebSocket client) starting ...")
 

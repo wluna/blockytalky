@@ -99,6 +99,7 @@ class UserScript(object):
             # On SM message: TBD
         """
         # For testing purposes
+        message = Message.decode(body)
         if message.getChannel() == "Message":
             # If it's a "do this" type message ...
             logger.debug('Adding message from %s with content \'%s\'' % (message.getSource(), message.getContent()))
@@ -108,8 +109,8 @@ class UserScript(object):
             usercode.run(self, self.channel)
         else:
             # If it's a robot status update ...
-            logger.debug('Updating the robot status: %s' % str(hwDict))
             hwDict = message.getContent()
+            logger.debug('Updating the robot status: %s' % str(hwDict))
             # Apply the value changes
             for key, valueList in hwDict.iteritems():
                 for index, value in enumerate(valueList):
@@ -127,8 +128,8 @@ if __name__ == "__main__":
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
-    handler.setLevel(logging.INFO)
     logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
     us = UserScript()
     thread.start_new(us.executeScript, ())

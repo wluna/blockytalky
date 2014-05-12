@@ -117,7 +117,10 @@ def upload_code(xml_data, python_data):
     code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
 
     startTime = time.time()
-    subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
+    try:
+        subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
+    except Exception as e:
+        logger.exception('Failed to stop Blockly code when uploading code:')
     endTime = time.time()
     logger.debug('Subprocess pt1 took '+ str(endTime - startTime) + ' s')
 
@@ -139,7 +142,10 @@ def convert_usercode(python_code):
 @requires_auth
 def stop():
     logger.info('Issuing kill command')
-    subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
+    try:
+        subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
+    except Exception as e:
+        logger.exception('Failed to stop Blockly code:')
     #commands.getstatusoutput('python /home/pi/blockytalky/code/kill.py')
     toSend = Message('name', None, 'HwCmd', Message.createImage(motor1=0, motor2=0, motor3=0, motor4=0, pin13=0))
     toSend = Message.encode(toSend)
@@ -226,8 +232,8 @@ if __name__ == '__main__':
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
-    handler.setLevel(logging.INFO)
     logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
     device_settings = load_device_settings()
     app.run(host = '0.0.0.0')
