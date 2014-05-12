@@ -1,7 +1,0 @@
-INFO:	Message Passer (WebSocket server) starting ...
-Traceback (most recent call last):
-  File "/home/pi/blockytalky/backend/mp.py", line 95, in <module>
-    tornado.ioloop.IOLoop.instance().start()
-  File "/usr/local/lib/python2.7/dist-packages/tornado/ioloop.py", line 646, in start
-    event_pairs = self._impl.poll(poll_timeout)
-KeyboardInterrupt
