@@ -46,6 +46,10 @@ upMsg = Message.encode(upMsg)
 channel.basic_publish(exchange='', routing_key='HwCmd', body=upMsg)
 
 
+connection2 = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+channel2 = connection2.channel()
+channel2.queue_declare(queue="Message")
+
 os.chdir('/home/pi/blockytalky')
 
 def load_device_settings():
@@ -142,6 +146,14 @@ def convert_usercode(python_code):
 @requires_auth
 def stop():
     logger.info('Issuing kill command')
+    try:
+        channel.queue_purge(queue='HwCmd')
+    except Exception as e:
+        logger.exception('Failed to purge HwCmd queue:')
+    try:
+        channel2.queue_purge(queue='Message')
+    except Exception as e:
+        logger.exception('Failed to purge Message queue:')
     try:
         subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
     except Exception as e:
