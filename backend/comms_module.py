@@ -17,7 +17,7 @@ from collections import deque
 from blockytalky_id import *
 from message import *
 
-logger = logging.getLogger('comms_module')
+logger = logging.getLogger(__name__)
 
 class Communicator(object):
     hostname = BlockyTalkyID()
@@ -164,9 +164,9 @@ class Communicator(object):
 
 if __name__ == "__main__":
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/comms_module.log',
-                                                   maxBytes=5096, backupCount=3)
+                                                   maxBytes=8192, backupCount=3)
     globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
-                                                         maxBytes=5096, backupCount=3)
+                                                         maxBytes=16384, backupCount=3)
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
@@ -179,8 +179,8 @@ if __name__ == "__main__":
 
     # DAX WebSocket (remote component)
     Communicator.createWebSocket("DAX",
+                                 #"ws://192.168.1.43:8005/dax",
                                  "ws://btrouter.getdown.org:8005/dax",
-                                 #"ws://54.187.3.140:8005/dax",
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
     logger.info("Communicator Module (WebSocket client) started.")

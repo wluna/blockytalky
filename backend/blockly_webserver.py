@@ -23,7 +23,7 @@ import jsonpickle
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-logger = logging.getLogger('blockly_webserver')
+logger = logging.getLogger(__name__)
 device_settings = {
         'password_hash': '',
         'device_name': '',
@@ -240,9 +240,9 @@ def authenticate():
 
 if __name__ == '__main__':
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/blockly_ws.log',
-                                                   maxBytes=5096, backupCount=3)
+                                                   maxBytes=8192, backupCount=3)
     globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
-                                                         maxBytes=5096, backupCount=3)
+                                                         maxBytes=16384, backupCount=3)
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)

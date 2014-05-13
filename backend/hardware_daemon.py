@@ -15,7 +15,7 @@ from message import *
 from BrickPi import *
 
 channel = None
-logger = logging.getLogger('hardware_daemon')
+logger = logging.getLogger(__name__)
 
 class HardwareDaemon(object):
     # Init hardware status and name, declare queues for the hardware, inits hardware
@@ -216,9 +216,9 @@ class HardwareDaemon(object):
 
 if __name__ == "__main__":
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/hardware_daemon.log',
-                                                   maxBytes=5096, backupCount=3)
+                                                   maxBytes=8192, backupCount=3)
     globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
-                                                         maxBytes=5096, backupCount=3)
+                                                         maxBytes=16384, backupCount=3)
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)

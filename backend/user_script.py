@@ -15,7 +15,7 @@ from blockytalky_id import *
 from message import *
 import urllib2
 
-logger = logging.getLogger('user_script')
+logger = logging.getLogger(__name__)
 
 class UserScript(object):
     def __init__(self):
@@ -127,9 +127,9 @@ class UserScript(object):
 if __name__ == "__main__":
     # Set the logging level.
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/user_script.log',
-                                                   maxBytes=5096, backupCount=3)
+                                                   maxBytes=8192, backupCount=3)
     globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
-                                                         maxBytes=5096, backupCount=3)
+                                                         maxBytes=16384, backupCount=3)
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
