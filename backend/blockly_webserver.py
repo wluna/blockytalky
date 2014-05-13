@@ -52,6 +52,8 @@ channel2.queue_declare(queue="Message")
 
 os.chdir('/home/pi/blockytalky')
 
+max_retries = 5
+
 def load_device_settings():
     try:
         json_file = open('/home/coder/coder-dist/coder-base/device.json', 'r')
@@ -81,6 +83,49 @@ def check_auth(username, password):
     return (username == device_settings['device_name'] and
             bcrypt.check_password_hash(device_settings['password_hash'], password))
 
+def restart_comms_module():
+    try:
+        subprocess.call(['sudo pkill -15 -f comms_module.py'], shell = True)
+    except Exception as e:
+        logger.exception('Failed to terminate communication module. Trying again more forcefully:')
+        try:
+            subprocess.call(['sudo pkill -9 -f comms_module.py'], shell =True)
+        except Exception as e:
+            logger.exception('Failed to terminate communication module:')
+
+def stop_user_script():
+    try:
+        channel2.queue_purge(queue='Message')
+    except Exception as e:
+        logger.exception('Failed to purge Message queue:')
+    try:
+        subprocess.call(['sudo pkill -15 -f user_script.py'], shell = True)
+    except Exception as e:
+        logger.exception('Failed to stop Blockly code, trying again more forcefully:')
+        try:
+            subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
+        except:
+            logger.exception('Failed to stop Blockly code:')
+
+def retry_request(request=None, num_tries=0, action='complete request', *args, **kwargs):
+    max_retries = 5
+    wait_time = 3
+    if num_tries < 0:
+        num_tries = 0
+
+    try:
+        if num_tries == 0:
+            logger.exception('Failed to %; restarting communication module and trying again (try #1):' % action)
+        elif num_tries < max_retries:
+            logger.exception('Failed to %; restarting communication module and trying again in %d seconds (try #%d):'
+                             % (action, wait_time, num_tries + 1))
+            time.sleep(wait_time)
+        num_tries += 1
+        restart_comms_module()
+        request(num_tries=num_tries, *args, **kwargs)
+    except Exception as e:
+        retry_request(request=request, num_tries=num_tries, action=action, *args, **kwargs)
+
 @app.route('/blockly', methods = ['GET','POST'])
 @requires_auth
 def blockly():
@@ -89,7 +134,7 @@ def blockly():
     try:    
 	    channel.basic_publish(exchange='', routing_key='HwCmd', body=startMsg)
     except:
-	    pass
+        logger.exception('Failed to start Blockly:')
     return render_template('code.html')
 
 @app.route('/upload', methods = ['GET', 'POST'])
@@ -121,10 +166,8 @@ def upload_code(xml_data, python_data):
     code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
 
     startTime = time.time()
-    try:
-        subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
-    except Exception as e:
-        logger.exception('Failed to stop Blockly code when uploading code:')
+    logger.info('Issuing kill command before uploading code')
+    stop_user_script()
     endTime = time.time()
     logger.debug('Subprocess pt1 took '+ str(endTime - startTime) + ' s')
 
@@ -146,10 +189,7 @@ def convert_usercode(python_code):
 @requires_auth
 def stop():
     logger.info('Issuing kill command')
-    try:
-        channel.queue_purge(queue='HwCmd')
-    except Exception as e:
-        logger.exception('Failed to purge HwCmd queue:')
+    stop_user_script()
     try:
         channel2.queue_purge(queue='Message')
     except Exception as e:
@@ -167,7 +207,7 @@ def stop():
         logger.exception('Failed to stop Blockly code:')
     return 'OK'
 
-def update_sensors(sensors):
+def update_sensors(sensors, num_tries=0):
     try:
         assert len(sensors) == 4
     except AssertionError as e:
@@ -181,8 +221,8 @@ def update_sensors(sensors):
     sensorMsg = Message.encode(sensorMsg)
     try:
         channel.basic_publish(exchange='', routing_key='HwCmd', body=sensorMsg)
-    except:
-        logger.exception('Failed to update sensors:')
+    except Exception as e:
+        retry_request(request=update_sensors, action='update sensors', num_tries=num_tries)
 
 @app.route('/update', methods = ['GET', 'POST'])
 @requires_auth
@@ -191,6 +231,7 @@ def update():
                request.form['sensor2'],
                request.form['sensor3'],
                request.form['sensor4']]
+    logger.info('Updating sensor types')
     update_sensors(sensors)
     return 'OK'
 

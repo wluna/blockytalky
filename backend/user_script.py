@@ -27,7 +27,7 @@ class UserScript(object):
         #true if unread data from sensor
         self.sensorStatus= Message.createSensorStatus()
         logger.debug(self.sensorStatus.values())
-
+        print(self.sensorStatus.values())
 
     def executeScript(self):
         """

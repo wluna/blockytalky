@@ -40,7 +40,10 @@ class Communicator(object):
 
     @staticmethod
     def onError(ws, error):
-        logger.error("A WebSocket error has occured: %s" % str(error))
+        if error:
+            logger.error("A WebSocket error has occured: %s" % str(error))
+        else:
+            logger.error("An unknown WebSocket error has occurred")
 
     @staticmethod
     def onClose(ws):
