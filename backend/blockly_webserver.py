@@ -268,27 +268,7 @@ def load():
     url = url_for('static', filename='rawxml.txt', t=time.time())
     return redirect(url)
 
-#TODO: Login and logout routes
-# @app.route('/login', methods = ['GET'])
-def login():
-    return render_template('login.html')
-
-# @app.route('/api_login', methods = ['POST'])
-def api_login():
-    if request.values.password and request.values.password != '':
-        authenticated = check_auth(request.values.username, request.values.password)
-    if authenticated:
-        return Response(status='success')
-    return authenticate()
-
-# @app.route('/logout', methods = ['GET', 'POST'])
-@requires_auth
-def logout():
-    # TODO
-    pass
-
 def authenticate():
-    # TODO: Use a better response!!!
     return Response('Oops! You need to login with the right username and'
                     ' password to access BlockyTalky.', 401,
                     {'WWW-Authenticate': 'Basic realm="Login Required"'})
