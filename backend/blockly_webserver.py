@@ -126,6 +126,10 @@ def retry_request(request=None, num_tries=0, action='complete request', *args, *
     except Exception as e:
         retry_request(request=request, num_tries=num_tries, action=action, *args, **kwargs)
 
+@app.route('/', methods = ['GET'])
+def index():
+    return render_template('index.html')
+
 @app.route('/blockly', methods = ['GET','POST'])
 @requires_auth
 def blockly():

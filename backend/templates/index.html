@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="/static/favicon.ico" rel="shortcut icon" />
+    <title>Blockly : Code</title>
+    <style>
+        body {
+            background-color: #fff;
+            font-family: Arial,sans-serif;
+            width: 100%;
+            height: 100%;
+        }
+
+        .server-div,
+        #coder,
+        #coder-link {
+            position: absolute;
+        }
+
+        .server-div,
+        #coder-link {
+            margin: auto;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .server-div {
+            bottom: 30%;
+            width: 500px;
+            height: 80px;
+        }
+
+        .server {
+            display: inline-block;
+            width: 50%;
+            height: 100%;
+            text-align: center;
+        }
+
+        #coder-canvas {
+            position: relative;
+            background-color: #89c7f1;
+            width: 160px;
+            height: 100%;
+            border-radius: 6px;
+        }
+
+        #coder-link {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+            width: 160px;
+            height: 100%;
+            display: block;
+            font-size: xx-large;
+            line-height: 80px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="server-div">
+        <div class="server blockytalky" id="blockytalky">
+            <a href="blockly">
+                <img src="/static/media/bt.png" />
+            </a>
+        </div>
+        <div class="server coder" id="coder">
+            <canvas id="coder-canvas"></canvas>
+            <a id="coder-link" href="/app/coder">
+                Coder
+            </a>
+        </div>
+    </div>
+    <script src="/static/jquery.js"></script>
+    <script src="/static/canvas.js"></script>
+</body>
+</html>
