@@ -84,12 +84,21 @@ def check_auth(username, password):
             bcrypt.check_password_hash(device_settings['password_hash'], password))
 
 def restart_comms_module():
+    cmd = ['sudo python /home/pi/blockytalky/backend/comms_module.py']
     try:
         subprocess.call(['sudo pkill -15 -f comms_module.py'], shell = True)
+        try:
+            subprocess.Popen(cmd, shell = True)
+        except Exception as e:
+            logger.exception('Failed to start comms_module back up')
     except Exception as e:
         logger.exception('Failed to terminate communication module. Trying again more forcefully:')
         try:
             subprocess.call(['sudo pkill -9 -f comms_module.py'], shell =True)
+            try:
+                subprocess.Popen(cmd, shell = True)
+            except Exception as e:
+                logger.exception('Failed to start comms_module back up')
         except Exception as e:
             logger.exception('Failed to terminate communication module:')
 
