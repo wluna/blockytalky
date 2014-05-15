@@ -75,6 +75,7 @@ def requires_auth(f):
     def decorated(*args, **kwargs):
         auth = request.authorization
         if not auth or not check_auth(auth.username, auth.password):
+            logger.info('Incorrect login attempt')
             return authenticate()
         return f(*args, **kwargs)
     return decorated
