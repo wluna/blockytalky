@@ -140,7 +140,7 @@ class Communicator(object):
         """
         logger.info("Communicator Agent starting ...")
         while True:
-            time.sleep(10)
+            time.sleep(2)
             logger.debug(">>> Checking the restartQueue ...")
             if Communicator.restartQueue:
                 logger.info("Restarting a closed WebSocket ...")
@@ -187,7 +187,9 @@ if __name__ == "__main__":
                                  Communicator.onRemoteMessage)
     Communicator.initialize()
     logger.info("Communicator Module (WebSocket client) started.")
-    #Communicator.startAgent()
+
+    agentThread = threading.Thread(target=Communicator.startAgent)
+    agentThread.start()
     
     cm = Communicator()
     parameters = pika.ConnectionParameters()
