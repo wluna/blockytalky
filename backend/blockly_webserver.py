@@ -16,7 +16,7 @@ import logging
 import logging.handlers
 from functools import wraps
 from flask import Flask, request, Response, redirect, url_for, render_template
-from flaskext.bcrypt import Bcrypt
+from flask.ext.bcrypt import Bcrypt
 from message import *
 import time, commands, subprocess, pika
 import jsonpickle
