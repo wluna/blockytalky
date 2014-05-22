@@ -1,8 +1,8 @@
 #! /bin/bash
 
 nhost=$1
-chost=$(hostname)
-rand=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+chost=$(cat /etc/hostname)
+rand=$(date +%s | sha256sum | head -c 32)
 
 # Replace the current name with a random string in case, e.g., the new name
 # is a shorter version of the old one
