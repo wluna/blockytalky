@@ -15,13 +15,16 @@ from message import *
 from BrickPi import *
 
 channel = None
+logger = logging.getLogger(__name__)
 
 class HardwareDaemon(object):
     # Init hardware status and name, declare queues for the hardware, inits hardware
     def __init__(self):
+        logger.info('Initializing hardware daemon')
         self.hostname = BlockyTalkyID()
         self.robot = Message.initStatus()
         self.sensorList = [0,0,0,0]
+        self.sensorsRequested = False
         initPins()
         BrickPiSetup()
         BrickPi.MotorEnable[PORT_A] = 1
@@ -37,15 +40,20 @@ class HardwareDaemon(object):
         channel every time a hardware value changes on the robot.
         """
         valuesChanged = False
+
         connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
         channel = connection.channel()
         channel.queue_declare(queue="HwVal")
         while True:
             BrickPi.Led = self.robot["leds"]
-            BrickPi.MotorSpeed[0] = int(float(self.robot["motors"][0]) * 2.55)
-            BrickPi.MotorSpeed[1] = int(float(self.robot["motors"][1]) * 2.55)
-            BrickPi.MotorSpeed[2] = int(float(self.robot["motors"][2]) * 2.55)
-            BrickPi.MotorSpeed[3] = int(float(self.robot["motors"][3]) * 2.55)
+            try:
+                BrickPi.MotorSpeed[0] = int(float(self.robot["motors"][0]) * 2.55)
+                BrickPi.MotorSpeed[1] = int(float(self.robot["motors"][1]) * 2.55)
+                BrickPi.MotorSpeed[2] = int(float(self.robot["motors"][2]) * 2.55)
+                BrickPi.MotorSpeed[3] = int(float(self.robot["motors"][3]) * 2.55)
+            except Exception as e:
+                logger.exception('Error occurred while reading motor values:')
+
             BrickPi.Gpio = self.robot["pins"]
             BrickPiUpdateValues()
 
@@ -58,24 +66,40 @@ class HardwareDaemon(object):
 
             #Check to see if sensor or encoder status has changed.
             for index, sensor in enumerate(sensors):
-                if (self.sensorList[index] == 32) or (self.sensorList[index] == 33):
-                    if abs(int(sensor) - self.robot["sensors"][index]) > 0: 
+                try:
+                    if (self.sensorList[index] == 32) or (self.sensorList[index] == 33):
+                        if (abs(int(sensor) - self.robot["sensors"][index]) > 0 or
+                            self.robot["sensors"][index] == None):
+                            self.robot["sensors"][index] = sensor
+                            if not valuesChanged:
+                                valuesChanged = True
+
+                    if (abs(int(sensor)) - self.robot["sensors"][index] > 5 or
+                        self.robot["sensors"][index] == None):
                         self.robot["sensors"][index] = sensor
                         if not valuesChanged:
                             valuesChanged = True
-        
-                if abs(int(sensor) - self.robot["sensors"][index]) > 5:
-                    self.robot["sensors"][index] = sensor
-                    if not valuesChanged:
-                        valuesChanged = True
+
+                except:
+                    logger.debug('Sensor[%d] not found' % index)
+                    self.robot["sensors"][index] = None
 
             for index, encoder in enumerate(encoders):
-                if abs((encoder) - (self.robot["encoders"][index])) > 5:
-                    self.robot["encoders"][index] = encoder
-                    if not valuesChanged:
-                        valuesChanged = True
+                try:
+                    if (abs((encoder) - (self.robot["encoders"][index])) > 5 or
+                        self.robot["encorders"][index] == None):
+                        self.robot["encoders"][index] = encoder
+                        if not valuesChanged:
+                            valuesChanged = True
+                except:
+                    logger.debug('Sensor[%d] not found' % index)
+                    self.robot["encoders"][index] = None
 
-            #valuesChanged = True
+            if self.sensorsRequested:
+                logger.debug('Sensor values requested')
+                valuesChanged = True
+                self.sensorsRequested = False
+
             if valuesChanged:
                 s1 = sensors[0]
                 s2 = sensors[1]
@@ -172,6 +196,7 @@ class HardwareDaemon(object):
                         self.sensorList[index] = newType   
             time.sleep(.01)
             BrickPiSetupSensors()
+            self.sensorsRequested = True
 
         else:
             hwDict = command.getContent()
@@ -185,15 +210,23 @@ class HardwareDaemon(object):
                     for index, value in enumerate(valueList):
                         if value is not None:
                             self.robot[key][index] = value
-                logging.debug("Command: " + str(hwDict))
+                logger.debug('Command: ' + str(hwDict))
             self.prevMessage = command
 
 
 if __name__ == "__main__":
-    # Set the logging level.
-    logging.basicConfig(format = "%(levelname)s:\t%(message)s",
-                        # filename = "hd.log",
-                        level = logging.INFO)
+    handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/hardware_daemon.log',
+                                                   maxBytes=8192, backupCount=3)
+    globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
+                                                         maxBytes=16384, backupCount=3)
+    formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
+                                  datefmt='%H:%M:%S %d/%m')
+    handler.setFormatter(formatter)
+    globalHandler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.addHandler(globalHandler)
+    logger.setLevel(logging.INFO)
+
     hd = HardwareDaemon()
     checkStatusThread = threading.Thread(target = hd.checkStatus, args = ())
     checkStatusThread.daemon = True

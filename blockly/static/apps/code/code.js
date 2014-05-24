@@ -294,6 +294,7 @@ function init(blockly) {
   BlocklyApps.init();
 
   loadCode();
+  updateSensors();
 
   // Add to reserved word list: Local variables in execution evironment (runJS)
   // and the infinite loop detection function.
@@ -319,7 +320,6 @@ var on_message = function(m) {
         var s2 = document.getElementById("sensor2").value
         var s3 = document.getElementById("sensor3").value
         var s4 = document.getElementById("sensor4").value
-        console.log(s4);
         var d = new Date();
 
         currentTime = d.getTime();
@@ -407,7 +407,7 @@ function discard() {
  */
 
 function uploadToRobot() {
-    $("#status").val("Uploading code...");
+    $("#status").text("Uploading code...");
     setTimeout(finishUpload, 1)
     
     //alert("Code uploaded to robot");
@@ -415,13 +415,17 @@ function uploadToRobot() {
 
 function finishUpload()
 {
+   var python = getPython();
    var xml = getXML();
     var url = getIP()+"upload";
     $.ajax({
 	type: 'POST',
 	async: false,
 	url: url,
-	data: xml,
+	data: {
+        'python': python,
+        'xml': xml
+    },
 	success: function(response){
 	    console.log(response);
 	},
@@ -430,7 +434,7 @@ function finishUpload()
 	}
     });
     
-    $("#status").val("Code uploaded to robot");
+    $("#status").text("Code uploaded to robot");
 }
 
 function runRobot() {
@@ -448,7 +452,7 @@ function runRobot() {
 	}
     });
 
-  $("#status").val("Code running on robot...");
+  $("#status").text("Code running on robot...");
 }
 
 function getIP() {
@@ -476,6 +480,9 @@ function getXML() {
     return plainxml;
 }
 
+function getPython() {
+    return Blockly.Generator.workspaceToCode('Python');
+}
 
 function updateSensors(){
   var sensor1 = document.getElementById('sensor1').value;
@@ -505,7 +512,7 @@ function updateSensors(){
 }
 
 function stopRobot() {
-    $("#status").val("Robot stopped");
+    $("#status").text("Robot stopped");
     var url = getIP()+"stop";
    var xml = "a"
     $.ajax({
@@ -549,7 +556,7 @@ function removeWhite(data) {
 }
 
 function loadCode() {
-    $("#status").val("Code loaded from robot");
+    $("#status").text("Code loaded from robot");
 
     $.get('/load', function(data) {
 	$("#tab_xml").click();
