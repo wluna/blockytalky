@@ -14,7 +14,7 @@
 
 import time
 import serial
-import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO          
 ser = serial.Serial()
 ser.port='/dev/ttyAMA0'
 ser.baudrate = 500000
@@ -64,7 +64,7 @@ TYPE_MOTOR_SPEED             = 1
 TYPE_MOTOR_POSITION          = 2
 
 TYPE_SENSOR_RAW              = 0 # - 31
-TYPE_SENSOR_LIGHT_OFF        = 50
+TYPE_SENSOR_LIGHT_OFF        = 50            
 TYPE_SENSOR_LIGHT_ON         = (MASK_D0_M | MASK_D0_S)
 TYPE_SENSOR_TOUCH            = 32
 TYPE_SENSOR_ULTRASONIC_CONT  = 33
@@ -77,7 +77,7 @@ TYPE_SENSOR_COLOR_BLUE       = 39
 TYPE_SENSOR_COLOR_NONE       = 40
 TYPE_SENSOR_I2C              = 41
 TYPE_SENSOR_I2C_9V           = 42
-TYPE_SENSOR_SOUND            = 51
+TYPE_SENSOR_SOUND            = 51   
 
 BIT_I2C_MID  = 0x01  # Do one of those funny clock pulses between writing and reading. defined for each device.
 BIT_I2C_SAME = 0x02  # The transmit data, and the number of bytes to read and write isn't going to change. defined for each device.
@@ -148,7 +148,6 @@ def BrickPiSetTimeout():
             Array[j] = InArray[j]
         if not (BytesReceived == 1 and Array[BYTE_MSG_TYPE] == MSG_TYPE_TIMEOUT_SETTINGS):
             return -1
-        i+=1
     return 0
         
 def motorRotateDegree(power,deg,port,sampling_time=.1):
@@ -387,16 +386,15 @@ def BrickPiUpdateValues():
             port = ii + (i * 2)
             if BrickPi.SensorType[port] == TYPE_SENSOR_TOUCH :
                 BrickPi.Sensor[port] = GetBits(1,0,1)
-            elif BrickPi.SensorType[port] == TYPE_SENSOR_ULTRASONIC_CONT or BrickPi.SensorType[port] == TYPE_SENSOR_ULTRASONIC_SS :
+            elif BrickPi.SensorType[port] == TYPE_SENSOR_ULTRASONIC_SS :
                 BrickPi.Sensor[port] = GetBits(1,0,8)
-                #print str(BrickPi.Sensor[port])
             elif BrickPi.SensorType[port] == TYPE_SENSOR_COLOR_FULL:
                 BrickPi.Sensor[port] = GetBits(1,0,3)
                 BrickPi.SensorArray[port][INDEX_BLANK] = GetBits(1,0,10)
                 BrickPi.SensorArray[port][INDEX_RED] = GetBits(1,0,10)
                 BrickPi.SensorArray[port][INDEX_GREEN] = GetBits(1,0,10)
                 BrickPi.SensorArray[port][INDEX_BLUE] = GetBits(1,0,10)
-            elif BrickPi.SensorType[port] == TYPE_SENSOR_I2C or BrickPi.SensorType[port] == TYPE_SENSOR_I2C_9V :
+            elif BrickPi.SensorType[port] == TYPE_SENSOR_I2C or BrickPi.SensorType[port] == TYPE_SENSOR_I2C_9V or BrickPi.SensorType[port] == TYPE_SENSOR_ULTRASONIC_CONT:   
                 BrickPi.Sensor[port] = GetBits(1,0, BrickPi.SensorI2CDevices[port])
                 for device in range(BrickPi.SensorI2CDevices[port]):
                     if (BrickPi.Sensor[port] & ( 0x01 << device)) :
@@ -405,6 +403,12 @@ def BrickPiUpdateValues():
             else:   #For all the light, color and raw sensors 
                 BrickPi.Sensor[ii + (i * 2)] = GetBits(1,0,10)
         
+            if BrickPi.SensorType[port] == TYPE_SENSOR_ULTRASONIC_CONT :
+                if(BrickPi.Sensor[port] & ( 0x01 << US_I2C_IDX)) :
+                    BrickPi.Sensor[port] = BrickPi.SensorI2CIn[port][US_I2C_IDX][0]
+                else:
+                    BrickPi.Sensor[port] = -1
+
         i += 1
     
 

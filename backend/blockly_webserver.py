@@ -195,7 +195,7 @@ def convert_usercode(python_code):
                 "import RPi.GPIO as GPIO\n"
                 "import pyttsx\n\n"
                 "def run(self, channel, channel2):\n"
-                "  while True:\n"
+              #  "  while True:\n"
                 "%s" % python_code.replace("\n", "\n    "))
     return usercode
 
