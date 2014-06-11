@@ -237,6 +237,7 @@ Blockly.Python.send_osc_message = function() {
   // pattern followed by the message content (itself another
   // list of arbitrary length).
   var value_message_input = Blockly.Python.valueToCode(this, 'message_input', Blockly.Python.ORDER_NONE);
+  console.log("Value of OSC message input was " + value_message_input);
   var message_address = value_message_input[0];
   var message_content = value_message_input[1];
   // Hostname and port.
