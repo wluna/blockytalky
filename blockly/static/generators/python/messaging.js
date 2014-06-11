@@ -125,7 +125,7 @@ category: 'Messaging',
 };
 
 // Constructing an OSC message (UNTESTED)
-Blockly.Blocks.create_osc_message = {
+Blockly.Language.create_osc_message = {
 category: 'Messaging',
   helpUrl: 'opensoundcontrol.org',
   init: function() {
