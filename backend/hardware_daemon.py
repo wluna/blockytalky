@@ -61,8 +61,8 @@ class HardwareDaemon(object):
             sensors = BrickPi.Sensor[:]
             encoders = BrickPi.Encoder[:]
 
-            encoders.pop(2)
-            encoders.pop(2)
+            #encoders.pop(2)
+            #encoders.pop(2)
 
             #Check to see if sensor or encoder status has changed.
             for index, sensor in enumerate(sensors):
