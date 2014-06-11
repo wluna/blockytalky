@@ -125,7 +125,7 @@ category: 'Messaging',
 };
 
 // Constructing an OSC message (UNTESTED)
-Blockly.Blocks.create_osc_message = {
+Blockly.Language.create_osc_message = {
 category: 'Messaging',
   helpUrl: 'opensoundcontrol.org',
   init: function() {
@@ -252,7 +252,7 @@ Blockly.Python.send_osc_message = function() {
     If not, it connects to the argument address and port.
     5) Finally, it sends the message.
   */
-  var code = 'try:\n\tmessage = OSC.OSCMessage()\nexcept NameError:\n\timport OSC\n\tmessage = OSC.OSCMessage()\nmessage.setAddress("' + message_address'")\nmessage.append("' + message_content + '")\ntry:\n\tosc_client\nexcept NameError:\n\tosc_client = OSC.OSCClient()\nif (osc_client.address() != "' + value_hostname + '"):\n\tosc_client.connect( ("' + value_hostname + '", ' + value_port_as_string + ') )\nosc_client.send(message)';
+  var code = "try:\n\tmessage = OSC.OSCMessage()\nexcept NameError:\n\timport OSC\n\tmessage = OSC.OSCMessage()\nmessage.setAddress(\"" + message_address"\")\nmessage.append(\"" + message_content + "\")\ntry:\n\tosc_client\nexcept NameError:\n\tosc_client = OSC.OSCClient()\nif (osc_client.address() != \"" + value_hostname + "\"):\n\tosc_client.connect( (\"" + value_hostname + "\", " + value_port_as_string + ") )\nosc_client.send(message)";
   
   // For now, print this code to the console so it can be looked over if something goes wrong.
   console.log('Just tried to send OSC message.\n' + code);
