@@ -265,7 +265,7 @@ Blockly.Python.send_osc_message = function() {
   code += "\tosc_client = OSC.OSCClient()\n"
   code += "if (osc_client.address() != \"" + value_hostname + "\"):\n"
   code += "\tosc_client.connect( (\"" + value_hostname + "\", " + value_port_as_string + ") )\n"
-  code += "osc_client.send(message)";
+  code += "osc_client.send(message)\n";
   
   // For now, print this code to the console so it can be looked over if something goes wrong.
   console.log('Just tried to send OSC message.\n' + code);
