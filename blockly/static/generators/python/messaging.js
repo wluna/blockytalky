@@ -223,7 +223,8 @@ Blockly.Python.create_osc_message = function() {
   // The address pattern is a proper OSC-formatted address pattern string. /example/of/formatting
   var text_address_pattern = this.getTitleValue('address_pattern');
   // TODO: Assemble Python into code variable.
-  var code = '("' + text_address_pattern + '", ' + value_message_content +  ')';
+  var code = "(\"" + text_address_pattern + "\", " + value_message_content +  ")";
+  console.log("Just constructed an OSC message:\n" + code);
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Python.ORDER_NONE];
 }
