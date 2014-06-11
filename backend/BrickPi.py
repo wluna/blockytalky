@@ -432,6 +432,8 @@ def BrickPiUpdateValues():
     else:
         GPIO.output(15, False)
 
+
+    time.sleep(0.05)
     return 0
 
 
