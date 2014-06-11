@@ -238,8 +238,6 @@ Blockly.Python.send_osc_message = function() {
   // list of arbitrary length).
   var value_message_input = Blockly.Python.valueToCode(this, 'message_input', Blockly.Python.ORDER_NONE);
   console.log("Value of OSC message input was " + value_message_input);
-  var message_address = value_message_input[0];
-  var message_content = value_message_input[1];
   // Hostname and port.
   var value_hostname = this.getTitleValue('hostname');
   var value_port_as_string = this.getTitleValue('port_as_string');
@@ -259,8 +257,8 @@ Blockly.Python.send_osc_message = function() {
   code += "except NameError:\n"
   code += "\timport OSC\n"
   code += "\tmessage = OSC.OSCMessage()\n"
-  code += "message.setAddress(" + value_message_input + "[0])\n"
-  code += "message.append(" + value_message_input + "[1])\n"
+  code += "message.setAddress(" + value_message_input + "[0][0])\n"
+  code += "message.append(" + value_message_input + "[0][1])\n"
   code += "try:\n"
   code += "\tosc_client\n"
   code += "except NameError:\n"
