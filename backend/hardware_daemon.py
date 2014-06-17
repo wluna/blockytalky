@@ -184,7 +184,7 @@ class HardwareDaemon(object):
                         if value == "touch":
                             newType = TYPE_SENSOR_TOUCH
                         if value == "ultra":
-                            newType = TYPE_SENSOR_ULTRASONIC_CONT
+                            newType = TYPE_SENSOR_I2C
                         if value == "sound":
                             newType = TYPE_SENSOR_SOUND
                         if value == "light_on":
