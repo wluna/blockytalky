@@ -377,9 +377,9 @@ def BrickPiUpdateValues():
             Temp_EncoderVal = GetBits(1,0, Temp_BitsUsed[ii])
             if Temp_EncoderVal & 0x01 :
                 Temp_EncoderVal /= 2
-                BrickPi.Encoder[ii + i*2] = (Temp_EncoderVal*(-1))%360
+                BrickPi.Encoder[ii + i*2] = (Temp_EncoderVal*(-1))
             else:
-                BrickPi.Encoder[ii + i*2] = (Temp_EncoderVal / 2)%360
+                BrickPi.Encoder[ii + i*2] = (Temp_EncoderVal / 2)
 
 
         for ii in range(2):

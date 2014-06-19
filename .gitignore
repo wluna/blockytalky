@@ -38,3 +38,7 @@ logs/*
 ehthumbs.db
 Thumbs.db
 
+# BT Files #
+############
+*/usercode.py
+*/rawxml.txt
