@@ -61,9 +61,6 @@ class HardwareDaemon(object):
             sensors = BrickPi.Sensor[:]
             encoders = BrickPi.Encoder[:]
 
-            #encoders.pop(2)
-            #encoders.pop(2)
-
             #Check to see if sensor or encoder status has changed.
             for index, sensor in enumerate(sensors):
                 try:
@@ -87,7 +84,7 @@ class HardwareDaemon(object):
             for index, encoder in enumerate(encoders):
                 try:
                     if (abs((encoder) - (self.robot["encoders"][index])) > 5 or
-                        self.robot["encorders"][index] == None):
+                        self.robot["encoders"][index] == None):
                         self.robot["encoders"][index] = encoder
                         if not valuesChanged:
                             valuesChanged = True
@@ -145,6 +142,8 @@ class HardwareDaemon(object):
                 content = Message.createImage(
                                                 encoder1 = encoders[0],
                                                 encoder2 = encoders[1],
+                                                encoder3 = encoders[2],
+                                                encoder4 = encoders[3],
                                                 sensor1 = value1,
                                                 sensor2 = value2,
                                                 sensor3 = value3,
