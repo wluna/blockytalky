@@ -377,10 +377,11 @@ def BrickPiUpdateValues():
             Temp_EncoderVal = GetBits(1,0, Temp_BitsUsed[ii])
             if Temp_EncoderVal & 0x01 :
                 Temp_EncoderVal /= 2
-                BrickPi.Encoder[ii + i*2] = (Temp_EncoderVal*(-1))
+                BrickPi.Encoder[ii + i*2] = (Temp_EncoderVal*(-1))/2  
             else:
-                BrickPi.Encoder[ii + i*2] = (Temp_EncoderVal / 2)
-
+                BrickPi.Encoder[ii + i*2] = (Temp_EncoderVal / 2)/2
+            # dividing the encoder values by 2 again makes there be 360 degrees
+            # per rotation of the motor.
 
         for ii in range(2):
             port = ii + (i * 2)
