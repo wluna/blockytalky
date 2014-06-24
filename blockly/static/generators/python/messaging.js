@@ -17,7 +17,7 @@ Blockly.Language.facebook_msg= {
     }
 };
 
-Blockly.Language.send_osc= {
+Blockly.Language.send_osc = {
 category: 'Messaging',
     helpUrl: 'http://www.google.com',
     init: function() {
