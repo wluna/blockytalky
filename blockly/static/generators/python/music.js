@@ -299,7 +299,7 @@ Blockly.Language.music_on_beat_play_with = {
 			.appendTitle("play");
 		this.appendValueInput("notes_input")
 			.setCheck("notes");
-		this.appendDumyInput()
+		this.appendDummyInput("")
 			.appendTitle("with");
 		this.appendValueInput("instrument_input")
 			.setCheck("instrument");
@@ -337,7 +337,7 @@ Blockly.Language.music_on_beat_start_playing_with = {
 			.appendTitle("start playing")
 		this.appendValueInput("notes_input")
 			.setCheck("notes");
-		this.appendDummyInput()
+		this.appendDummyInput("")
 			.appendTitle("with");
 		this.appendValueInput("instrument_input")
 			.setCheck("instrument");
