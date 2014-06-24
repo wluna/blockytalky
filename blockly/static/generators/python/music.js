@@ -87,9 +87,10 @@ Blockly.Language.music_specific_note = {
 			.appendTitle("for")
 			.appendTitle(new Blockly.FieldDropdown([["one eighth", "eighth"], ["one quarter", "quarter"], ["one half", "half"], ["one", "one"], ["two", "two"], ["three", "three"], ["four", "four"]]), "duration_select")
 			.appendTitle("beats");
+		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
-		this.setTooltop("Creates a rest note one beat long.");
+		this.setTooltip("Creates a rest note one beat long.");
 	}
 };
 
