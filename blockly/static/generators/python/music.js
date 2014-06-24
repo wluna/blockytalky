@@ -296,7 +296,7 @@ Blockly.Language.music_on_beat_play_with = {
 			.appendTitle("On the next")
 			.appendTitle(new Blockly.FieldDropdown([["beat", "beat"], ["1/2 beat", "half_beat"], ["1/4 beat", "quarter_beat"], ["1/8 beat", "eighth_beat"]]), "beat_select");
 		this.appendDummyInput("")
-			.appendField("play");
+			.appendTitle("play");
 		this.appendValueInput("notes_input")
 			.setCheck("notes");
 		this.appendDumyInput()
