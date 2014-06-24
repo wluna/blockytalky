@@ -14,12 +14,12 @@ Blockly.Python = Blockly.Generator.get('Python');
  * nickjbenson@gmail.com
  */
  
-// === Simple Play Block ===
-// music_play_block
+// === Simple Play ===
+// music_simple_play
 // Takes an input of type "notes" and plays it
 // once.
 
-Blockly.Language.music_play_block = {
+Blockly.Language.music_simple_play = {
 	category: 'Music',
 	helpUrl: '',
 	init: function() {
@@ -35,22 +35,22 @@ Blockly.Language.music_play_block = {
 	}
 };
 
-// Generator for Simple Play Block
+// Generator for Simple Play
 // TODO: Method stub
 
-Blockly.Python.music_play_block = function() {
+Blockly.Python.music_simple_play = function() {
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
 	var code = '...';
 	return code;
 };
 
-// === Simple Note Block ===
-// music_simple_note_block
+// === Simple Note ===
+// music_simple_note
 // Generate a middle C note one beat long, or
 // a simple sequence of notes, for debugging
 // and/or quick-start purposes.
 
-Blockly.Language.music_simple_note_block = {
+Blockly.Language.music_simple_note = {
 	category: 'Music',
 	helpUrl: '',
 	init: function() {
@@ -62,10 +62,10 @@ Blockly.Language.music_simple_note_block = {
 	}
 };
 
-// Generator for Simple Note Block
+// Generator for Simple Note
 // TODO: Method stub
 
-Blockly.Python.music_simple_note_block = function() {
+Blockly.Python.music_simple_note = function() {
 	var dropdown_type_of_simple_notes = this.getTitleValue('type_of_simple_notes');
 	var code = '...';
 	return [code, Blockly.Python.ORDER_NONE];
@@ -103,11 +103,11 @@ Blockly.Python.music_specific_note = function() {
 	return code;
 };
 
-// === Simple Rest Block ===
-// music_simple_rest_block
+// === Simple Rest ===
+// music_simple_rest
 // Generates a rest note for one beat.
 
-Blockly.Language.music_simple_rest_block = {
+Blockly.Language.music_simple_rest = {
 	category: 'Music',
 	helpUrl: '',
 	init: function() {
@@ -120,10 +120,10 @@ Blockly.Language.music_simple_rest_block = {
 	}
 };
 
-// Generator for Simple Rest Block
+// Generator for Simple Rest
 // TODO: Method stub
 
-Blockly.Python.music_simple_rest_block = function() {
+Blockly.Python.music_simple_rest = function() {
 	var code = '...';
 	return [code, Blockly.Python.ORDER_NONE];
 };
@@ -312,7 +312,7 @@ Blockly.Language.music_on_beat_play_with = {
 // Generator for On Beat Play with Instrument
 // TODO: Method stub
 
-Blockly.Python.music_on_next_play_with = function () {
+Blockly.Python.music_on_beat_play_with = function () {
 	var dropdown_beat_select = this.getTitleValue('beat_select');
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
 	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
