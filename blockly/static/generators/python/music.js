@@ -213,7 +213,7 @@ Blockly.Python.music_specific_note = function() {
 	if (midi_note == -1) {
 		console.log("Error parsing midi note from specific note block: " + text_note_text_input);
 		// We failed, return something
-		return "(48, 1)";
+		return ["(48, 1)", Blockly.Python.ORDER_ATOMIC];
 	}
 	
 	var duration = 1;
