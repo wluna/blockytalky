@@ -222,8 +222,7 @@ Blockly.Python.music_specific_note = function() {
 	
 	var code = "(" + midi_note + ", " + duration + ")";
 	
-	console.log("Returning " + code);
-	return code;
+	return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
 // === Simple Rest ===
@@ -247,7 +246,7 @@ Blockly.Language.music_simple_rest = {
 
 Blockly.Python.music_simple_rest = function() {
 	var code = "(-1, 1)";
-	return [code, Blockly.Python.ORDER_NONE];
+	return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
 // === Play Block With Instrument ===
