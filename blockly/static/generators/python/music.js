@@ -113,7 +113,7 @@ var text_to_midi = function(text) {
 	if (/^[#b]/.test(octave)) {
 		// If the test passes then the first
 		// character of octave is a # or a b
-		if (octave[0] = "#") {
+		if (octave[0] == "#") {
 			// sharp, offset is +1
 			sharpFlatOffset = 1;
 		}
