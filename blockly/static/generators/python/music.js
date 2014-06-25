@@ -127,7 +127,7 @@ var text_to_midi = function(text) {
 	}
 	
 	// Notes are a-g or A-G.
-	if (/[a-g][A-G]/.test(note)) {
+	if (/[a-gA-G]/.test(note)) {
 		switch (note.toUpperCase()) {
 			case "C":
 				note_midi_number = 24;
