@@ -5,7 +5,6 @@ if (!Blockly.Language) Blockly.Language = {};
 Blockly.Python = Blockly.Generator.get('Python');
 
 /* Music Blockly Blocks for BlockyTalky.
- * These blocks won't work without 
  * 
  * BlockyTalky dev for Tufts Laboratory for Playful Computaton.
  * blockytalky-dev@elist.tufts.edu
@@ -41,7 +40,7 @@ Blockly.Python.music_simple_play = function() {
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
 	console.log("Simple play: Got as note input: " + value_notes_input);
 	var code = "";
-	code += "print " + value_notes_input;
+	code += "print " + value_notes_input + "\n";
 	return code;
 };
 
