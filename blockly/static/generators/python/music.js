@@ -392,3 +392,139 @@ Blockly.Python.music_on_beat_stop_playing = function () {
 	var code = "...";
 	return code;
 };
+
+// === Create Phrase ===
+// music_create_phrase
+// Essentially duplicated from Blockly's create list
+// blocks. Creates a list of notes.
+
+Blockly.Language.music_create_phrase = {
+  // Create a list with any number of elements of any type.
+  category: 'Music',
+  helpUrl: '',
+  init: function() {
+    this.setColour(0);
+    this.appendValueInput('ADD0')
+        .appendTitle("create a phrase with");
+    this.appendValueInput('ADD1');
+    this.appendValueInput('ADD2');
+    this.setOutput(true, 'notes');
+    this.setMutator(new Blockly.Mutator(['phrase_create_with_item']));
+    this.setTooltip("Creates a list of musical notes and/or rests.");
+    this.itemCount_ = 3;
+  },
+  mutationToDom: function(workspace) {
+    var container = document.createElement('mutation');
+    container.setAttribute('items', this.itemCount_);
+    return container;
+  },
+  domToMutation: function(container) {
+    for (var x = 0; x < this.itemCount_; x++) {
+      this.removeInput('ADD' + x);
+    }
+    this.itemCount_ = window.parseInt(container.getAttribute('items'), 10);
+    for (var x = 0; x < this.itemCount_; x++) {
+      var input = this.appendValueInput('ADD' + x);
+      if (x == 0) {
+        input.appendTitle("create a phrase with");
+      }
+    }
+    if (this.itemCount_ == 0) {
+      this.appendDummyInput('EMPTY')
+          .appendTitle("bluh?");
+    }
+  },
+  decompose: function(workspace) {
+    var containerBlock = new Blockly.Block(workspace,
+                                           'phrase_create_with_container');
+    containerBlock.initSvg();
+    var connection = containerBlock.getInput('STACK').connection;
+    for (var x = 0; x < this.itemCount_; x++) {
+      var itemBlock = new Blockly.Block(workspace, 'phrase_create_with_item');
+      itemBlock.initSvg();
+      connection.connect(itemBlock.previousConnection);
+      connection = itemBlock.nextConnection;
+    }
+    return containerBlock;
+  },
+  compose: function(containerBlock) {
+    // Disconnect all input blocks and remove all inputs.
+    if (this.itemCount_ == 0) {
+      this.removeInput('EMPTY');
+    } else {
+      for (var x = this.itemCount_ - 1; x >= 0; x--) {
+        this.removeInput('ADD' + x);
+      }
+    }
+    this.itemCount_ = 0;
+    // Rebuild the block's inputs.
+    var itemBlock = containerBlock.getInputTargetBlock('STACK');
+    while (itemBlock) {
+      var input = this.appendValueInput('ADD' + this.itemCount_);
+      if (this.itemCount_ == 0) {
+        input.appendTitle("create a phrase with");
+      }
+      // Reconnect any child blocks.
+      if (itemBlock.valueConnection_) {
+        input.connection.connect(itemBlock.valueConnection_);
+      }
+      this.itemCount_++;
+      itemBlock = itemBlock.nextConnection &&
+          itemBlock.nextConnection.targetBlock();
+    }
+    if (this.itemCount_ == 0) {
+      this.appendDummyInput('EMPTY')
+          .appendTitle("bluh?");
+    }
+  },
+  saveConnections: function(containerBlock) {
+    // Store a pointer to any connected child blocks.
+    var itemBlock = containerBlock.getInputTargetBlock('STACK');
+    var x = 0;
+    while (itemBlock) {
+      var input = this.getInput('ADD' + x);
+      itemBlock.valueConnection_ = input && input.connection.targetConnection;
+      x++;
+      itemBlock = itemBlock.nextConnection &&
+          itemBlock.nextConnection.targetBlock();
+    }
+  }
+};
+
+Blockly.Language.phrase_create_with_container = {
+  // Container.
+  init: function() {
+    this.setColour(0);
+    this.appendDummyInput()
+        .appendTitle("bloop");
+    this.appendStatementInput('STACK');
+    this.setTooltip("Creates a list of notes or rests.");
+    this.contextMenu = false;
+  }
+};
+
+Blockly.Language.phrase_create_with_item = {
+  // Add items.
+  init: function() {
+    this.setColour(0);
+    this.appendDummyInput()
+        .appendTitle("not sure where this goes");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip("Creates a list of notes or rests.");
+    this.contextMenu = false;
+  }
+};
+
+// Generator for Create Phrase
+
+Blockly.Python.music_create_phrase = function() {
+  // Create a list with any number of elements of any type.
+  var code = new Array(this.itemCount_);
+  for (var n = 0; n < this.itemCount_; n++) {
+    code[n] = Blockly.Python.valueToCode(this, 'ADD' + n,
+        Blockly.Python.ORDER_NONE) || 'None';
+  }
+  code = '[' + code.join(', ') + ']';
+  return [code, Blockly.Python.ORDER_ATOMIC];
+};
