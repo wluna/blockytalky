@@ -36,11 +36,12 @@ Blockly.Language.music_simple_play = {
 };
 
 // Generator for Simple Play
-// TODO: Method stub
 
 Blockly.Python.music_simple_play = function() {
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
-	var code = '...';
+	console.log("Simple play: Got as note input: " + value_notes_input);
+	var code = "";
+	code += "print " + value_notes_input;
 	return code;
 };
 
@@ -63,12 +64,17 @@ Blockly.Language.music_simple_note = {
 };
 
 // Generator for Simple Note
-// TODO: Method stub
 
 Blockly.Python.music_simple_note = function() {
 	var dropdown_type_of_simple_notes = this.getTitleValue('type_of_simple_notes');
-	var code = '...';
-	return [code, Blockly.Python.ORDER_NONE];
+	var code = "";
+	if (dropdown_type_of_simple_notes == "a_note") {
+		code += "(60, 1)";
+	}
+	else {
+		code += "[(60, 1), (64, 1), (62, 1)]";
+	}
+	return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
 // === Specific Note ===
@@ -88,19 +94,133 @@ Blockly.Language.music_specific_note = {
 			.appendTitle(new Blockly.FieldDropdown([["one eighth", "eighth"], ["one quarter", "quarter"], ["one half", "half"], ["one", "one"], ["two", "two"], ["three", "three"], ["four", "four"]]), "duration_select")
 			.appendTitle("beats");
 		this.setInputsInline(true);
-		this.setPreviousStatement(true);
-		this.setNextStatement(true);
+		this.setOutput(true, "notes");
 		this.setTooltip("Creates a rest note one beat long.");
 	}
 };
 
+// Helper function for Specific Note
+// converts the argument text, like C#5,
+// to a corresponding MIDI note value
+
+var text_to_midi = function(var text) {
+	// Aiming to match input like C4, D5, E#7, Bb2, etc.
+	var note = text[0];
+	var octave = text.substring(1);
+	var sharpFlatOffset = 0;
+	var note_midi_number = 0;
+	
+	// Sharp or flat
+	if (/^[#b]/.test(octave)) {
+		// If the test passes then the first
+		// character of octave is a # or a b
+		if (octave[0] = "#") {
+			// sharp, offset is +1
+			sharpFlatOffset = 1;
+		}
+		else {
+			// flat, offset is -1
+			sharpFlatOffset = -1;
+		}
+		// Clean the sharp/flat sign out of the
+		// octave text storage
+		octave = octave.substring(1);
+	}
+	
+	// Notes are a-g or A-G.
+	if (/[a-g][A-G]/.test(note)) {
+		switch (note.toUpperCase()) {
+			case "C":
+				note_midi_number = 24;
+				break;
+			case "D":
+				note_midi_number = 26;
+				break;
+			case "E":
+				note_midi_number = 28;
+				break;
+			case "F":
+				note_midi_number = 29;
+				break;
+			case "G":
+				note_midi_number = 31;
+				break;
+			case "A":
+				note_midi_number = 33;
+				break;
+			case "B":
+				note_midi_number = 35;
+				break;
+			default:
+				break;
+		}
+	}
+	else {
+		console.log("Aborting text-to-midi conversion attempt on " + text + ", invalid note letter.");
+		return "-1";
+	}
+	
+	// offset midi note number by octave
+	var octave_num = parseInt(octave);
+	if (isNaN(octave_num)) {
+		// octave couldn't be gotten, abort
+		console.log("Aborting text-to-midi conversion attempt on " + text + ", couldn't parse octave number.");
+		return "-1";
+	}
+	else {
+		note_midi_number += (octave_num - 1) * 12
+	}
+	
+	// Finally, return note_midi_number + the sharp/flat offset
+	return note_midi_number + sharpFlatOffset;
+	
+}
+
+// Helper function for notes
+// converts the argument text, like quarter, half, one, two..
+// to a corresponding float value (0.25, 0.5, 1, 2...)
+// Supports 1/8, 1/4, 1/2, 1, 2, 3, 4.
+// Returns 1 if given an unsupported argument.
+
+var duration_to_float = function(var text) {
+	if (text == "eighth")
+		duration = 0.125;
+	else if (text == "quarter")
+		duration = 0.25;
+	else if (text == "half")
+		duration = 0.5;
+	else if (text == "one")
+		duration = 1;
+	else if (text == "two")
+		duration = 2;
+	else if (text == "three")
+		duration = 3;
+	else if (text == "four")
+		duration = 4;
+	else {
+		return 1;
+	}
+}
+
 // Generator for Specific Note
-// TODO: Method stub
 
 Blockly.Python.music_specific_note = function() {
 	var text_note_text_input = this.getTitleValue('note_text_input');
 	var dropdown_duration_select = this.getTitleValue('duration_select');
-	var code = '...';
+	
+	// Try to get midi note value from text input
+	var midi_note = text_to_midi(text_note_text_input);
+	if (midi_note == -1) {
+		console.log("Error parsing midi note from specific note block: " + text_note_text_input);
+		// We failed, return something
+		return "(48, 1)"
+	}
+	
+	var duration = 1;
+	// Determine note duration
+	duration = duration_to_float(dropdown_duration_select);
+	
+	var code = "(" + midi_note + ", " + duration + ")";
 	return code;
 };
 
@@ -122,10 +242,9 @@ Blockly.Language.music_simple_rest = {
 };
 
 // Generator for Simple Rest
-// TODO: Method stub
 
 Blockly.Python.music_simple_rest = function() {
-	var code = '...';
+	var code = "(-1, 1)";
 	return [code, Blockly.Python.ORDER_NONE];
 };
 
