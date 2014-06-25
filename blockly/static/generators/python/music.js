@@ -219,6 +219,8 @@ Blockly.Python.music_specific_note = function() {
 	duration = duration_to_float(dropdown_duration_select);
 	
 	var code = "(" + midi_note + ", " + duration + ")";
+	
+	console.log("Returning " + code);
 	return code;
 };
 
