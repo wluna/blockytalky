@@ -103,7 +103,7 @@ Blockly.Language.music_specific_note = {
 // converts the argument text, like C#5,
 // to a corresponding MIDI note value
 
-var text_to_midi = function(var text) {
+var text_to_midi = function(text) {
 	// Aiming to match input like C4, D5, E#7, Bb2, etc.
 	var note = text[0];
 	var octave = text.substring(1);
@@ -182,7 +182,7 @@ var text_to_midi = function(var text) {
 // Supports 1/8, 1/4, 1/2, 1, 2, 3, 4.
 // Returns 1 if given an unsupported argument.
 
-var duration_to_float = function(var text) {
+var duration_to_float = function(text) {
 	if (text == "eighth")
 		duration = 0.125;
 	else if (text == "quarter")
