@@ -168,13 +168,13 @@ var text_to_midi = function(var text) {
 		return "-1";
 	}
 	else {
-		note_midi_number += (octave_num - 1) * 12
+		note_midi_number += (octave_num - 1) * 12;
 	}
 	
 	// Finally, return note_midi_number + the sharp/flat offset
 	return note_midi_number + sharpFlatOffset;
 	
-}
+};
 
 // Helper function for notes
 // converts the argument text, like quarter, half, one, two..
@@ -197,10 +197,9 @@ var duration_to_float = function(var text) {
 		duration = 3;
 	else if (text == "four")
 		duration = 4;
-	else {
+	else
 		return 1;
-	}
-}
+};
 
 // Generator for Specific Note
 
@@ -213,7 +212,7 @@ Blockly.Python.music_specific_note = function() {
 	if (midi_note == -1) {
 		console.log("Error parsing midi note from specific note block: " + text_note_text_input);
 		// We failed, return something
-		return "(48, 1)"
+		return "(48, 1)";
 	}
 	
 	var duration = 1;
@@ -234,7 +233,7 @@ Blockly.Language.music_simple_rest = {
 	init: function() {
 		this.setColour(0);
 		this.appendDummyInput("")
-			.appendTitle("a rest")
+			.appendTitle("a rest");
 		this.setInputsInline(true);
 		this.setOutput(true, "notes");
 		this.setTooltip("Generates a rest note one beat long.");
