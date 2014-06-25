@@ -182,6 +182,8 @@ var text_to_midi = function(text) {
 // Returns 1 if given an unsupported argument.
 
 var duration_to_float = function(text) {
+	var duration = 1;
+	
 	if (text == "eighth")
 		duration = 0.125;
 	else if (text == "quarter")
@@ -196,8 +198,8 @@ var duration_to_float = function(text) {
 		duration = 3;
 	else if (text == "four")
 		duration = 4;
-	else
-		return 1;
+		
+	return duration;
 };
 
 // Generator for Specific Note
