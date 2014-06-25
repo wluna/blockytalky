@@ -496,9 +496,9 @@ Blockly.Language.phrase_create_with_container = {
   init: function() {
     this.setColour(0);
     this.appendDummyInput()
-        .appendTitle("bloop");
+        .appendTitle("phrase");
     this.appendStatementInput('STACK');
-    this.setTooltip("Creates a list of notes or rests.");
+    this.setTooltip("Add or remove note slots to change the length of the phrase.");
     this.contextMenu = false;
   }
 };
@@ -508,10 +508,10 @@ Blockly.Language.phrase_create_with_item = {
   init: function() {
     this.setColour(0);
     this.appendDummyInput()
-        .appendTitle("not sure where this goes");
+        .appendTitle("note slot");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip("Creates a list of notes or rests.");
+    this.setTooltip("Add more of these to the phrase container to lengthen the phrase.");
     this.contextMenu = false;
   }
 };
