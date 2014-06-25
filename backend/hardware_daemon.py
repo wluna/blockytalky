@@ -212,6 +212,9 @@ class HardwareDaemon(object):
                 logger.debug('Command: ' + str(hwDict))
             self.prevMessage = command
 
+    def disconnect(self):
+        pass
+
 
 if __name__ == "__main__":
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/hardware_daemon.log',
