@@ -71,7 +71,7 @@ class HardwareDaemon(object):
                             if not valuesChanged:
                                 valuesChanged = True
 
-                    if (abs(int(sensor)) - self.robot["sensors"][index] > 5 or
+                    if (abs(int(sensor) - self.robot["sensors"][index]) > 5 or
                         self.robot["sensors"][index] == None):
                         self.robot["sensors"][index] = sensor
                         if not valuesChanged:
