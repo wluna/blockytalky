@@ -32,5 +32,6 @@ def simple_play(notes):
 		client.connect( (note_destination_hostname, note_destination_port) )
 		try:
 			client.send(message)
+			print "Sent the second time around"
 		except OSC.OSCClientError as e:
-		print "Nope the message failed to send again. :(" + str(e)
+			print "Nope the message failed to send again. :(" + str(e)
