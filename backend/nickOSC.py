@@ -9,6 +9,7 @@ note_destination_port = 1111
 
 client = OSC.OSCClient()
 client.connect( (note_destination_hostname, note_destination_port) )
+print "Attempted to connect to " + note_destination_hostname + " on port " + str(note_destination_port)
 
 def simple_play(notes):
 	message = OSC.OSCMessage()
