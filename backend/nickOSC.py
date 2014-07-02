@@ -30,3 +30,7 @@ def simple_play(notes):
 		print "Error while sending: " + str(e)
 		print "Trying to reconnect."
 		client.connect( (note_destination_hostname, note_destination_port) )
+		try:
+			client.send(message)
+		except OSC.OSCClientError as e:
+		print "Nope the message failed to send again. :(" + str(e)
