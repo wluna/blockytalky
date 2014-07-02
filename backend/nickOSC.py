@@ -8,8 +8,6 @@ note_destination_hostname = "localhost"
 note_destination_port = 1111
 
 osc_client = OSC.OSCClient()
-osc_client.connect( (note_destination_hostname, note_destination_port) )
-print "Attempted to connect to " + note_destination_hostname + " on port " + str(note_destination_port)
 
 def simple_play(notes):
 	message = OSC.OSCMessage()
@@ -24,14 +22,13 @@ def simple_play(notes):
 		message.append(-1)
 		message.append(0.)
 	try:
-		osc_client.send(message)
+		osc_client.sendto(message, (note_destination_hostname, note_destination_port))
 		print "message sent to " + note_destination_hostname + " from simple_play"
 	except OSC.OSCClientError as e:
 		print "Error while sending: " + str(e)
-		print "Trying to reconnect."
-		osc_client.connect( (note_destination_hostname, note_destination_port) )
+		print "Trying again."
 		try:
-			osc_client.send(message)
+			osc_client.sendto(message, (note_destination_hostname, note_destination_port))
 			print "Sent the second time around"
 		except OSC.OSCClientError as e:
 			print "Nope the message failed to send again. :(" + str(e)
