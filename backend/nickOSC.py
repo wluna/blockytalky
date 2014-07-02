@@ -23,7 +23,3 @@ def simple_play(notes):
 		message.append(0.)
 	client.send(message)
 	print "message sent to " + note_destination_hostname + " from simple_play"
-	
-# Provides a 
-def ping():
-	return True
