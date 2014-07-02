@@ -14,6 +14,7 @@ def simple_play(notes):
 	message = OSC.OSCMessage()
 	# copy note content into message
 	for i in range(len(notes)):
+		print str(notes[i][0])
 		message.append(float(notes[i][0]))
 		message.append(int(notes[i][1]))
 	# pad message with empty notes
