@@ -12,6 +12,7 @@ client.connect( (note_destination_hostname, note_destination_port) )
 
 def simple_play(notes):
 	message = OSC.OSCMessage()
+	message.setAddress("lpc/maestro/play")
 	# copy note content into message
 	for i in range(len(notes)):
 		print "currently on " + str(notes[i])
