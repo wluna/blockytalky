@@ -17,7 +17,7 @@ Blockly.Language.facebook_msg= {
     }
 };
 
-Blockly.Language.send_osc= {
+Blockly.Language.send_osc = {
 category: 'Messaging',
     helpUrl: 'http://www.google.com',
     init: function() {
@@ -124,7 +124,7 @@ category: 'Messaging',
   }
 };
 
-// Constructing an OSC message (UNTESTED)
+// Constructing an OSC message
 Blockly.Language.create_osc_message = {
 category: 'Messaging',
   helpUrl: 'opensoundcontrol.org',
@@ -227,7 +227,7 @@ Blockly.Python.create_osc_message = function() {
   console.log("Just constructed an OSC message:\n" + code);
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Python.ORDER_NONE];
-}
+};
 
 Blockly.Python.send_osc_message = function() {
   // Get the message_input object from the block connected
