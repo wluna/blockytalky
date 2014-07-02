@@ -13,7 +13,7 @@ print "Attempted to connect to " + note_destination_hostname + " on port " + str
 
 def simple_play(notes):
 	message = OSC.OSCMessage()
-	message.setAddress("lpc/maestro/play")
+	message.setAddress("/lpc/maestro/play")
 	# copy note content into message
 	for i in range(len(notes)):
 		message.append(float(notes[i][0]))
