@@ -40,8 +40,11 @@ Blockly.Python.music_simple_play = function() {
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
 	console.log("Simple play: Got as note input: " + value_notes_input);
 	
-	var code = "";
-	code += "import nickOSC\n";
+	var code = "try:\n";
+	code += "\test = nickOSC.note_destination_hostname\n";
+	code += "except NameError:\n"
+	code += "\timport nickOSC\n"
+	code += "\tprint 'imported nickOSC'\n"
 	code += "print " + value_notes_input + "\n"; // DEBUG
 	
 	// do some parsing to see if this is one note
