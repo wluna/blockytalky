@@ -39,8 +39,23 @@ Blockly.Language.music_simple_play = {
 Blockly.Python.music_simple_play = function() {
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
 	console.log("Simple play: Got as note input: " + value_notes_input);
+	
 	var code = "";
-	code += "print " + value_notes_input + "\n";
+	code += "import nickOSC\n";
+	code += "print " + value_notes_input + "\n"; // DEBUG
+	
+	// do some parsing to see if this is one note
+	// or multiple notes
+	var str = value_notes_input;
+	if (str[0] == '(') {
+		// one note, wrap with a list
+		code += "nickOSC.simple_play([" + str + "])\n";
+	}
+	else if (str[0] == '[') {
+		// multiple notes, send as-is
+		code += "nickOSC.simple_play(" + str + ")\n";
+	}
+	
 	return code;
 };
 
@@ -302,12 +317,14 @@ Blockly.Language.music_instrument = {
 };
 
 // Generator for Music Instrument
-// TODO: Method stub
+// New instruments should be able to be added
+// by simply updating the dropdown menu above to
+// include that instrument.
 
 Blockly.Python.music_instrument = function() {
 	var dropdown_instrument_select = this.getTitleValue('instrument_select');
-	var code = '...';
-	return [code, Blockly.Python.ORDER_NONE];
+	var code = dropdown_instrument_select;
+	return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
 // === Drumkit Note ===
