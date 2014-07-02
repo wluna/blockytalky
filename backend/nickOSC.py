@@ -5,7 +5,7 @@ import OSC
 # to send OSC messages from blocks.
 
 note_destination_hostname = "localhost"
-note_destination_port = 1111
+note_destination_port = 1112
 
 osc_client = OSC.OSCClient()
 
