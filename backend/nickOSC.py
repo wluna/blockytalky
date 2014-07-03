@@ -46,7 +46,7 @@ def on_beat_play_with(notes, beat_fraction):
 		message.append(-1)
 		message.append(0.)
 	# append beat alignment fraction
-	message.append(beat_fraction)
+	message.append(float(beat_fraction))
 	try:
 		osc_client.sendto(message, (note_destination_hostname, note_destination_port))
 		print "message sent to " + note_destination_hostname + " from on_beat_play_with"
