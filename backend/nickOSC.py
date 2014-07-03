@@ -35,7 +35,7 @@ def simple_play(notes):
 			
 def on_beat_play_with(notes, beat_fraction):
 	message = OSC.OSCMessage()
-	message.setAddress("/lpc/maestro/play")
+	message.setAddress("/lpc/maestro/play_on_beat")
 	# copy note content into message
 	for i in range(len(notes)):
 		message.append(int(notes[i][0]))
@@ -49,7 +49,7 @@ def on_beat_play_with(notes, beat_fraction):
 	message.append(beat_fraction)
 	try:
 		osc_client.sendto(message, (note_destination_hostname, note_destination_port))
-		print "message sent to " + note_destination_hostname + " from simple_play"
+		print "message sent to " + note_destination_hostname + " from on_beat_play_with"
 	except OSC.OSCClientError as e:
 		print "Error while sending: " + str(e)
 		print "Trying again."

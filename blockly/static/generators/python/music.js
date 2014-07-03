@@ -477,6 +477,7 @@ Blockly.Python.music_on_beat_play_with = function () {
 	var beat_align = beat_alignment_to_float(dropdown_beat_select);
 	
 	var code = "";
+	code += "print " + value_notes_input + "\n"; // DEBUG
 	// do some parsing to see if this is one note
 	// or multiple notes
 	var str = value_notes_input;
