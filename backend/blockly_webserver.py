@@ -193,6 +193,7 @@ def convert_usercode(python_code):
     usercode = ("from message import *\n"
                 "import time\n"
                 "import RPi.GPIO as GPIO\n"
+                "import nickOSC\n"
                 "import pyttsx\n\n"
                 "def run(self, channel, channel2):\n"
               #  "  while True:\n"

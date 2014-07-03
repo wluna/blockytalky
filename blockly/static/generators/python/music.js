@@ -40,11 +40,7 @@ Blockly.Python.music_simple_play = function() {
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
 	console.log("Simple play: Got as note input: " + value_notes_input);
 	
-	var code = "try:\n";
-	code += "\test = nickOSC.note_destination_hostname\n";
-	code += "except NameError:\n"
-	code += "\timport nickOSC\n"
-	code += "\tprint 'imported nickOSC'\n"
+	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
 	
 	// do some parsing to see if this is one note
@@ -112,7 +108,7 @@ Blockly.Language.music_specific_note = {
 			.appendTitle("beats");
 		this.setInputsInline(true);
 		this.setOutput(true, "notes");
-		this.setTooltip("Creates a rest note one beat long.");
+		this.setTooltip("Creates a specific note one beat long.");
 	}
 };
 
@@ -230,8 +226,7 @@ Blockly.Python.music_specific_note = function() {
 	var midi_note = text_to_midi(text_note_text_input);
 	if (midi_note == -1) {
 		console.log("Error parsing midi note from specific note block: " + text_note_text_input);
-		// We failed, return something
-		return ["(48, 1)", Blockly.Python.ORDER_ATOMIC];
+		// We failed, will return rest
 	}
 	
 	var duration = 1;
@@ -450,14 +445,50 @@ Blockly.Language.music_on_beat_play_with = {
 	}
 };
 
+// Helper function for notes
+// converts the argument text, like quarter, half, one, two..
+// to a corresponding float value (0.25, 0.5, 1, 2...)
+// Supports 1/8, 1/4, 1/2, 1, 2, 3, 4.
+// Returns 1 if given an unsupported argument.
+
+var beat_alignment_to_float = function(text) {
+	var beat_align = 1;
+	
+	if (text == "1/8 beat")
+		beat_align = 0.125;
+	else if (text == "1/4 beat")
+		beat_align = 0.25;
+	else if (text == "1/2 beat")
+		beat_align = 0.5;
+	else if (text == "beat")
+		beat_align = 1;
+		
+	return beat_align;
+};
+
 // Generator for On Beat Play with Instrument
-// TODO: Method stub
+// TODO: Implement "with instrument" part
 
 Blockly.Python.music_on_beat_play_with = function () {
 	var dropdown_beat_select = this.getTitleValue('beat_select');
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
 	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
-	var code = "...";
+	
+	var beat_align = beat_alignment_to_float(dropdown_beat_select);
+	
+	var code = "";
+	// do some parsing to see if this is one note
+	// or multiple notes
+	var str = value_notes_input;
+	if (str[1] == '(') {
+		// one note, wrap with a list
+		code += "nickOSC.on_beat_play_with([" + str + "], " + beat_align + ")\n";
+	}
+	else if (str[1] == '[') {
+		// multiple notes, send as-is
+		code += "nickOSC.on_beat_play_with(" + str + ", " + beat_align + ")\n";
+	}
+	
 	return code;
 };
 
