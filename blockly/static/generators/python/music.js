@@ -509,11 +509,11 @@ Blockly.Python.music_on_beat_play_with = function () {
 	var str = value_notes_input;
 	if (str[1] == '(') {
 		// one note, wrap with a list
-		code += "nickOSC.on_beat_play_with([" + str + "], " + beat_align + ")\n";
+		code += "nickOSC.on_beat_play_with([" + str + "], " + beat_align + ", " + instrument_input + ")\n";
 	}
 	else if (str[1] == '[') {
 		// multiple notes, send as-is
-		code += "nickOSC.on_beat_play_with(" + str + ", " + beat_align + ")\n";
+		code += "nickOSC.on_beat_play_with(" + str + ", " + beat_align + ", " + instrument_input + ")\n";
 	}
 	
 	return code;
