@@ -325,6 +325,32 @@ Blockly.Python.music_instrument = function() {
 	return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
+// === Arbitrary Instrument ===
+// music_arbitrary_instrument
+// Can be used to specify any instrument by name.
+
+Blockly.Language.music_arbitrary_instrument = {
+	category: 'Music',
+	helpUrl: '',
+	init: function() {
+		this.setColour(0);
+		this.appendDummyInput("")
+			.appendTitle(new Blockly.FieldTextInput("flute"), "instrument_name");
+		this.setInputsInline(true);
+		this.setOutput(true, "instrument");
+		this.setTooltip('Can be used to specify any instrument by name.');
+	}
+};
+
+// Generator for Arbitrary Instrument
+// Just returns the name of the instrument as a string
+
+Blockly.Python.music_arbitrary_instrument = function() {
+	var text_instrument_name = this.getTitleValue('instrument_name');
+	var code = "'" + text_instrument_name + "'";
+	return [code, Blockly.Python.ORDER_ATOMIC];
+};
+
 // === Drumkit Note ===
 // music_drumkit_note
 // Used to specify standardized notes by
