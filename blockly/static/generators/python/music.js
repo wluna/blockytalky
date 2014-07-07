@@ -565,6 +565,34 @@ Blockly.Python.music_on_beat_stop_playing = function () {
 	return code;
 };
 
+// === Specify Maestro Address ===
+// specify_maestro_address
+// Sets the IP address to use to send messages to the
+// maestro (timing) ChucK module.
+
+Blockly.Language.music_specify_maestro_address = {
+	category: 'Music',
+	helpUrl: '',
+	init: function() {
+		this.setColour(0);
+		this.appendDummyInput("")
+			.appendTitle("Specify maestro machine:")
+			.appendTitled(new Blockly.FieldTextInput("192.168.1.14"), "maestro_address");
+		this.setPreviousStatement(true);
+		this.setNextStatement(true);
+		this.setTooltip("Sets the IP address to use to send messages to the timing module.");
+	}
+};
+
+// Generator for Specify Maestro Address
+// Sets the maestro_IP variable
+
+Blockly.Python.music_specify_maestro_address = function () {
+	var text_maestro_address = this.getTitleValue('maestro_address');
+	var code = "nickOSC.set_maestro_IP('" + text_maestro_address + "')\n";
+	return code;
+};
+
 // === Create Phrase ===
 // music_create_phrase
 // Essentially duplicated from Blockly's create list

@@ -9,6 +9,10 @@ note_destination_port = 1111
 
 osc_client = OSC.OSCClient()
 
+def set_maestro_IP(maestro_IP_string):
+	note_destination_hostname = maestro_IP_string
+	print "Destination hostname set to " + str(maestro_IP_string)
+
 def simple_play(notes):
 	message = OSC.OSCMessage()
 	message.setAddress("/lpc/maestro/play")
