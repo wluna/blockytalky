@@ -592,7 +592,7 @@ Blockly.Python.music_on_beat_stop_playing = function () {
 };
 
 // === Specify Maestro Address ===
-// specify_maestro_address
+// music_specify_maestro_address
 // Sets the IP address to use to send messages to the
 // maestro (timing) ChucK module.
 
@@ -616,6 +616,33 @@ Blockly.Language.music_specify_maestro_address = {
 Blockly.Python.music_specify_maestro_address = function () {
 	var text_maestro_address = this.getTitleValue('maestro_address');
 	var code = "nickOSC.set_maestro_IP('" + text_maestro_address + "')\n";
+	return code;
+};
+
+// === Set Tempo ===
+// music_set_tempo
+// Sets the maestro machine's tempo.
+
+Blockly.Language.music_set_tempo = {
+	category: 'Music',
+	helpUrl: '',
+	init: function() {
+		this.setColour(0);
+		this.appendDummyInput("")
+			.appendTitle("Specify maestro's tempo: ")
+			.appendTitle(new Blockly.FieldTextInput("120"), "tempo");
+		this.setPreviousStatement(true);
+		this.setNextStatement(true);
+		this.setTooltip("Sets the maestro machine's tempo.");
+	}
+};
+
+// Generator for Specify Maestro Address
+// Sends a bpm message to maestro machine
+
+Blockly.Python.music_specify_maestro_address = function () {
+	var text_tempo = this.getTitleValue('tempo');
+	var code = "nickOSC.set_tempo(" + text_tempo + ")\n";
 	return code;
 };
 

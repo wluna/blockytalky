@@ -54,3 +54,10 @@ def on_beat_play_with(notes, beat_fraction, instrument):
 	# append instrument name
 	message.append(str(instrument))
 	send_message_to_maestro(message, address)
+
+def set_tempo(bpm):
+	address = "/lpc/maestro/tempo"
+	message = OSC.OSCMessage()
+	message.setAddress(address)
+	message.append(float(bpm))
+	send_message_to_maestro(message, address)
