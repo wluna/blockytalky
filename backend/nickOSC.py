@@ -48,7 +48,7 @@ def simple_play(notes):
 			
 def on_beat_play_with(notes, beat_fraction, instrument):
 	address = "/lpc/maestro/play_on_beat"
-	message = construct_basic_phrase_message(notes)
+	message = construct_basic_phrase_message(notes, address)
 	# append beat fraction
 	message.append(float(beat_fraction))
 	# append instrument name
