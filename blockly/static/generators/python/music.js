@@ -640,7 +640,7 @@ Blockly.Language.music_set_tempo = {
 // Generator for Specify Maestro Address
 // Sends a bpm message to maestro machine
 
-Blockly.Python.music_specify_maestro_address = function () {
+Blockly.Python.music_set_tempo = function () {
 	var text_tempo = this.getTitleValue('tempo');
 	var code = "nickOSC.set_tempo(" + text_tempo + ")\n";
 	return code;
