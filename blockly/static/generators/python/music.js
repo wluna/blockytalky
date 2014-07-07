@@ -577,7 +577,7 @@ Blockly.Language.music_specify_maestro_address = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("Specify maestro machine:")
-			.appendTitled(new Blockly.FieldTextInput("192.168.1.14"), "maestro_address");
+			.appendTitle(new Blockly.FieldTextInput("192.168.1.14"), "maestro_address");
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
 		this.setTooltip("Sets the IP address to use to send messages to the timing module.");
