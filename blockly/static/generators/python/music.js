@@ -108,7 +108,7 @@ Blockly.Language.music_specific_note = {
 			.appendTitle("beats");
 		this.setInputsInline(true);
 		this.setOutput(true, "notes");
-		this.setTooltip("Creates a specific note one beat long.");
+		this.setTooltip("Creates a specific note of specified duration.");
 	}
 };
 
@@ -248,17 +248,25 @@ Blockly.Language.music_simple_rest = {
 	init: function() {
 		this.setColour(0);
 		this.appendDummyInput("")
-			.appendTitle("a rest");
+			.appendTitle("rest for ")
+			.appendTitle(new Blockly.FieldDropdown([["one eighth", "eighth"], ["one quarter", "quarter"], ["one half", "half"], ["one", "one"], ["two", "two"], ["three", "three"], ["four", "four"]]), "duration_select")
+			.appendTitle("beats");
 		this.setInputsInline(true);
 		this.setOutput(true, "notes");
-		this.setTooltip("Generates a rest note one beat long.");
+		this.setTooltip("Generates a rest note a specified number of beats long.");
 	}
 };
 
 // Generator for Simple Rest
 
 Blockly.Python.music_simple_rest = function() {
-	var code = "(-1, 1)";
+	var dropdown_duration_select = this.getTitleValue('duration_select');
+	
+	var duration = 1;
+	// Determine note duration
+	duration = duration_to_float(dropdown_duration_select);
+	
+	var code = "(-1, " + duration + ")";
 	return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
@@ -455,7 +463,7 @@ Blockly.Language.music_on_beat_play_with = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("On the next")
-			.appendTitle(new Blockly.FieldDropdown([["beat", "beat"], ["1/2 beat", "half_beat"], ["1/4 beat", "quarter_beat"], ["1/8 beat", "eighth_beat"]]), "beat_select");
+			.appendTitle(new Blockly.FieldDropdown([["beat", "beat"], ["1/2 beat", "half_beat"], ["1/4 beat", "quarter_beat"], ["1/8 beat", "eighth_beat"], ["two beats", "two_beats"], ["three beats", "three_beats"], ["four beats", "four_beats"]]), "beat_select");
 		this.appendDummyInput("")
 			.appendTitle("play");
 		this.appendValueInput("notes_input")
@@ -480,14 +488,20 @@ Blockly.Language.music_on_beat_play_with = {
 var beat_alignment_to_float = function(text) {
 	var beat_align = 1;
 	
-	if (text == "1/8 beat")
+	if (text == "eighth_beat")
 		beat_align = 0.125;
-	else if (text == "1/4 beat")
+	else if (text == "quarter_beat")
 		beat_align = 0.25;
-	else if (text == "1/2 beat")
+	else if (text == "half_beat")
 		beat_align = 0.5;
 	else if (text == "beat")
 		beat_align = 1;
+	else if (text == "two_beats")
+		beat_align = 2;
+	else if (text == "three_beats")
+		beat_align = 3;
+	else if (text == "four_beats")
+		beat_align = 4;
 		
 	return beat_align;
 };
