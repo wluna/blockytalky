@@ -627,8 +627,8 @@ Blockly.Language.music_on_beat_stop_playing = {
 // TODO: Method stub
 
 Blockly.Python.music_on_beat_stop_playing = function () {
-	var dropdown_beat_select = block.getFieldValue('beat_select');
-	var value_instrument_input = Blockly.Python.valueToCode(block, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
+	var dropdown_beat_select = this.getTitleValue('beat_select');
+	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
 	
 	var beat_align = beat_alignment_to_float(dropdown_beat_select);
 	
