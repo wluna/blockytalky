@@ -461,8 +461,6 @@ Blockly.Language.music_stop_playing = {
 Blockly.Python.music_stop_playing = function() {
 	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
 	
-	var beat_align = beat_alignment_to_float(dropdown_beat_select);
-	
 	var code = "nickOSC.stop_playing(" + value_instrument_input + ")\n";
 	
 	return code;
