@@ -732,6 +732,37 @@ Blockly.Python.music_set_tempo = function () {
 	return code;
 };
 
+// === Combine Phrase ===
+// music_combine_phrase
+// Pssst. Secretly this is just a + operator
+// (that returns concatenated notes)
+
+Blockly.Language.music_combine_phrase = {
+  // Create a list with any number of elements of any type.
+  category: 'Music',
+  helpUrl: '',
+  init: function() {
+    this.setColour(0);
+    this.setOutput(true, 'notes');
+    this.appendValueInput('A')
+        .setCheck('Number');
+    this.appendValueInput('B')
+        .setCheck('Number')
+        .appendTitle('plus');
+    this.setInputsInline(true);
+    this.setTooltip("Returns a combined phrase.");
+  }
+};
+
+// Generator for Combine Phrase
+
+Blockly.Python.music_combine_phrase = function () {
+	var argument0 = Blockly.Python.valueToCode(this, 'A', order) || '[]';
+	var argument1 = Blockly.Python.valueToCode(this, 'B', order) || '[]';
+	code = argument0 + " + " + argument1;
+	return [code, Blockly.Python.ORDER_ATOMIC];
+};
+
 // === Create Phrase ===
 // music_create_phrase
 // Essentially duplicated from Blockly's create list

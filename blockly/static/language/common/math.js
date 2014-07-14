@@ -42,8 +42,10 @@ Blockly.Language.math_arithmetic = {
   init: function() {
     this.setColour(230);
     this.setOutput(true, 'Number');
-    this.appendValueInput('A');
+    this.appendValueInput('A')
+        .setCheck('Number');
     this.appendValueInput('B')
+        .setCheck('Number')
         .appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
