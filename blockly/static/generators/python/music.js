@@ -46,11 +46,11 @@ Blockly.Python.music_simple_play = function() {
 	// do some parsing to see if this is one note
 	// or multiple notes
 	var str = value_notes_input;
-	if (str[1] == '(') {
+	if (str[0] == '(') {
 		// one note, wrap with a list
 		code += "nickOSC.simple_play([" + str + "])\n";
 	}
-	else if (str[1] == '[') {
+	else if (str[0] == '[') {
 		// multiple notes, send as-is
 		code += "nickOSC.simple_play(" + str + ")\n";
 	}
