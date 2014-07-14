@@ -406,7 +406,7 @@ Blockly.Language.music_start_playing_with = {
 		this.appendValueInput("instrument_input")
 			.setCheck("instrument");
 		this.appendDummyInput("")
-			.appendTitle(", call it");
+			.appendTitle(", call it")
 			.appendTitle(new Blockly.FieldTextInput("loop name"), "loop_name");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
@@ -449,7 +449,7 @@ Blockly.Language.music_stop_playing = {
 	init: function() {
 		this.setColour(0);
 		this.appendDummyInput("")
-			.appendTitle("stop playing");
+			.appendTitle("stop playing")
 			.appendTitle(new Blockly.FieldTextInput("loop name"), "loop_name");
 		this.setInputsInline(true);
 		this.setInputsInline(true);
@@ -570,7 +570,7 @@ Blockly.Language.music_on_beat_start_playing_with = {
 		this.appendValueInput("instrument_input")
 			.setCheck("instrument");
 		this.appendDummyInput("")
-			.appendTitle(", call it");
+			.appendTitle(", call it")
 			.appendTitle(new Blockly.FieldTextInput("loop name"), "loop_name");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
