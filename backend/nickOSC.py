@@ -23,11 +23,10 @@ def set_maestro_IP(maestro_IP_string):
 # list of notes (pitch, duration tuples) and an argument
 # address, padded. Methods can append more information onto the
 # message as needed.
-def construct_basic_phrase_message(notes, address, loop_name):
+def construct_basic_phrase_message(notes, address):
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	# copy note content into message
-	message.append(loop_name)
 	for i in range(len(notes)):
 		message.append(int(notes[i][0]))
 		message.append(float(notes[i][1]))
@@ -55,14 +54,15 @@ def send_message_to_maestro(message, address):
 # Sends some notes to be played immediately.
 def simple_play(notes):
 	address = "lpc/maestro/play"
-	message = construct_basic_phrase_message(notes, address, "")
+	message = construct_basic_phrase_message(notes, address)
 	send_message_to_maestro(message, address)
+	print "got to simple play"
 			
 # Sends some notes to be played with a certain instrument
 # on a certain beat (or fraction thereof).
 def on_beat_play_with(notes, beat_fraction, instrument, loop_name):
 	address = "/lpc/maestro/play_on_beat_with"
-	message = construct_basic_phrase_message(notes, address, "")
+	message = construct_basic_phrase_message(notes, address)
 	# append beat fraction
 	message.append(float(beat_fraction))
 	# append instrument name
@@ -73,9 +73,10 @@ def on_beat_play_with(notes, beat_fraction, instrument, loop_name):
 # on a certain beat (or fraction thereof).
 def on_beat_start_playing_with(notes, beat_fraction, instrument, loop_name):
 	address = "/lpc/maestro/loop_on_beat_with"
-	message = construct_basic_phrase_message(notes, address, loop_name)
+	message = construct_basic_phrase_message(notes, address)
 	message.append(float(beat_fraction))
 	message.append(str(instrument))
+	message.append(str(loop_name))
 	send_message_to_maestro(message, address)
 	
 # Stops playing any notes with the specified loop name
