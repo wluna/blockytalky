@@ -307,31 +307,31 @@ Blockly.Python.music_play_with = function() {
 // === Instruments ===
 // music_instrument_block
 // Specifies an instrument to use to play 
-// notes.
+// notes. NOT IN USE.
 
-Blockly.Language.music_instrument = {
-	category: 'Music',
-	helpUrl: '',
-	init: function() {
-		this.setColour(0);
-		this.appendDummyInput("")
-			.appendTitle(new Blockly.FieldDropdown([["a flute", "flute"], ["a cool synth", "coolsynth"], ["a kerfuffler", "kerfuffler"], ["an electric drum kit", "electricdrumkit"]]), "instrument_select");
-		this.setInputsInline(true);
-		this.setOutput(true, "instrument");
-		this.setTooltip('');
-	}
-};
+//Blockly.Language.music_instrument = {
+//	category: 'Music',
+//	helpUrl: '',
+//	init: function() {
+//		this.setColour(0);
+//		this.appendDummyInput("")
+//			.appendTitle(new Blockly.FieldDropdown([["a flute", "flute"], ["a cool synth", "coolsynth"], ["a kerfuffler", "kerfuffler"], ["an electric drum kit", "electricdrumkit"]]), "instrument_select");
+//		this.setInputsInline(true);
+//		this.setOutput(true, "instrument");
+//		this.setTooltip('');
+//	}
+//};
 
 // Generator for Music Instrument
 // New instruments should be able to be added
 // by simply updating the dropdown menu above to
 // include that instrument.
 
-Blockly.Python.music_instrument = function() {
-	var dropdown_instrument_select = this.getTitleValue('instrument_select');
-	var code = dropdown_instrument_select;
-	return [code, Blockly.Python.ORDER_ATOMIC];
-};
+//Blockly.Python.music_instrument = function() {
+//	var dropdown_instrument_select = this.getTitleValue('instrument_select');
+//	var code = dropdown_instrument_select;
+//	return [code, Blockly.Python.ORDER_ATOMIC];
+//};
 
 // === Arbitrary Instrument ===
 // music_arbitrary_instrument
@@ -363,27 +363,28 @@ Blockly.Python.music_arbitrary_instrument = function() {
 // music_drumkit_note
 // Used to specify standardized notes by
 // name for use with drumkits.
+// NOT IN USE.
 
-Blockly.Language.music_drumkit_note = {
-	category: 'Music',
-	helpUrl: '',
-	init: function() {
-		this.setColour(0);
-		this.appendDummyInput("")
-			.appendTitle(new Blockly.FieldDropdown([["a kick", "a_kick"], ["a hi hat", "a_hi_hat"], ["a tom", "a_tom"]]), "type_of_drumkit_note");
-		this.setOutput(true, "notes");
-		this.setTooltip("Specifies notes by name, for use with drum instruments.");
-	}
-};
+//Blockly.Language.music_drumkit_note = {
+//	category: 'Music',
+//	helpUrl: '',
+//	init: function() {
+//		this.setColour(0);
+//		this.appendDummyInput("")
+//			.appendTitle(new Blockly.FieldDropdown([["a kick", "a_kick"], ["a hi hat", "a_hi_hat"], ["a tom", "a_tom"]]), "type_of_drumkit_note");
+//		this.setOutput(true, "notes");
+//		this.setTooltip("Specifies notes by name, for use with drum instruments.");
+//	}
+//};
 
 // Generator for Drumkit Note
 // TODO: Method stub
 
-Blockly.Python.music_drumkit_note = function() {
-	var dropdown_type_of_drumkit_note = this.getTitleValue('type_of_drumkit_note');
-	var code = "...";
-	return [code, Blockly.Python.ORDER_NONE];
-};
+//Blockly.Python.music_drumkit_note = function() {
+//	var dropdown_type_of_drumkit_note = this.getTitleValue('type_of_drumkit_note');
+//	var code = "...";
+//	return [code, Blockly.Python.ORDER_NONE];
+//};
 
 // === Start Playing With Instrument ===
 // music_start_playing_with
@@ -404,6 +405,9 @@ Blockly.Language.music_start_playing_with = {
 			.appendTitle("with");
 		this.appendValueInput("instrument_input")
 			.setCheck("instrument");
+		this.appendDummyInput("")
+			.appendTitle(", call it");
+			.appendTitle(new Blockly.FieldTextInput("loop name"), "loop_name");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
@@ -416,6 +420,7 @@ Blockly.Language.music_start_playing_with = {
 Blockly.Python.music_start_playing_with = function() {
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
 	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
+	var text_loop_name = this.getTitleValue('loop_name');
 	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
@@ -424,7 +429,7 @@ Blockly.Python.music_start_playing_with = function() {
 	var str = value_notes_input;
 	if (str[1] == '(') {
 		// one note, wrap with a list
-		code += "nickOSC.start_playing_with([" + str + value_instrument_input + ")\n";
+		code += "nickOSC.start_playing_with([" + str + "], " + value_instrument_input + ", " + text_loop_name + ")\n";
 	}
 	else if (str[1] == '[') {
 		// multiple notes, send as-is
@@ -436,8 +441,7 @@ Blockly.Python.music_start_playing_with = function() {
 
 // === Stop Playing (With Instrument) ===
 // music_stop_playing
-// Stops playing anything with the specified
-// instrument.
+// Stops playing the loop specified by name.
 
 Blockly.Language.music_stop_playing = {
 	category: 'Music',
@@ -446,22 +450,21 @@ Blockly.Language.music_stop_playing = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("stop playing");
-		this.appendValueInput("instrument_input")
-			.setCheck("instrument");
+			.appendTitle(new Blockly.FieldTextInput("loop name"), "loop_name");
 		this.setInputsInline(true);
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
-		this.setTooltip("Stops playing anything with the specified instrument.");
+		this.setTooltip("Stops playing the loop specified by name.");
 	}
 };
 
 // Generator for Stop Playing With Instrument
 
 Blockly.Python.music_stop_playing = function() {
-	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
+	var text_loop_name = this.getTitleValue('loop_name');
 	
-	var code = "nickOSC.stop_playing(" + value_instrument_input + ")\n";
+	var code = "nickOSC.stop_playing(" + text_loop_name + ")\n";
 	
 	return code;
 };
@@ -566,6 +569,9 @@ Blockly.Language.music_on_beat_start_playing_with = {
 			.appendTitle("with");
 		this.appendValueInput("instrument_input")
 			.setCheck("instrument");
+		this.appendDummyInput("")
+			.appendTitle(", call it");
+			.appendTitle(new Blockly.FieldTextInput("loop name"), "loop_name");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
@@ -579,6 +585,7 @@ Blockly.Python.music_on_beat_start_playing_with = function () {
 	var dropdown_beat_select = this.getTitleValue('beat_select');
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
 	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
+	var text_loop_name = this.getTitleValue('loop_name');
 	
 	var beat_align = beat_alignment_to_float(dropdown_beat_select);
 	
@@ -589,11 +596,11 @@ Blockly.Python.music_on_beat_start_playing_with = function () {
 	var str = value_notes_input;
 	if (str[1] == '(') {
 		// one note, wrap with a list
-		code += "nickOSC.on_beat_start_playing_with([" + str + "], " + beat_align + ", " + value_instrument_input + ")\n";
+		code += "nickOSC.on_beat_start_playing_with([" + str + "], " + beat_align + ", " + value_instrument_input + ", " + text_loop_name + ")\n";
 	}
 	else if (str[1] == '[') {
 		// multiple notes, send as-is
-		code += "nickOSC.on_beat_start_playing_with(" + str + ", " + beat_align + ", " + value_instrument_input + ")\n";
+		code += "nickOSC.on_beat_start_playing_with(" + str + ", " + beat_align + ", " + value_instrument_input + ", " + text_loop_name + ")\n";
 	}
 	
 	return code;
@@ -614,8 +621,7 @@ Blockly.Language.music_on_beat_stop_playing = {
 			.appendTitle(new Blockly.FieldDropdown([["beat", "beat"], ["1/2 beat", "half_beat"], ["1/4 beat", "quarter_beat"], ["1/8 beat", "eighth_beat"]]), "beat_select");
 		this.appendDummyInput("")
 			.appendTitle("stop playing")
-		this.appendValueInput("instrument_input")
-			.setCheck("instrument");
+			.appendTitle(new Blockly.FieldTextInput("loop name"), "loop_name");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
@@ -628,11 +634,11 @@ Blockly.Language.music_on_beat_stop_playing = {
 
 Blockly.Python.music_on_beat_stop_playing = function () {
 	var dropdown_beat_select = this.getTitleValue('beat_select');
-	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
+	var text_loop_name = this.getTitleValue('loop_name');
 	
 	var beat_align = beat_alignment_to_float(dropdown_beat_select);
 	
-	var code = "nickOSC.on_beat_stop_playing(" + beat_align + ", " + value_instrument_input + ")\n";
+	var code = "nickOSC.on_beat_stop_playing(" + beat_align + ", " + text_loop_name + ")\n";
 	
 	return code;
 };
