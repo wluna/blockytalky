@@ -60,7 +60,7 @@ def simple_play(notes):
 			
 # Sends some notes to be played with a certain instrument
 # on a certain beat (or fraction thereof).
-def on_beat_play_with(notes, beat_fraction, instrument, loop_name):
+def on_beat_play_with(notes, beat_fraction, instrument):
 	address = "/lpc/maestro/play_on_beat_with"
 	message = construct_basic_phrase_message(notes, address)
 	# append beat fraction
@@ -88,6 +88,9 @@ def on_beat_stop_playing(beat_fraction, loop_name):
 	message.append(float(beat_fraction))
 	message.append(str(loop_name))
 	send_message_to_maestro(message, address)
+	
+def play_with(notes, instrument):
+	on_beat_play_with(notes, 0., instrument)
 
 # Starts looping a phrase immediately in the specified loop
 def start_playing_with(notes, instrument, loop_name):
