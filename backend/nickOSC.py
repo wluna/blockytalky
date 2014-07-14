@@ -53,10 +53,9 @@ def send_message_to_maestro(message, address):
 
 # Sends some notes to be played immediately.
 def simple_play(notes):
-	address = "lpc/maestro/play"
+	address = "/lpc/maestro/play"
 	message = construct_basic_phrase_message(notes, address)
 	send_message_to_maestro(message, address)
-	print "got to simple play"
 			
 # Sends some notes to be played with a certain instrument
 # on a certain beat (or fraction thereof).
