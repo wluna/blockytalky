@@ -455,11 +455,11 @@ Blockly.Python.music_start_playing_with = function() {
 	}
 	else if (str[1] == '[') {
 		// multiple notes, send as-is
-		code += "nickOSC.start_playing_with(" + str + ", " + value_instrument_input + "[0]" + ", '" + text_loop_name + "')\n";
+		code += "nickOSC.start_playing_with(" + str + ", " + value_instrument_input + ", '" + text_loop_name + "')\n";
 	}
 	else {
 		// variable, send as-is
-		code += "nickOSC.start_playing_with(" + str + ", " + value_instrument_input + "[0]" + ", '" + text_loop_name + "')\n";
+		code += "nickOSC.start_playing_with(" + str + ", " + value_instrument_input + ", '" + text_loop_name + "')\n";
 	}
 	
 	return code;
@@ -630,11 +630,11 @@ Blockly.Python.music_on_beat_start_playing_with = function () {
 	}
 	else if (str[1] == '[') {
 		// multiple notes, send as-is
-		code += "nickOSC.on_beat_start_playing_with(" + str + ", " + beat_align + ", " + value_instrument_input + "[0], " + "'" + text_loop_name + "')\n";
+		code += "nickOSC.on_beat_start_playing_with(" + str + ", " + beat_align + ", " + value_instrument_input + ", " + "'" + text_loop_name + "')\n";
 	}
 	else {
 		// variable, send as-is
-		code += "nickOSC.on_beat_start_playing_with(" + str + ", " + beat_align + ", " + value_instrument_input + "[0], " + "'" + text_loop_name + "')\n";
+		code += "nickOSC.on_beat_start_playing_with(" + str + ", " + beat_align + ", " + value_instrument_input + ", " + "'" + text_loop_name + "')\n";
 	}
 	
 	return code;
