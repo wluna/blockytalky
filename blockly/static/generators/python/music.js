@@ -490,7 +490,7 @@ Blockly.Language.music_stop_playing = {
 Blockly.Python.music_stop_playing = function() {
 	var text_loop_name = this.getTitleValue('loop_name');
 	
-	var code = "nickOSC.stop_playing(" + text_loop_name + ")\n";
+	var code = "nickOSC.stop_playing('" + text_loop_name + "')\n";
 	
 	return code;
 };
@@ -672,7 +672,7 @@ Blockly.Python.music_on_beat_stop_playing = function () {
 	
 	var beat_align = beat_alignment_to_float(dropdown_beat_select);
 	
-	var code = "nickOSC.on_beat_stop_playing(" + beat_align + ", " + text_loop_name + ")\n";
+	var code = "nickOSC.on_beat_stop_playing(" + beat_align + ", '" + text_loop_name + "')\n";
 	
 	return code;
 };
