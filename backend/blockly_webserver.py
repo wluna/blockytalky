@@ -190,14 +190,37 @@ def upload_code(xml_data, python_data):
 def convert_usercode(python_code):
     # Need to use two-space tabs for consistency with Blockly conversion
     python_code = "\n%s" % python_code
+    python_code += "\n"
+    python_code = python_code.splitlines()
+  
+    # comment out code that comes from blocks not in event blocks.
+    comment = True
+    i = 0
+    while i < len(python_code):
+        if python_code[i].isspace() or python_code[i] == "":
+            comment = False
+        elif python_code[i][-7:] == " = None":
+            comment = False
+        elif python_code[i][:4] == "def ":
+            comment = False
+            while not (python_code[i].isspace() or python_code[i] == ""):
+                i += 1
+        else:
+            comment = True
+                
+        if comment == True:
+            python_code[i] = "#" + python_code[i]
+        i += 1
+        
+    python_code = "\n".join(python_code)
+    print python_code
+    
     usercode = ("from message import *\n"
                 "import time\n"
                 "import RPi.GPIO as GPIO\n"
                 "import nickOSC\n"
                 "import pyttsx\n\n"
-                "def run(self, channel, channel2):\n"
-              #  "  while True:\n"
-                "%s" % python_code.replace("\n", "\n    "))
+                )
     return usercode
 
 @app.route('/stop', methods = ['GET', 'POST'])

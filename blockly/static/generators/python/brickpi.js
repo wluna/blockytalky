@@ -320,6 +320,51 @@ Blockly.Language.controls_inf_loop = {
     }
 };
 
+Blockly.Language.events_on_start = {
+    // Run on start
+    helpUrl: '',
+    init: function() {
+	this.setColour(120);
+	this.appendDummyInput("")
+	    .appendTitle('when i start');
+	this.appendStatementInput('DO')
+            .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setPreviousStatement(false);
+	this.setNextStatement(false);
+	this.deletable = false;
+    }
+};
+
+Blockly.Language.events_on_sensor_change = {
+    // Run on sensor value change
+    helpUrl: '',
+    init: function() {
+	this.setColour(120);
+	this.appendDummyInput("")
+	    .appendTitle('when a sensor value changes');
+	this.appendStatementInput('DO')
+            .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setPreviousStatement(false);
+	this.setNextStatement(false);
+	this.deletable = false;
+    }
+};
+
+Blockly.Language.events_run_continuously = {
+    // Repeat continuously
+    helpUrl: '',
+    init: function() {
+	this.setColour(120);
+	this.appendDummyInput("")
+	    .appendTitle('run continuously');
+	this.appendStatementInput('DO')
+            .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setPreviousStatement(false);
+	this.setNextStatement(false);
+	this.deletable = false;
+    }
+};
+
 //DEFINE GENERATORS:
 
 Blockly.Python= Blockly.Generator.get('Python');
@@ -511,4 +556,23 @@ Blockly.Python.sensor_sound=function() {
     var b=this.getTitleValue("port");;
 
         return['self.robot["sensors"]['+(b-1)+']',Blockly.Python.ORDER_ATOMIC];
+};
+
+
+Blockly.Python.events_on_start=function () {
+    var branch = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
+    var code= 'def run_on_start():'+'\n'+ branch;
+    return code;
+};
+
+Blockly.Python.events_on_sensor_change=function () {
+    var branch = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
+    var code= 'def on_sensor_change():'+'\n'+ branch;
+    return code;
+};
+
+Blockly.Python.events_run_continuously=function () {
+    var branch = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
+    var code= 'def run_continuously():'+'\n'+ branch;
+    return code;
 };
