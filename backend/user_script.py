@@ -67,6 +67,7 @@ class UserScript(object):
    
     def start(self):
         self.run_on_start()
+        self.schedule_run_continuously()
         self.hwval_channel.start_consuming()
 
     def schedule_run_continuously(self):
@@ -132,8 +133,12 @@ class UserScript(object):
         
 
     """
-if __name__ == "__main__":
+
+# this could be a footer file or get tacked onto the user code in
+# blockly webserver
+if __name__ == "__main__": 
 
     handle_logging(logger)
     us = UserScript()
+    us.start()
     
