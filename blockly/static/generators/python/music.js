@@ -759,7 +759,7 @@ Blockly.Language.music_combine_phrase = {
 Blockly.Python.music_combine_phrase = function () {
 	var value_arg0 = Blockly.Python.valueToCode(this, 'A', Blockly.Python.ORDER_ATOMIC);
 	var value_arg1 = Blockly.Python.valueToCode(this, 'B', Blockly.Python.ORDER_ATOMIC);
-	code = value_arg0 + " + " + value_arg1;
+	var code = value_arg0 + " + " + value_arg1;
 	return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
