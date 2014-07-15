@@ -42,6 +42,8 @@ def handle_logging(logger):
         
 
 class UserScript(object):
+    RUN_INTERVAL = .04 # how often to do the contents of "run_continuously"
+
     def __init__(self):
         logger.info('Initializing user script object')
        
@@ -68,6 +70,11 @@ class UserScript(object):
         self.hwval_channel.start_consuming()
 
     def schedule_run_continuously(self):
+        self.connection.add_timeout(self.__class__.RUN_INTERVAL, self.run_cont_reschedule())
+
+    def run_cont_reschedule(self):
+        self.run_continuously()
+        self.schedule_run_continuously()
 
     def setup_hwcmd_channel(self):  
         self.hwcmd_channel = self.connection.channel()
