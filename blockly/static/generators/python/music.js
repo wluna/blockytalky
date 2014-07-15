@@ -745,9 +745,9 @@ Blockly.Language.music_combine_phrase = {
     this.setColour(0);
     this.setOutput(true, 'notes');
     this.appendValueInput('A')
-        .setCheck('Number');
+        .setCheck('notes');
     this.appendValueInput('B')
-        .setCheck('Number')
+        .setCheck('notes')
         .appendTitle('plus');
     this.setInputsInline(true);
     this.setTooltip("Returns a combined phrase.");
