@@ -111,3 +111,8 @@ def set_tempo(bpm):
 	message.setAddress(address)
 	message.append(float(bpm))
 	send_message_to_maestro(message, address)
+	
+# combines two phrases into one
+def combine_phrase(notes1, notes2):
+	print "combining " + notes1 + " and " + notes2
+	return notes1 + notes2

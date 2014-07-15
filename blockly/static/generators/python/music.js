@@ -37,7 +37,7 @@ Blockly.Language.music_simple_play = {
 // Generator for Simple Play
 
 Blockly.Python.music_simple_play = function() {
-	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
+	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_NONE);
 	console.log("Simple play: Got as note input: " + value_notes_input);
 	
 	var code = "";
@@ -757,10 +757,10 @@ Blockly.Language.music_combine_phrase = {
 // Generator for Combine Phrase
 
 Blockly.Python.music_combine_phrase = function () {
-	var value_arg0 = Blockly.Python.valueToCode(this, 'A', Blockly.Python.ORDER_ATOMIC);
-	var value_arg1 = Blockly.Python.valueToCode(this, 'B', Blockly.Python.ORDER_ATOMIC);
-	var code = value_arg0 + " + " + value_arg1;
-	return [code, Blockly.Python.ORDER_ATOMIC];
+	var value_arg0 = Blockly.Python.valueToCode(this, 'A', Blockly.Python.ORDER_NONE);
+	var value_arg1 = Blockly.Python.valueToCode(this, 'B', Blockly.Python.ORDER_NONE);
+	var code = "nickOSC.combine_phrase(" + value_arg0 + ", " + value_arg1 + ")"
+	return [code, Blockly.Python.ORDER_NONE];
 };
 
 // === Create Phrase ===
