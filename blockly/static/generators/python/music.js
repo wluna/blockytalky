@@ -757,9 +757,8 @@ Blockly.Language.music_combine_phrase = {
 // Generator for Combine Phrase
 
 Blockly.Python.music_combine_phrase = function () {
-	var argument0 = Blockly.Python.valueToCode(this, 'A', order) || '[]';
-	var argument1 = Blockly.Python.valueToCode(this, 'B', order) || '[]';
-	code = argument0 + " + " + argument1;
+	var value_arg0 = Blockly.Python.valueToCode(this, 'A', Blockly.Python.ORDER_ATOMIC) || '[]';
+	var value_arg1 = Blockly.Python.valueToCode(this, 'B', Blockly.Python.ORDER_ATOMIC) || '[]';
 	return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
