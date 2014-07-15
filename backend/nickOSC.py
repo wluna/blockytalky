@@ -71,6 +71,7 @@ def on_beat_play_with(notes, beat_fraction, instrument):
 # Sends some notes to be looped with a certain instrument
 # on a certain beat (or fraction thereof).
 def on_beat_start_playing_with(notes, beat_fraction, instrument, loop_name):
+	print "at on_beat_start_playing_with"
 	address = "/lpc/maestro/loop_on_beat_with"
 	message = construct_basic_phrase_message(notes, address)
 	message.append(float(beat_fraction))
@@ -81,6 +82,7 @@ def on_beat_start_playing_with(notes, beat_fraction, instrument, loop_name):
 # Stops playing any notes with the specified loop name
 # on a certain beat (or fraction thereof).
 def on_beat_stop_playing(beat_fraction, loop_name):
+	print "at on_beat_stop_playing"
 	address = "/lpc/maestro/stop_playing_on_beat"
 	message = OSC.OSCMessage()
 	message.setAddress(address)
@@ -93,10 +95,12 @@ def play_with(notes, instrument):
 
 # Starts looping a phrase immediately in the specified loop
 def start_playing_with(notes, instrument, loop_name):
+	print "at start_playing_with"
 	on_beat_start_playing_with(notes, 0., instrument, loop_name)
 
 # Stops playing any notes in the specified loop
 def stop_playing(loop_name):
+	print "at stop_playing"
 	on_beat_stop_playing(0., loop_name)
 
 # Sets the tempo of the maestro module by sending a
