@@ -451,7 +451,7 @@ Blockly.Python.music_start_playing_with = function() {
 	var str = value_notes_input;
 	if (str[1] == '(') {
 		// one note, wrap with a list
-		code += "nickOSC.start_playing_with([" + str + "], " + value_instrument_input + ", " + text_loop_name + ")\n";
+		code += "nickOSC.start_playing_with([" + str + "], " + value_instrument_input + ", '" + text_loop_name + "')\n";
 	}
 	else if (str[1] == '[') {
 		// multiple notes, send as-is
@@ -626,7 +626,7 @@ Blockly.Python.music_on_beat_start_playing_with = function () {
 	var str = value_notes_input;
 	if (str[1] == '(') {
 		// one note, wrap with a list
-		code += "nickOSC.on_beat_start_playing_with([" + str + "], " + beat_align + ", " + value_instrument_input + ", " + text_loop_name + ")\n";
+		code += "nickOSC.on_beat_start_playing_with([" + str + "], " + beat_align + ", " + value_instrument_input + ", '" + text_loop_name + "')\n";
 	}
 	else if (str[1] == '[') {
 		// multiple notes, send as-is
