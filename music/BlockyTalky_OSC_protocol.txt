@@ -1,0 +1,39 @@
+BlockyTalky OSC Protocol
+========================
+
+I. Preface
+	The music blocks in BlockyTalky function by constructing OSC messages with different target addresses and message contents. These messages are received by maestro.ck, a ChucK module, which then performs computations based on those messages according to this protocol and sends more messages to be received by a sound-driving module, mastersound.pd. This document describes the protocol used between BlockyTalky and maestro.ck as well as between maestro.ck and mastersound.pd.
+	
+II. Messaging Protocol between BlockyTalky and the ChucK Maestro
+	A. Playing Notes
+		1. /lpc/maestro/play (if*64)
+			Message containing 64 notes, where each note is identified by an integer (i) and a float (f). Such a construct is considered a "phrase," and will be henceforth named thusly in this document. A phrase may contain empty notes; such notes take no time to play and produce no sound, and can be specified with a pitch of -1 and a duration of 0. This message is intended to be used to tell the maestro machine to play a sequence of notes immediately.
+			
+		2. /lpc/maestro/play_on_beat_with (if*64)fs
+			Message containing a phrase of up to 64 notes as well as a float specifying a "beat alignment fraction" and a string specifying the name of an instrument to be used to play the notes in the phrase. This message is intended to be used to tell the maestro machine to play a sequence of notes aligned to a particular beat or fraction thereof, and/or to play notes with a specific instrument. (For no beat alignment, pass 0; for no specific instrument, pass "default".)
+			
+		3. TODO: The rest of this section.
+	
+	B. Controlling Sound
+		1. /lpc/maestro/tempo f
+			The real number argument specifies the user's desired song tempo in beats per minute.
+			
+		2. TODO: The rest of this section.
+
+III. Messaging Protocol between the ChucK Maestro and PD Sound Driver
+	A. Playing Notes
+		1. /lpc/sound/default if
+			Message specifying one note by MIDI pitch (i) and real number duration in seconds (f).
+
+		2. /lpc/sound/INSTRUMENT_NAME if
+			INSTRUMENT_NAME specifies the name of the instrument to use as a part of the OSC message address. The message then specifies note data in its contents. 
+			
+	B. Controlling Sound
+		1. /lpc/sound/volume f NOT IMPLEMENTED
+			Message specifying the master volume multiplier as a real number between 0 and 1.
+			
+		2. /lpc/sound/INSTRUMENT_NAME/volume NOT IMPLEMENTED
+			Message specifying the desired volume of a particular instrument as a real number between 0 and 1.
+			
+		3. /lpc/sound/INSTRUMENT_NAME/ TODO: moooore control
+	
