@@ -117,5 +117,8 @@ def set_tempo(bpm):
 	
 # combines two phrases into one
 def combine_phrase(notes1, notes2):
-	#print "combining " + str(notes1) + " and " + str(notes2)
+	if (isinstance(notes1, tuple)):
+		notes1 = [notes1]
+	if (isinstance(notes2, tuple)):
+		notes2 = [notes2]
 	return notes1 + notes2
