@@ -38,31 +38,13 @@ Blockly.Language.music_simple_play = {
 
 Blockly.Python.music_simple_play = function() {
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_NONE);
-	console.log("Simple play: Got as note input: " + value_notes_input);
-	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	
-	// do some parsing to see if this is one note
-	// or multiple notes
-	var str = value_notes_input;
-	if (str[1] == '(') {
-		// one note, wrap with a list
-		code += "nickOSC.simple_play([" + str + "])\n";
-	}
-	else if (str[1] == '[') {
-		// multiple notes, send as-is
-		code += "nickOSC.simple_play(" + str + ")\n";
-	}
-	else {
-		// variable, send as-is
-		code += "nickOSC.simple_play(" + str + ")\n";
-	}
-	
+	code += "nickOSC.simple_play(" + value_notes_input + ")\n";
 	return code;
 };
 
-// === Simple Note ===
+// === Simple Note === TODO: REMOVE. Nobody uses this.
 // music_simple_note
 // Generate a middle C note one beat long, or
 // a simple sequence of notes, for debugging
@@ -239,7 +221,7 @@ Blockly.Python.music_specific_note = function() {
 	
 	var code = "(" + midi_note + ", " + duration + ")";
 	
-	return [code, Blockly.Python.ORDER_ATOMIC];
+	return [code, Blockly.Python.ORDER_NONE];
 };
 
 // === Simple Rest ===
@@ -271,7 +253,7 @@ Blockly.Python.music_simple_rest = function() {
 	duration = duration_to_float(dropdown_duration_select);
 	
 	var code = "(-1, " + duration + ")";
-	return [code, Blockly.Python.ORDER_ATOMIC];
+	return [code, Blockly.Python.ORDER_NONE];
 };
 
 // === Play Block With Instrument ===
@@ -302,26 +284,12 @@ Blockly.Language.music_play_with = {
 // TODO: Method stub
 
 Blockly.Python.music_play_with = function() {
-	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
-	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
+	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_NONE);
+	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_NONE);
 	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	// do some parsing to see if this is one note
-	// or multiple notes
-	var str = value_notes_input;
-	if (str[1] == '(') {
-		// one note, wrap with a list
-		code += "nickOSC.play_with([" + str + "], " + value_instrument_input + ")\n";
-	}
-	else if (str[1] == '[') {
-		// multiple notes, send as-is
-		code += "nickOSC.play_with(" + str + ", " + value_instrument_input + ")\n";
-	}
-	else {
-		// variable, send as-is
-		code += "nickOSC.play_with(" + str + ", " + value_instrument_input + ")\n";
-	}
+	code += "nickOSC.play_with(" + value_notes_input + ", " + value_instrument_input + ")\n";
 	
 	return code;
 };
@@ -378,7 +346,7 @@ Blockly.Language.music_arbitrary_instrument = {
 Blockly.Python.music_arbitrary_instrument = function() {
 	var text_instrument_name = this.getTitleValue('instrument_name');
 	var code = "'" + text_instrument_name + "'";
-	return [code, Blockly.Python.ORDER_ATOMIC];
+	return [code, Blockly.Python.ORDER_NONE];
 };
 
 // === Drumkit Note ===
@@ -440,27 +408,13 @@ Blockly.Language.music_start_playing_with = {
 // Generator for Start Playing With Instrument
 
 Blockly.Python.music_start_playing_with = function() {
-	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
-	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
+	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_NONE);
+	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_NONE);
 	var text_loop_name = this.getTitleValue('loop_name');
 	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	// do some parsing to see if this is one note
-	// or multiple notes
-	var str = value_notes_input;
-	if (str[1] == '(') {
-		// one note, wrap with a list
-		code += "nickOSC.start_playing_with([" + str + "], " + value_instrument_input + ", '" + text_loop_name + "')\n";
-	}
-	else if (str[1] == '[') {
-		// multiple notes, send as-is
-		code += "nickOSC.start_playing_with(" + str + ", " + value_instrument_input + ", '" + text_loop_name + "')\n";
-	}
-	else {
-		// variable, send as-is
-		code += "nickOSC.start_playing_with(" + str + ", " + value_instrument_input + ", '" + text_loop_name + "')\n";
-	}
+	code += "nickOSC.start_playing_with(" + value_notes_input + ", " + value_instrument_input + ", '" + text_loop_name + "')\n";
 	
 	return code;
 };
@@ -553,28 +507,14 @@ var beat_alignment_to_float = function(text) {
 
 Blockly.Python.music_on_beat_play_with = function () {
 	var dropdown_beat_select = this.getTitleValue('beat_select');
-	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
-	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
+	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_NONE);
+	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_NONE);
 	
 	var beat_align = beat_alignment_to_float(dropdown_beat_select);
 	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	// do some parsing to see if this is one note
-	// or multiple notes
-	var str = value_notes_input;
-	if (str[1] == '(') {
-		// one note, wrap with a list
-		code += "nickOSC.on_beat_play_with([" + str + "], " + beat_align + ", " + value_instrument_input + ")\n";
-	}
-	else if (str[1] == '[') {
-		// multiple notes, send as-is
-		code += "nickOSC.on_beat_play_with(" + str + ", " + beat_align + ", " + value_instrument_input + ")\n";
-	}
-	else {
-		// variable, send as-is
-		code += "nickOSC.on_beat_play_with(" + str + ", " + beat_align + ", " + value_instrument_input + ")\n";
-	}
+	code += "nickOSC.on_beat_play_with(" + value_notes_input + ", " + beat_align + ", " + value_instrument_input + ")\n";
 	
 	return code;
 };
@@ -613,29 +553,15 @@ Blockly.Language.music_on_beat_start_playing_with = {
 
 Blockly.Python.music_on_beat_start_playing_with = function () {
 	var dropdown_beat_select = this.getTitleValue('beat_select');
-	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_ATOMIC);
-	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_ATOMIC);
+	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_NONE);
+	var value_instrument_input = Blockly.Python.valueToCode(this, 'instrument_input', Blockly.Python.ORDER_NONE);
 	var text_loop_name = this.getTitleValue('loop_name');
 	
 	var beat_align = beat_alignment_to_float(dropdown_beat_select);
 	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	// do some parsing to see if this is one note
-	// or multiple notes
-	var str = value_notes_input;
-	if (str[1] == '(') {
-		// one note, wrap with a list
-		code += "nickOSC.on_beat_start_playing_with([" + str + "], " + beat_align + ", " + value_instrument_input + ", '" + text_loop_name + "')\n";
-	}
-	else if (str[1] == '[') {
-		// multiple notes, send as-is
-		code += "nickOSC.on_beat_start_playing_with(" + str + ", " + beat_align + ", " + value_instrument_input + ", " + "'" + text_loop_name + "')\n";
-	}
-	else {
-		// variable, send as-is
-		code += "nickOSC.on_beat_start_playing_with(" + str + ", " + beat_align + ", " + value_instrument_input + ", " + "'" + text_loop_name + "')\n";
-	}
+	code += "nickOSC.on_beat_start_playing_with(" + value_notes_input + ", " + beat_align + ", " + value_instrument_input + ", " + "'" + text_loop_name + "')\n";
 	
 	return code;
 };

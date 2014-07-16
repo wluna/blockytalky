@@ -28,6 +28,8 @@ def construct_basic_phrase_message(notes, address):
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	# copy note content into message
+	if (isinstance(notes, tuple)):
+		notes = [notes]
 	for note in notes:
 		message.append(int(note[0]))
 		message.append(float(note[1]))
