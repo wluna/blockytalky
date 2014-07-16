@@ -561,18 +561,18 @@ Blockly.Python.sensor_sound=function() {
 
 Blockly.Python.events_on_start=function () {
     var branch = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
-    var code= 'def run_on_start():'+'\n'+ branch;
+    var code= 'def run_on_start(self):'+'\n'+ branch;
     return code;
 };
 
 Blockly.Python.events_on_sensor_change=function () {
     var branch = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
-    var code= 'def on_sensor_change():'+'\n'+ branch;
+    var code= 'def on_sensor_change(self):'+'\n'+ branch;
     return code;
 };
 
 Blockly.Python.events_run_continuously=function () {
     var branch = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
-    var code= 'def run_continuously():'+'\n'+ branch;
+    var code= 'def run_continuously(self):'+'\n'+ branch;
     return code;
 };
