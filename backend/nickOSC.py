@@ -24,12 +24,13 @@ def set_maestro_IP(maestro_IP_string):
 # address, padded. Methods can append more information onto the
 # message as needed.
 def construct_basic_phrase_message(notes, address):
+	print "constructing phrase from: " + str(notes)
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	# copy note content into message
-	for i in range(len(notes)):
-		message.append(int(notes[i][0]))
-		message.append(float(notes[i][1]))
+	for note in notes:
+		message.append(int(note[0]))
+		message.append(float(note[1]))
 	# pad message with empty notes
 	# (phrases require 64 notes sent)
 	for i in range(64 - len(notes)):
