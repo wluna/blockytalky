@@ -75,7 +75,7 @@ class HardwareDaemon(object):
             BrickPi.MotorSpeed[3] = int(float(self.robot["motors"][3]) * 2.55)
         except Exception as e:
             logger.exception('Error occurred while reading motor values:')
-
+       
         BrickPi.Gpio = self.robot["pins"]
         logger.info("Calling BrickPiUpdateValues")
         BrickPiUpdateValues()
@@ -198,7 +198,6 @@ class HardwareDaemon(object):
                                     queue=queue_name, no_ack = True)
         
     def handle_hwcmd_delivery(self, channel, method, header, body):
-        print "hw daemon received hwcmd message"
         logger.info("hwcmd command received: " + body)
         command = Message.decode(body)
         if command.channel == "Sensor":
