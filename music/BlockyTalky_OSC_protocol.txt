@@ -6,11 +6,11 @@ I. Preface
 	
 II. Messaging Protocol between BlockyTalky and the ChucK Maestro
 	A. Playing Notes
-		1. /lpc/maestro/play (if*64)
-			Message containing 64 notes, where each note is identified by an integer (i) and a float (f). Such a construct is considered a "phrase," and will be henceforth named thusly in this document. A phrase may contain empty notes; such notes take no time to play and produce no sound, and can be specified with a pitch of -1 and a duration of 0. This message is intended to be used to tell the maestro machine to play a sequence of notes immediately.
+		1. /lpc/maestro/play (if*256)
+			Message containing 256 notes, where each note is identified by an integer (i) and a float (f). Such a construct is considered a "phrase," and will be henceforth named thusly in this document. A phrase may contain empty notes; such notes take no time to play and produce no sound, and can be specified with a pitch of -1 and a duration of 0. This message is intended to be used to tell the maestro machine to play a sequence of notes immediately.
 			
-		2. /lpc/maestro/play_on_beat_with (if*64)fs
-			Message containing a phrase of up to 64 notes as well as a float specifying a "beat alignment fraction" and a string specifying the name of an instrument to be used to play the notes in the phrase. This message is intended to be used to tell the maestro machine to play a sequence of notes aligned to a particular beat or fraction thereof, and/or to play notes with a specific instrument. (For no beat alignment, pass 0; for no specific instrument, pass "default".)
+		2. /lpc/maestro/play_on_beat_with (if*256)fs
+			Message containing a phrase of up to 256 notes as well as a float specifying a "beat alignment fraction" and a string specifying the name of an instrument to be used to play the notes in the phrase. This message is intended to be used to tell the maestro machine to play a sequence of notes aligned to a particular beat or fraction thereof, and/or to play notes with a specific instrument. (For no beat alignment, pass 0; for no specific instrument, pass "default".)
 			
 		3. TODO: The rest of this section.
 	

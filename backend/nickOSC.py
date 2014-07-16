@@ -34,8 +34,8 @@ def construct_basic_phrase_message(notes, address):
 		message.append(int(note[0]))
 		message.append(float(note[1]))
 	# pad message with empty notes
-	# (phrases require 64 notes sent)
-	for i in range(64 - len(notes)):
+	# (phrases require 256 notes sent)
+	for i in range(256 - len(notes)):
 		message.append(-1)
 		message.append(0.)
 	return message
