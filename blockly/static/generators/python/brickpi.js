@@ -1,4 +1,4 @@
-/**
+ /**
  * Visual Blocks Language
  *
  * Copyright 2012 Google Inc.
@@ -26,6 +26,8 @@
 if(!Blockly.Language) Blockly.Language= {};
 
 var prefix = 'message.getContent()';
+
+var unique_id = 0;
 
 Blockly.Language.sensor_touch={
     category:"Sensors",
@@ -232,15 +234,14 @@ Blockly.Language.sensor_new_val= {
         .appendTitle("Unread Data On:");
     this.appendDummyInput("")
         .appendTitle(new Blockly.FieldDropdown([["Sensor 1", "sensor1"], 
-                            ["Sensor 2", "sensor2"],
-                                                    ["Sensor 3", "sensor3"],
-                            ["Sensor 4", "sensor4"],
-                            ["Sensor 5", "sensor5"],
-                            ["Encoder 1", "encoder1"],
-                            ["Encoder 2", "encoder2"],
-                            ["Encoder 3", "encoder3"],
-                            ["Encoder 4", "encoder4"]]
-                          ), 'port');
+						["Sensor 2", "sensor2"],
+                                                ["Sensor 3", "sensor3"],
+						["Sensor 4", "sensor4"],
+						["Sensor 5", "sensor5"],
+						["Encoder 1", "encoder1"],
+						["Encoder 2", "encoder2"],
+						["Encoder 3", "encoder3"],
+						["Encoder 4", "encoder4"]]), 'port');
     this.setInputsInline(true);
     this.setOutput(true, 'Boolean');
     this.setTooltip('Returns true if there is unread data on the specified port');
@@ -265,22 +266,7 @@ category: 'LED',
     this.setOutput(false);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip('Set LEDs to on or off');
-  }
-};
-
-
-Blockly.Language.time_sleep= {
-category: 'Time',
-  helpUrl: '',
-  init: function() {
-    this.setColour(300);
-    this.appendDummyInput("")
-        .appendTitle('Wait for')
-        .appendTitle(new Blockly.FieldTextInput('1000',
-          Blockly.Language.math_number.validator), 'time_sleep');
-    this.appendDummyInput("")
-    .appendTitle('ms');
+    this.setTooltip('Set LEDs');
     this.setInputsInline(true);
     this.setOutput(false);
     this.setPreviousStatement(true);
@@ -364,6 +350,56 @@ Blockly.Language.events_run_continuously = {
 	this.deletable = false;
     }
 };
+
+
+Blockly.Language.events_while_touch= {
+    helpUrl: '',
+    init: function() {
+	this.setColour(0);
+	this.appendDummyInput("")
+            .appendTitle("while touch sensor on port")
+            .appendTitle(new Blockly.FieldDropdown([["1", "1"], 
+						    ["2", "2"],
+						    ["3","3"],
+						    ["4","4"]]), 'p_num');
+	this.appendDummyInput("")
+            .appendTitle("is")
+            .appendTitle(new Blockly.FieldDropdown([["pressed", "1"], 
+						    ["released", "0"]]), 
+			 'touch_val');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+
+Blockly.Language.events_when_touch= {
+    category: 'Events',
+    helpUrl: '',
+    init: function() {
+	this.setColour(0);
+	this.appendDummyInput("")
+            .appendTitle("when touch sensor on port")
+            .appendTitle(new Blockly.FieldDropdown([["1", "1"],
+						    ["2", "2"],
+						    ["3","3"],
+						    ["4","4"]]), 'p_num');
+	this.appendDummyInput("")
+            .appendTitle("is")
+            .appendTitle(new Blockly.FieldDropdown([["pressed", "1"],
+						    ["released", "0"]]),
+			 'touch_val');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
 
 //DEFINE GENERATORS:
 
@@ -572,7 +608,47 @@ Blockly.Python.events_on_sensor_change=function () {
 };
 
 Blockly.Python.events_run_continuously=function () {
-    var branch = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
+    var branch = Blockly.Python.statementToCode(this, 'DO') || '    pass\n';
     var code= 'def run_continuously(self):'+'\n'+ branch;
+    return code;
+};
+
+Blockly.Python.events_while_touch = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '    pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "    " + branch2[i] + '\n';
+    }
+    var port= this.getTitleValue('p_num');    
+    var value = this.getTitleValue('touch_val');
+    var code = 'def '+'wlt'+port+ unique_id + '(self):'+'\n';
+    if (value == 1) {
+	code += '    if self.robot["sensors"]['+ (port-1) + '] == 1: \n'+ branch;
+    } else if (value == 0) {
+	code += '    if self.robot["sensors"]['+ (port-1) + '] == 0: \n'+ branch;
+    }
+    unique_id += 1;
+    return code;
+};
+
+
+Blockly.Python.events_when_touch = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '    pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "    " + branch2[i] + '\n';
+    }
+    var port= this.getTitleValue('p_num');    
+    var value = this.getTitleValue('touch_val');
+    var code = 'def '+'wnt'+port+unique_id+'(self):'+'\n';
+    if (value == 1) {
+	code += '    if self.robot["sensors"]['+ (port-1) + '] == 1 and self.last_robot["sensors"]['+(port-1)+'] == 0: \n'+ branch;
+    } else if (value == 0) {
+	code += '    if self.robot["sensors"]['+ (port-1) + '] == 0 and self.last_robot["sensors"]['+(port-1)+'] == 1: \n'+ branch;
+
+    }
+    unique_id += 1;
     return code;
 };

@@ -177,8 +177,8 @@ def code_to_file(code, file_name, file_label):
 def upload_code(xml_data, python_data):
     uploadStart = time.time()
     code_to_file(xml_data, 'code/rawxml.txt', 'XML')
-    code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
-
+    #code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
+    code_to_file(convert_usercode(python_data), 'backend/us.py', 'Python')
     startTime = time.time()
     logger.info('Issuing kill command before uploading code')
     stop_user_script()
@@ -192,7 +192,9 @@ def convert_usercode(python_code):
     python_code = "\n%s" % python_code
     python_code += "\n"
     python_code = python_code.splitlines()
-  
+    
+    init_functions = "    def init_function_list(self): \n"
+
     # comment out code that comes from blocks not in event blocks.
     comment = True
     i = 0
@@ -202,6 +204,8 @@ def convert_usercode(python_code):
         elif python_code[i][-7:] == " = None":
             comment = False
         elif python_code[i][:4] == "def ":
+            func = python_code[i][python_code[i].find(" ")+1:python_code[i].find("(")]
+            init_functions += "        self.callbacks.append(self." + func + ") \n"
             comment = False
             while not (python_code[i].isspace() or python_code[i] == ""):
                 i += 1
@@ -211,17 +215,25 @@ def convert_usercode(python_code):
         if comment == True:
             python_code[i] = "#" + python_code[i]
         i += 1
-        
-    python_code = "\n".join(python_code)
-    print python_code
     
-    usercode = ("from message import *\n"
-                "import time\n"
-                "import RPi.GPIO as GPIO\n"
-                "import nickOSC\n"
-                "import pyttsx\n\n"
-                )
-    return usercode
+    python_code = ["    " + x for x in python_code]
+    python_code = "\n".join(python_code)
+    
+    init_functions += "        self.callbacks.remove(self.run_on_start) \n        self.callbacks.remove(self.run_continuously) \n\n"
+    python_code += "\n" + init_functions
+
+    #print python_code
+    
+    user_script_header = open('backend/us_header', 'r')
+    header_text = user_script_header.read()
+    
+    footer_text = ('if __name__ == "__main__": \n'
+                          '    handle_logging(logger) \n'
+                          '    uscript = UserScript() \n'
+                          '    uscript.start() \n')
+
+
+    return header_text + python_code + footer_text 
 
 @app.route('/stop', methods = ['GET', 'POST'])
 @requires_auth
