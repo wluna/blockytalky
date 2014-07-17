@@ -193,7 +193,8 @@ def convert_usercode(python_code):
     python_code += "\n"
     python_code = python_code.splitlines()
     
-    init_functions = "    def init_callbacks(self): \n"
+    callback_functions = "    def init_callbacks(self): \n"
+    while_functions = "    def init_whiles(self): \n"
 
     # comment out code that comes from blocks not in event blocks.
     comment = True
@@ -205,7 +206,12 @@ def convert_usercode(python_code):
             comment = False
         elif python_code[i][:4] == "def ":
             func = python_code[i][python_code[i].find(" ")+1:python_code[i].find("(")]
-            init_functions += "        self.callbacks.append(self." + func + ") \n"
+            if func == "run_continuously":
+                python_code[i] += "\n      for f in self.whiles: \n        f() \n"    
+            if func[:2] == "wl":
+                while_functions += "        self.whiles.append(self." + func + ") \n"
+            else:    
+                callback_functions += "        self.callbacks.append(self." + func + ") \n"
             comment = False
             while not (python_code[i].isspace() or python_code[i] == ""):
                 i += 1
@@ -219,11 +225,11 @@ def convert_usercode(python_code):
     python_code = ["    " + x for x in python_code]
     python_code = "\n".join(python_code)
 
-    init_functions += "        if self.run_on_start in self.callbacks: self.callbacks.remove(self.run_on_start) \n        if self.run_continuously in self.callbacks: self.callbacks.remove(self.run_continuously) \n"
+    callback_functions += "        if self.run_on_start in self.callbacks: self.callbacks.remove(self.run_on_start) \n        if self.run_continuously in self.callbacks: self.callbacks.remove(self.run_continuously) \n"
     
-    python_code += "\n" + init_functions + "\n"
+    python_code += "\n" + callback_functions + "\n" + while_functions + "\n"
 
-    #print python_code
+    print python_code
     
     user_script_header = open('backend/us_header', 'r')
     header_text = user_script_header.read()
@@ -232,7 +238,7 @@ def convert_usercode(python_code):
                    '    handle_logging(logger) \n'
                    '    uscript = UserScript() \n'
                    '    uscript.start() \n'
-                   '    print "starting user script..."')
+                   '    print "starting user script..." \n')
 
 
     return header_text + python_code + footer_text 

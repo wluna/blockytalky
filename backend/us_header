@@ -59,6 +59,8 @@ class UserScript(object):
         # sensor message
         self.callbacks = []
         self.init_callbacks()
+        self.whiles = []
+        self.init_whiles()
    
     def start(self):
         self.run_on_start()
@@ -113,6 +115,7 @@ class UserScript(object):
         pass
  
     def run_continuously(self):
-        pass
+        for f in self.whiles:
+            f()
 
  
