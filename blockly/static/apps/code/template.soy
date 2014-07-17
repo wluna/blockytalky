@@ -17,7 +17,7 @@
     // Common messages.  So is Apps.blocklyMessage, which appears later.
     <span id="httpRequestError">{msg meaning="Apps.httpRequestError" desc="IBID"}There was a problem with the request.{/msg}</span>
     <span id="linkAlert">{msg meaning="Apps.linkAlert" desc="IBID"}Share your blocks with this link:\n\n%1{/msg}</span>
-    <span id="hashError">{msg meaning="Apps.hashError" desc="IBID"}Sorry, '%1' doesn't correspond with any saved program.{/msg}</span>
+    <span id="hashError">{msg meaning="Apps.hashError" desc="IBID"}Sorry, '%1' doesn't correspond with any saved pr`ogram.{/msg}</span>
     <span id="xmlError">{msg meaning="Apps.xmlError" desc="IBID"}Could not load your saved file.  Perhaps it was created with a different version of Blockly?{/msg}</span>
 
     <span id="badXml">{msg meaning="Code.badXml" desc="alert - Message shown when the user tries switching from the XML tab after entering XML text that could not be parsed.  This asks whether they wish to abandon the XML they added.  If they select 'OK' (or the translated equivalent), the XML is cleared, and the other tab is shown.  If they select 'Cancel', they remain on the XML tab with the bad XML."}Error parsing XML:\n%1\n\nAbandon changes?{/msg}</span>
@@ -145,6 +145,17 @@
       <block type="controls_flow_statements"></block>
       <block type="time_sleep"></block>
       <block type="print_print"></block>
+    </category>
+
+    <category name="Events" id="EV">
+      <block type="events_on_start"></block>
+      <block type="events_run_continuously"></block>
+      <block type="events_while_touch"></block>
+      <block type="events_when_touch"></block>
+      <block type="events_while_sensor_value"></block>
+      <block type="events_when_sensor_value"></block>
+      <block type="events_while_sensor_range"></block>
+      <block type="events_when_sensor_range"></block>  
     </category>
 
     <category name="BT Messaging" id="BTM">

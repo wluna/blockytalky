@@ -308,7 +308,7 @@ var d = new Date();
 var previousTime = d.getTime();
 
 var on_connect = function() {
-        client.subscribe("/queue/HwVal2", on_message);
+        client.subscribe("/exchange/sensors", on_message);
         console.log('connected');
     };
 var on_error =  function() {
@@ -399,6 +399,7 @@ function discard() {
     Blockly.mainWorkspace.clear();
     window.location.hash = '';
   }
+    //loadEventBlocks();
 }
 
 
@@ -564,7 +565,14 @@ function loadCode() {
 	//alert(data);
 	$("#tab_blocks").click();
     });
+}
 
+function loadEventBlocks() {
+    event_block_xml = '<xml xmlns="http://www.w3.org/1999/xhtml"><block type="events_on_start" x="7" y="-10"></block><block type="events_on_sensor_change" x="312" y="-10"></block><block type="events_run_continuously" deletable="false" x="146" y="-10"></block></xml>'
+
+    $("#tab_xml").click();
+    $("#textarea_xml").val(event_block_xml);
+    $("#tab_blocks").click();
 }
 
 function toPython(data) {

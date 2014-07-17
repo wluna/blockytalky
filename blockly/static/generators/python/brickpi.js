@@ -1,4 +1,4 @@
-/**
+ /**
  * Visual Blocks Language
  *
  * Copyright 2012 Google Inc.
@@ -26,6 +26,8 @@
 if(!Blockly.Language) Blockly.Language= {};
 
 var prefix = 'message.getContent()';
+
+var unique_id = 0;
 
 Blockly.Language.sensor_touch={
     category:"Sensors",
@@ -217,7 +219,7 @@ Blockly.Language.pin_out= {
             .appendTitle(new Blockly.FieldDropdown([["HIGH", "1"], ["LOW", "0"]]), 'gpio_out_value');
     this.setInputsInline(true);
     this.setOutput(false);
-    this.setPreviousStatement(true);
+    this.setPreviousStatemen(true);
         this.setNextStatement(true);
     }
 };
@@ -232,15 +234,14 @@ Blockly.Language.sensor_new_val= {
         .appendTitle("Unread Data On:");
     this.appendDummyInput("")
         .appendTitle(new Blockly.FieldDropdown([["Sensor 1", "sensor1"], 
-                            ["Sensor 2", "sensor2"],
-                                                    ["Sensor 3", "sensor3"],
-                            ["Sensor 4", "sensor4"],
-                            ["Sensor 5", "sensor5"],
-                            ["Encoder 1", "encoder1"],
-                            ["Encoder 2", "encoder2"],
-                            ["Encoder 3", "encoder3"],
-                            ["Encoder 4", "encoder4"]]
-                          ), 'port');
+						["Sensor 2", "sensor2"],
+                                                ["Sensor 3", "sensor3"],
+						["Sensor 4", "sensor4"],
+						["Sensor 5", "sensor5"],
+						["Encoder 1", "encoder1"],
+						["Encoder 2", "encoder2"],
+						["Encoder 3", "encoder3"],
+						["Encoder 4", "encoder4"]]), 'port');
     this.setInputsInline(true);
     this.setOutput(true, 'Boolean');
     this.setTooltip('Returns true if there is unread data on the specified port');
@@ -249,7 +250,7 @@ Blockly.Language.sensor_new_val= {
 }
 
 Blockly.Language.led_set= {
-category: 'LED',
+  category: 'LED',
   helpUrl: '',
   init: function() {
     this.setColour(300);
@@ -265,22 +266,7 @@ category: 'LED',
     this.setOutput(false);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip('Set LEDs to on or off');
-  }
-};
-
-
-Blockly.Language.time_sleep= {
-category: 'Time',
-  helpUrl: '',
-  init: function() {
-    this.setColour(300);
-    this.appendDummyInput("")
-        .appendTitle('Wait for')
-        .appendTitle(new Blockly.FieldTextInput('1000',
-          Blockly.Language.math_number.validator), 'time_sleep');
-    this.appendDummyInput("")
-    .appendTitle('ms');
+    this.setTooltip('Set LEDs');
     this.setInputsInline(true);
     this.setOutput(false);
     this.setPreviousStatement(true);
@@ -320,6 +306,219 @@ Blockly.Language.controls_inf_loop = {
     }
 };
 
+Blockly.Language.events_on_start = {
+    // Run on start
+    helpUrl: '',
+    init: function() {
+	this.setColour(30);
+	this.appendDummyInput("")
+	    .appendTitle('when i start');
+	this.appendStatementInput('DO')
+            .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setPreviousStatement(false);
+	this.setNextStatement(false);
+    }
+};
+
+Blockly.Language.events_run_continuously = {
+    // Repeat continuously
+    helpUrl: '',
+    init: function() {
+	this.setColour(100);
+	this.appendDummyInput("")
+	    .appendTitle('run continuously');
+	this.appendStatementInput('DO')
+            .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setPreviousStatement(false);
+	this.setNextStatement(false);
+    }
+};
+
+
+Blockly.Language.events_while_touch= {
+    helpUrl: '',
+    init: function() {
+	this.setColour(100);
+	this.appendDummyInput("")
+            .appendTitle("while touch sensor on port")
+            .appendTitle(new Blockly.FieldDropdown([["1", "1"], 
+						    ["2", "2"],
+						    ["3","3"],
+						    ["4","4"]]), 'p_num');
+	this.appendDummyInput("")
+            .appendTitle("is")
+            .appendTitle(new Blockly.FieldDropdown([["pressed", "1"], 
+						    ["not pressed", "0"]]), 
+			 'touch_val');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+
+Blockly.Language.events_when_touch= {
+    category: 'Events',
+    helpUrl: '',
+    init: function() {
+	this.setColour(30);
+	this.appendDummyInput("")
+            .appendTitle("when touch sensor on port")
+            .appendTitle(new Blockly.FieldDropdown([["1", "1"],
+						    ["2", "2"],
+						    ["3","3"],
+						    ["4","4"]]), 'p_num');
+	this.appendDummyInput("")
+            .appendTitle("is")
+            .appendTitle(new Blockly.FieldDropdown([["pressed", "1"],
+						    ["released", "0"]]),
+			 'touch_val');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+
+Blockly.Language.events_while_sensor_value= {
+    category: 'Events',
+    helpUrl: '',
+    init: function() {
+	this.setColour(100);
+	this.appendDummyInput("")
+            .appendTitle("while")
+            .appendTitle(new Blockly.FieldDropdown([["sensor 1","1"],
+						    ["sensor 2","2"],
+						    ["sensor 3","3"],
+						    ["sensor 4","4"],
+						    ["encoder 1","5"],
+						    ["encoder 2","6"],
+						    ["encoder 3","7"],
+						    ["encoder 4","8"]]),
+			 's_num');
+	this.appendDummyInput("")
+            .appendTitle("value is")
+            .appendTitle(new Blockly.FieldDropdown([['=', "=="],
+						    ['\u2260', "!="],
+						    ['<', "<"],
+						    ['\u2264', "<="],
+						    ['>', ">"],
+						    ['\u2265', ">="]]),'op');
+	this.appendValueInput('comp')
+            .setCheck('Number');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+Blockly.Language.events_when_sensor_value= {
+    category: 'Events',
+    helpUrl: '',
+    init: function() {
+	this.setColour(30);
+	this.appendDummyInput("")
+            .appendTitle("when")
+            .appendTitle(new Blockly.FieldDropdown([["sensor 1", "1"],
+						    ["sensor 2", "2"],
+						    ["sensor 3","3"],
+						    ["sensor 4","4"],
+						    ["encoder 1", "5"],
+						    ["encoder 2", "6"],
+						    ["encoder 3", "7"],
+						    ["encoder 4", "8"]]),
+			 's_num');
+	this.appendDummyInput("")
+            .appendTitle("value is")
+            .appendTitle(new Blockly.FieldDropdown([['=', "=="],
+						    ['\u2260', "!="],
+						    ['<', "<"],
+						    ['\u2264', "<="],
+						    ['>', ">"],
+						    ['\u2265', ">="]]),'op');
+	this.appendValueInput('comp')
+            .setCheck('Number');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+
+Blockly.Language.events_while_sensor_range= {
+    category: 'Events',
+    helpUrl: '',
+    init: function() {
+	this.setColour(100);
+	this.appendDummyInput("")
+            .appendTitle("while")
+            .appendTitle(new Blockly.FieldDropdown([["sensor 1", "1"],
+						    ["sensor 2", "2"],
+						    ["sensor 3","3"],
+						    ["sensor 4","4"],
+						    ["encoder 1", "5"],
+						    ["encoder 2", "6"],
+						    ["encoder 3", "7"],
+						    ["encoder 4", "8"]]),
+			 's_num');
+	this.appendDummyInput("")
+            .appendTitle("is in range")
+     	this.appendValueInput('lo')
+            .setCheck('Number');
+	this.appendDummyInput("")
+	    .appendTitle("to");
+	this.appendValueInput('hi')
+	    .setCheck('Number');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+
+Blockly.Language.events_when_sensor_range= {
+    category: 'Events',
+    helpUrl: '',
+    init: function() {
+	this.setColour(30);
+	this.appendDummyInput("")
+            .appendTitle("when")
+            .appendTitle(new Blockly.FieldDropdown([["sensor 1", "1"],
+						    ["sensor 2", "2"],
+						    ["sensor 3","3"],
+						    ["sensor 4","4"],
+						    ["encoder 1", "5"],
+						    ["encoder 2", "6"],
+						    ["encoder 3", "7"],
+						    ["encoder 4", "8"]]),
+			 's_num');
+	this.appendDummyInput("")
+            .appendTitle("is in range")
+     	this.appendValueInput('lo')
+            .setCheck('Number');
+	this.appendDummyInput("")
+	    .appendTitle("to");
+	this.appendValueInput('hi')
+	    .setCheck('Number');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+
 //DEFINE GENERATORS:
 
 Blockly.Python= Blockly.Generator.get('Python');
@@ -346,7 +545,7 @@ Blockly.Python.motor_set = function() {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor4=' +value_motor_power+ '))'+'\n'
     }
     code = code + 'toSend = Message.encode(toSend)' + '\n'
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
+    code= code + 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n';
     return code;
 };
 
@@ -372,7 +571,7 @@ Blockly.Python.light_set = function() {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor4=' +value_motor_power+ '))'+'\n'
     }
     code = code + 'toSend = Message.encode(toSend)' + '\n'
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
+    code= code + 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
     return code;
 };
 
@@ -397,7 +596,7 @@ Blockly.Python.pin_in = function() {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin22=' +pin_value+ '))'+'\n'
     }
     code = code + 'toSend = Message.encode(toSend)' + '\n'
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
+    code= code + 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n';
     return code;
 };
 
@@ -422,15 +621,14 @@ Blockly.Python.pin_out = function() {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin15=' +pin_value+ '))'+'\n'
     }
     code = code + 'toSend = Message.encode(toSend)' + '\n'
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
+    code= code + 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n';
     return code;
 };
 
 Blockly.Python.motor_all_stop= function() {
     var code= 'toSend= Message(self.hostname, None, "HwCmd", Message.createImage(motor1=0, motor2=0, motor3=0, motor4=0))'+
     '\n' + 'toSend = Message.encode(toSend)' + '\n' 
-    + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'
-    +'time.sleep(.01)'+'\n';
+	+ 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n';
     return code;
 };
 
@@ -511,4 +709,174 @@ Blockly.Python.sensor_sound=function() {
     var b=this.getTitleValue("port");;
 
         return['self.robot["sensors"]['+(b-1)+']',Blockly.Python.ORDER_ATOMIC];
+};
+
+
+Blockly.Python.events_on_start=function () {
+    var branch = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
+    var code= 'def run_on_start(self):'+'\n'+ branch;
+    return code;
+};
+
+Blockly.Python.events_on_sensor_change=function () {
+    var branch = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
+    var code= 'def on_sensor_change(self):'+'\n'+ branch;
+    return code;
+};
+
+Blockly.Python.events_run_continuously=function () {
+    var branch = Blockly.Python.statementToCode(this, 'DO') || '    pass\n';
+    var code= 'def run_continuously(self):'+'\n'+ branch;
+    return code;
+};
+
+Blockly.Python.events_while_touch = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '    pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "    " + branch2[i] + '\n';
+    }
+    var port= this.getTitleValue('p_num');    
+    var value = this.getTitleValue('touch_val');
+    var code = 'def '+'wlt'+port+ unique_id + '(self):'+'\n';
+    if (value == 1) {
+	code += '    if self.robot["sensors"]['+ (port-1) + '] == 1: \n'+ branch;
+    } else if (value == 0) {
+	code += '    if self.robot["sensors"]['+ (port-1) + '] == 0: \n'+ branch;
+    }
+    unique_id += 1;
+    return code;
+};
+
+
+Blockly.Python.events_when_touch = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '    pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "    " + branch2[i] + '\n';
+    }
+    var port= this.getTitleValue('p_num');    
+    var value = this.getTitleValue('touch_val');
+    var code = 'def '+'wnt'+port+unique_id+'(self):'+'\n';
+    if (value == 1) {
+	code += '    if self.robot["sensors"]['+ (port-1) + '] == 1 and self.last_robot["sensors"]['+(port-1)+'] == 0: \n'+ branch;
+    } else if (value == 0) {
+	code += '    if self.robot["sensors"]['+ (port-1) + '] == 0 and self.last_robot["sensors"]['+(port-1)+'] == 1: \n'+ branch;
+
+    }
+    unique_id += 1;
+    return code;
+};
+
+
+Blockly.Python.events_while_sensor_value = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '    pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "    " + branch2[i] + '\n';
+    }
+    var sensor= this.getTitleValue('s_num');    
+    var op = this.getTitleValue('op');
+    var comp = Blockly.Python.valueToCode(this, 'comp', Blockly.Python.ORDER_NONE);
+    var code = 'def '+'wls'+sensor+unique_id+'(self):'+'\n';
+    if (sensor >= 1 && sensor <= 4) {
+	code += '    if self.robot["sensors"]['+(sensor-1)+'] '+op+' '+comp+': \n'; 
+    } else if (sensor >= 5 && sensor <= 8) {
+	code += '    if self.robot["encoders"]['+(sensor-5)+'] '+op+' '+comp+': \n';
+  
+    }
+
+    unique_id += 1;
+    return code + branch;
+};
+
+
+
+Blockly.Python.events_when_sensor_value = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '    pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "    " + branch2[i] + '\n';
+    }
+    var sensor= this.getTitleValue('s_num');    
+    var op = this.getTitleValue('op');
+    var comp = Blockly.Python.valueToCode(this, 'comp', Blockly.Python.ORDER_NONE);
+    var code = 'def '+'wns'+sensor+unique_id+'(self):'+'\n';
+    if (sensor >= 1 && sensor <= 4) {
+	code += '    if self.robot["sensors"]['+(sensor-1)+'] '+op+' '+comp; 
+	code += ' and not self.last_robot["sensors"]['+(sensor-1)+'] '; 
+	code += op+' '+comp+': \n' + branch;
+    } else if (sensor >= 5 && sensor <= 8) {
+	code += '    if self.robot["encoders"]['+(sensor-5)+'] '+op+' '+comp;  
+	code += ' and not self.last_robot["encoders"]['+(sensor-5)+'] ';
+	code += op+' '+comp+': \n'+ branch;
+    }
+
+    unique_id += 1;
+    return code;
+};
+
+
+Blockly.Python.events_while_sensor_range = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '    pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "    " + branch2[i] + '\n';
+    }
+    var sensor= this.getTitleValue('s_num');    
+    var lo = Blockly.Python.valueToCode(this, 'lo', Blockly.Python.ORDER_NONE);
+    var hi = Blockly.Python.valueToCode(this, 'hi', Blockly.Python.ORDER_NONE);
+    console.log(lo, hi);
+    if (lo > hi) {
+	var temp = hi;
+	hi = lo;
+	lo = temp;
+    }
+    console.log(lo,hi);
+    var code = 'def '+'wlr'+sensor+unique_id+'(self):'+'\n';
+    if (sensor >= 1 && sensor <= 4) {
+	code += '    if self.robot["sensors"]['+(sensor-1)+'] in range('; 
+	code += lo+','+hi+'): \n' + branch;
+    } else if (sensor >= 5 && sensor <= 8) {
+	code += '    if self.robot["encoders"]['+(sensor-5)+'] in range('; 
+	code += lo+','+hi+'): \n' + branch;
+    }
+
+    unique_id += 1;
+    return code;
+};
+
+Blockly.Python.events_when_sensor_range = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '    pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "    " + branch2[i] + '\n';
+    }
+    var sensor= this.getTitleValue('s_num');    
+    var lo = Blockly.Python.valueToCode(this, 'lo', Blockly.Python.ORDER_NONE);
+    var hi = Blockly.Python.valueToCode(this, 'hi', Blockly.Python.ORDER_NONE);
+    if (lo > hi) {
+	var temp = hi;
+	hi = lo;
+	lo = temp;
+    }
+    var code = 'def '+'wnr'+sensor+unique_id+'(self):'+'\n';
+    if (sensor >= 1 && sensor <= 4) {
+	code += '    if self.robot["sensors"]['+(sensor-1)+'] in range('; 
+	code += lo+','+hi+') and self.robot["sensors"]['+(sensor-1);
+	code += '] not in range('+lo+','+hi+'): \n' + branch;
+    } else if (sensor >= 5 && sensor <= 8) {
+	code += '    if self.robot["encoders"]['+(sensor-5)+'] in range('; 
+	code += lo+','+hi+') and self.robot["encoders"]['+(sensor-5);
+	code += '] not in range('+lo+','+hi+'): \n' + branch;
+    }
+
+    unique_id += 1;
+    return code;
 };

@@ -177,8 +177,8 @@ def code_to_file(code, file_name, file_label):
 def upload_code(xml_data, python_data):
     uploadStart = time.time()
     code_to_file(xml_data, 'code/rawxml.txt', 'XML')
-    code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
-
+    #code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
+    code_to_file(convert_usercode(python_data), 'backend/user_script.py', 'Python')
     startTime = time.time()
     logger.info('Issuing kill command before uploading code')
     stop_user_script()
@@ -190,15 +190,58 @@ def upload_code(xml_data, python_data):
 def convert_usercode(python_code):
     # Need to use two-space tabs for consistency with Blockly conversion
     python_code = "\n%s" % python_code
-    usercode = ("from message import *\n"
-                "import time\n"
-                "import RPi.GPIO as GPIO\n"
-                "import nickOSC\n"
-                "import pyttsx\n\n"
-                "def run(self, channel, channel2):\n"
-              #  "  while True:\n"
-                "%s" % python_code.replace("\n", "\n    "))
-    return usercode
+    python_code += "\n"
+    python_code = python_code.splitlines()
+    
+    callback_functions = "    def init_callbacks(self): \n"
+    while_functions = "    def init_whiles(self): \n"
+
+    # comment out code that comes from blocks not in event blocks.
+    comment = True
+    i = 0
+    while i < len(python_code):
+        if python_code[i].isspace() or python_code[i] == "":
+            comment = False
+        elif python_code[i][-7:] == " = None":
+            comment = False
+        elif python_code[i][:4] == "def ":
+            func = python_code[i][python_code[i].find(" ")+1:python_code[i].find("(")]
+            if func == "run_continuously":
+                python_code[i] += "\n      for f in self.whiles: \n        f() \n"    
+            if func[:2] == "wl":
+                while_functions += "        self.whiles.append(self." + func + ") \n"
+            else:    
+                callback_functions += "        self.callbacks.append(self." + func + ") \n"
+            comment = False
+            while not (python_code[i].isspace() or python_code[i] == ""):
+                i += 1
+        else:
+            comment = True
+                
+        if comment == True:
+            python_code[i] = "#" + python_code[i]
+        i += 1
+    
+    python_code = ["    " + x for x in python_code]
+    python_code = "\n".join(python_code)
+
+    callback_functions += "        if self.run_on_start in self.callbacks: self.callbacks.remove(self.run_on_start) \n        if self.run_continuously in self.callbacks: self.callbacks.remove(self.run_continuously) \n"
+    
+    python_code += "\n" + callback_functions + "\n" + while_functions + "\n"
+
+    print python_code
+    
+    user_script_header = open('backend/us_header', 'r')
+    header_text = user_script_header.read()
+    
+    footer_text = ('if __name__ == "__main__": \n'
+                   '    handle_logging(logger) \n'
+                   '    uscript = UserScript() \n'
+                   '    uscript.start() \n'
+                   '    print "starting user script..." \n')
+
+
+    return header_text + python_code + footer_text 
 
 @app.route('/stop', methods = ['GET', 'POST'])
 @requires_auth
@@ -217,7 +260,7 @@ def stop():
     toSend = Message('name', None, 'HwCmd', Message.createImage(motor1=0, motor2=0, motor3=0, motor4=0, pin13=0))
     toSend = Message.encode(toSend)
     try:
-        channel.basic_publish(exchange='', routing_key='HwCmd', body=toSend)
+        channel.basic_publish(exchange='HwCmd', routing_key='', body=toSend)
     except:
         logger.exception('Failed to stop Blockly code:')
     return 'OK'
@@ -235,7 +278,7 @@ def update_sensors(sensors, num_tries=0):
                 ))
     sensorMsg = Message.encode(sensorMsg)
     try:
-        channel.basic_publish(exchange='', routing_key='HwCmd', body=sensorMsg)
+        channel.basic_publish(exchange='HwCmd', routing_key='', body=sensorMsg)
     except Exception as e:
         retry_request(request=update_sensors, action='update sensors', num_tries=num_tries)
 
