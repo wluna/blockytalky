@@ -399,7 +399,7 @@ function discard() {
     Blockly.mainWorkspace.clear();
     window.location.hash = '';
   }
-    loadEventBlocks();
+    //loadEventBlocks();
 }
 
 

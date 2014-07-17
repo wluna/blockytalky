@@ -109,3 +109,11 @@ class UserScript(object):
 
         self.last_robot = copy.deepcopy(self.robot)
     
+    #this will be overwritten by user if they use those blocks
+    def run_on_start(self):
+        pass
+ 
+    def run_continuously(self):
+        pass
+
+ 
