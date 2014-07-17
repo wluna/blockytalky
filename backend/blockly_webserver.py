@@ -218,9 +218,10 @@ def convert_usercode(python_code):
     
     python_code = ["    " + x for x in python_code]
     python_code = "\n".join(python_code)
+
+    init_functions += "        if self.run_on_start in self.callbacks: self.callbacks.remove(self.run_on_start) \n        if self.run_continuously in self.callbacks: self.callbacks.remove(self.run_continuously) \n"
     
-    init_functions += "        self.callbacks.remove(self.run_on_start) \n        self.callbacks.remove(self.run_continuously) \n\n"
-    python_code += "\n" + init_functions
+    python_code += "\n" + init_functions + "\n"
 
     #print python_code
     
@@ -270,7 +271,7 @@ def update_sensors(sensors, num_tries=0):
                 ))
     sensorMsg = Message.encode(sensorMsg)
     try:
-        channel.basic_publish(exchange='', routing_key='HwCmd', body=sensorMsg)
+        channel.basic_publish(exchange='HwCmd', routing_key='', body=sensorMsg)
     except Exception as e:
         retry_request(request=update_sensors, action='update sensors', num_tries=num_tries)
 
