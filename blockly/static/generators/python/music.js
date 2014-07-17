@@ -147,7 +147,7 @@ Blockly.Language.music_play_with = {
 			.setCheck("notes");
 		this.appendDummyInput("")
 			.appendTitle("with")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", 1], ["voice 2", 2], ["voice 3", 3], ["voice 4", 4], ["voice 5", 5], ["voice 6", 6], ["voice 7", 7], ["voice 8", 8]]), "voice_select");
+			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
