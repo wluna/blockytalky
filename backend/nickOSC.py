@@ -141,6 +141,6 @@ def dotify_note(notes):
 	if (isinstance(notes, tuple)):
 		return (notes[0], notes[1]*1.5)
 	elif (isinstance(notes, list)):
-		return [(x[0], x[1]*1.5 for x in notes]
+		return [(x[0], x[1]*1.5) for x in notes]
 	else
 		return None
