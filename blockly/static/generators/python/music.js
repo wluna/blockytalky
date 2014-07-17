@@ -49,32 +49,32 @@ Blockly.Python.music_simple_play = function() {
 // Generate a middle C note one beat long, or
 // a simple sequence of notes, for debugging
 // and/or quick-start purposes.
-
-Blockly.Language.music_simple_note = {
-	category: 'Music',
-	helpUrl: '',
-	init: function() {
-		this.setColour(0);
-		this.appendDummyInput("")
-			.appendTitle(new Blockly.FieldDropdown([["a note", "a_note"], ["a bunch of notes", "a_bunch_of_notes"]]), "type_of_simple_notes");
-		this.setOutput(true, "notes");
-		this.setTooltip("Creates a middle C note or a simple sequence of notes. For specifying notes, use a Specific Note block, found further down.");
-	}
-};
-
-// Generator for Simple Note
-
-Blockly.Python.music_simple_note = function() {
-	var dropdown_type_of_simple_notes = this.getTitleValue('type_of_simple_notes');
-	var code = "";
-	if (dropdown_type_of_simple_notes == "a_note") {
-		code += "(60, 1)";
-	}
-	else {
-		code += "[(60, 1), (64, 1), (62, 1)]";
-	}
-	return [code, Blockly.Python.ORDER_ATOMIC];
-};
+//
+//Blockly.Language.music_simple_note = {
+//	category: 'Music',
+//	helpUrl: '',
+//	init: function() {
+//		this.setColour(0);
+//		this.appendDummyInput("")
+//			.appendTitle(new Blockly.FieldDropdown([["a note", "a_note"], ["a bunch of notes", "a_bunch_of_notes"]]), "type_of_simple_notes");
+//		this.setOutput(true, "notes");
+//		this.setTooltip("Creates a middle C note or a simple sequence of notes. For specifying notes, use a Specific Note block, found further down.");
+//	}
+//};
+//
+//// Generator for Simple Note
+//
+//Blockly.Python.music_simple_note = function() {
+//	var dropdown_type_of_simple_notes = this.getTitleValue('type_of_simple_notes');
+//	var code = "";
+//	if (dropdown_type_of_simple_notes == "a_note") {
+//		code += "(60, 1)";
+//	}
+//	else {
+//		code += "[(60, 1), (64, 1), (62, 1)]";
+//	}
+//	return [code, Blockly.Python.ORDER_ATOMIC];
+//};
 
 // === Specific Note ===
 // music_specific_note
@@ -220,6 +220,46 @@ Blockly.Python.music_specific_note = function() {
 	duration = duration_to_float(dropdown_duration_select);
 	
 	var code = "(" + midi_note + ", " + duration + ")";
+	
+	return [code, Blockly.Python.ORDER_NONE];
+};
+
+// === Number Note ===
+// music_number_note
+// Generates a note of specified pitch
+// and duration, with pitch specified
+// by an input number instead of by a string.
+
+Blockly.Language.music_number_note = {
+	category: 'Music',
+	helpUrl: '',
+	init: function() {
+		this.setColour(0);
+		this.appendDummyInput("")
+			.appendTitle("note by number: ");
+		this.appendValueInput("midi_note_input")
+			.setCheck("Number")
+		this.appendDummyInput("")
+			.appendTitle("for")
+			.appendTitle(new Blockly.FieldDropdown([["one eighth", "eighth"], ["one quarter", "quarter"], ["one half", "half"], ["one", "one"], ["two", "two"], ["three", "three"], ["four", "four"]]), "duration_select")
+			.appendTitle("beats");
+		this.setInputsInline(true);
+		this.setOutput(true, "notes");
+		this.setTooltip("Creates a specific note of specified duration.");
+	}
+};
+
+// Generator for Number Note
+
+Blockly.Python.music_number_note = function() {
+	var value_midi_note_input = Blockly.Python.valueToCode(this, 'midi_note_input', Blockly.Python.ORDER_NONE);
+	var dropdown_duration_select = this.getTitleValue('duration_select');
+	
+	var duration = 1;
+	// Determine note duration
+	duration = duration_to_float(dropdown_duration_select);
+	
+	var code = "(" + value_midi_note_input + ", " + duration + ")";
 	
 	return [code, Blockly.Python.ORDER_NONE];
 };
