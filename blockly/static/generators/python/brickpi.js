@@ -453,6 +453,72 @@ Blockly.Language.events_when_sensor_value= {
 };
 
 
+Blockly.Language.events_while_sensor_range= {
+    category: 'Events',
+    helpUrl: '',
+    init: function() {
+	this.setColour(0);
+	this.appendDummyInput("")
+            .appendTitle("while")
+            .appendTitle(new Blockly.FieldDropdown([["sensor 1", "1"],
+						    ["sensor 2", "2"],
+						    ["sensor 3","3"],
+						    ["sensor 4","4"],
+						    ["encoder 1", "5"],
+						    ["encoder 2", "6"],
+						    ["encoder 3", "7"],
+						    ["encoder 4", "8"]]),
+			 's_num');
+	this.appendDummyInput("")
+            .appendTitle("is in range")
+     	this.appendValueInput('lo')
+            .setCheck('Number');
+	this.appendDummyInput("")
+	    .appendTitle("to");
+	this.appendValueInput('hi')
+	    .setCheck('Number');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+
+Blockly.Language.events_when_sensor_range= {
+    category: 'Events',
+    helpUrl: '',
+    init: function() {
+	this.setColour(0);
+	this.appendDummyInput("")
+            .appendTitle("when")
+            .appendTitle(new Blockly.FieldDropdown([["sensor 1", "1"],
+						    ["sensor 2", "2"],
+						    ["sensor 3","3"],
+						    ["sensor 4","4"],
+						    ["encoder 1", "5"],
+						    ["encoder 2", "6"],
+						    ["encoder 3", "7"],
+						    ["encoder 4", "8"]]),
+			 's_num');
+	this.appendDummyInput("")
+            .appendTitle("is in range")
+     	this.appendValueInput('lo')
+            .setCheck('Number');
+	this.appendDummyInput("")
+	    .appendTitle("to");
+	this.appendValueInput('hi')
+	    .setCheck('Number');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+
 //DEFINE GENERATORS:
 
 Blockly.Python= Blockly.Generator.get('Python');
@@ -749,6 +815,65 @@ Blockly.Python.events_when_sensor_value = function() {
 	code += '    if self.robot["encoders"]['+(sensor-5)+'] '+op+' '+comp;  
 	code += ' and not self.last_robot["encoders"]['+(sensor-5)+'] ';
 	code += op+' '+comp+': \n'+ branch;
+    }
+
+    unique_id += 1;
+    return code;
+};
+
+
+Blockly.Python.events_while_sensor_range = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '    pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "    " + branch2[i] + '\n';
+    }
+    var sensor= this.getTitleValue('s_num');    
+    var lo = Blockly.Python.valueToCode(this, 'lo', Blockly.Python.ORDER_NONE);
+    var hi = Blockly.Python.valueToCode(this, 'hi', Blockly.Python.ORDER_NONE);
+    if (lo > hi) {
+	var temp = hi;
+	hi = lo;
+	lo = temp;
+    }
+    var code = 'def '+'wlr'+sensor+unique_id+'(self):'+'\n';
+    if (sensor >= 1 && sensor <= 4) {
+	code += '    if self.robot["sensors"]['+(sensor-1)+'] in range('; 
+	code += lo+','+hi+'): \n' + branch;
+    } else if (sensor >= 5 && sensor <= 8) {
+	code += '    if self.robot["encoders"]['+(sensor-5)+'] in range('; 
+	code += lo+','+hi+'): \n' + branch;
+    }
+
+    unique_id += 1;
+    return code;
+};
+
+Blockly.Python.events_when_sensor_range = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '    pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "    " + branch2[i] + '\n';
+    }
+    var sensor= this.getTitleValue('s_num');    
+    var lo = Blockly.Python.valueToCode(this, 'lo', Blockly.Python.ORDER_NONE);
+    var hi = Blockly.Python.valueToCode(this, 'hi', Blockly.Python.ORDER_NONE);
+    if (lo > hi) {
+	var temp = hi;
+	hi = lo;
+	lo = temp;
+    }
+    var code = 'def '+'wnr'+sensor+unique_id+'(self):'+'\n';
+    if (sensor >= 1 && sensor <= 4) {
+	code += '    if self.robot["sensors"]['+(sensor-1)+'] in range('; 
+	code += lo+','+hi+') and self.robot["sensors"]['+(sensor-1);
+	code += '] not in range('+lo+','+hi+'): \n' + branch;
+    } else if (sensor >= 5 && sensor <= 8) {
+	code += '    if self.robot["encoders"]['+(sensor-5)+'] in range('; 
+	code += lo+','+hi+') and self.robot["encoders"]['+(sensor-5);
+	code += '] not in range('+lo+','+hi+'): \n' + branch;
     }
 
     unique_id += 1;
