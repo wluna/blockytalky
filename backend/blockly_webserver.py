@@ -178,7 +178,7 @@ def upload_code(xml_data, python_data):
     uploadStart = time.time()
     code_to_file(xml_data, 'code/rawxml.txt', 'XML')
     #code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
-    code_to_file(convert_usercode(python_data), 'backend/us.py', 'Python')
+    code_to_file(convert_usercode(python_data), 'backend/user_script.py', 'Python')
     startTime = time.time()
     logger.info('Issuing kill command before uploading code')
     stop_user_script()
@@ -253,7 +253,7 @@ def stop():
     toSend = Message('name', None, 'HwCmd', Message.createImage(motor1=0, motor2=0, motor3=0, motor4=0, pin13=0))
     toSend = Message.encode(toSend)
     try:
-        channel.basic_publish(exchange='', routing_key='HwCmd', body=toSend)
+        channel.basic_publish(exchange='HwCmd', routing_key='', body=toSend)
     except:
         logger.exception('Failed to stop Blockly code:')
     return 'OK'
