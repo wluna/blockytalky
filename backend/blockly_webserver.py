@@ -193,7 +193,7 @@ def convert_usercode(python_code):
     python_code += "\n"
     python_code = python_code.splitlines()
     
-    init_functions = "    def init_function_list(self): \n"
+    init_functions = "    def init_callbacks(self): \n"
 
     # comment out code that comes from blocks not in event blocks.
     comment = True
