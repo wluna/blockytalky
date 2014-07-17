@@ -670,7 +670,7 @@ Blockly.Python.music_start_playing_with = function() {
 	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	code += "nickOSC.start_playing_with(" + value_notes_input + ", " + dropdown_voice_select + "')\n";
+	code += "nickOSC.start_playing_with(" + value_notes_input + ", " + dropdown_voice_select + ")\n";
 	
 	return code;
 };
@@ -699,7 +699,7 @@ Blockly.Language.music_stop_playing = {
 Blockly.Python.music_stop_playing = function() {
 	var dropdown_voice_select = this.getTitleValue('voice_select');
 	
-	var code = "nickOSC.stop_playing('" + dropdown_voice_select + "')\n";
+	var code = "nickOSC.stop_playing(" + dropdown_voice_select + ")\n";
 	
 	return code;
 };
@@ -741,7 +741,7 @@ Blockly.Python.music_on_beat_start_playing_with = function () {
 	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	code += "nickOSC.on_beat_start_playing_with(" + value_notes_input + ", " + beat_align + ", " + dropdown_voice_select + "')\n";
+	code += "nickOSC.on_beat_start_playing_with(" + value_notes_input + ", " + beat_align + ", " + dropdown_voice_select + ")\n";
 	
 	return code;
 };
@@ -777,7 +777,7 @@ Blockly.Python.music_on_beat_stop_playing = function () {
 	
 	var beat_align = beat_alignment_to_float(dropdown_beat_select);
 	
-	var code = "nickOSC.on_beat_stop_playing(" + beat_align + ", '" + dropdown_voice_select + "')\n";
+	var code = "nickOSC.on_beat_stop_playing(" + beat_align + ", " + dropdown_voice_select + ")\n";
 	
 	return code;
 };
@@ -848,7 +848,7 @@ Blockly.Python.music_change_voice = function () {
 	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	code += "nickOSC.change_voice(" + value_notes_input + ", " + beat_align + ", " + dropdown_voice_select + "')\n";
+	code += "nickOSC.change_voice(" + value_notes_input + ", " + beat_align + ", " + dropdown_voice_select + ")\n";
 	
 	return code;
 };
