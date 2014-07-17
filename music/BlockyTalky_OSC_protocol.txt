@@ -6,11 +6,11 @@ I. Preface
 	
 II. Messaging Protocol between BlockyTalky and the ChucK Maestro
 	A. Playing Notes
-		1. /lpc/maestro/play (if*256)
-			Message containing 256 notes, where each note is identified by an integer (i) and a float (f). Such a construct is considered a "phrase," and will be henceforth named thusly in this document. A phrase may contain empty notes; such notes take no time to play and produce no sound, and can be specified with a pitch of -1 and a duration of 0. This message is intended to be used to tell the maestro machine to play a sequence of notes immediately.
+		1. /lpc/maestro/play (if*128)
+			Message containing 128 notes, where each note is identified by an integer (i) and a float (f). Such a construct is considered a "phrase," and will be henceforth named thusly in this document. A phrase may contain empty notes; such notes take no time to play and produce no sound, and can be specified with a pitch of -1 and a duration of 0. This message is intended to be used to tell the maestro machine to play a sequence of notes immediately.
 			
-		2. /lpc/maestro/play_on_beat_with (if*256)fs
-			Message containing a phrase of up to 256 notes as well as a float specifying a "beat alignment fraction" and a string specifying the name of an instrument to be used to play the notes in the phrase. This message is intended to be used to tell the maestro machine to play a sequence of notes aligned to a particular beat or fraction thereof, and/or to play notes with a specific instrument. (For no beat alignment, pass 0; for no specific instrument, pass "default".)
+		2. /lpc/maestro/play_on_beat_with (if*128)fi
+			Message containing a phrase of up to 128 notes as well as a float specifying a "beat alignment fraction" and an int (1-8) specifying the voice to be used to play the notes in the phrase. This message is intended to be used to tell the maestro machine to play a sequence of notes aligned to a particular beat or fraction thereof, and/or to play notes with a specific voice. (For no beat alignment, pass 0.)
 			
 		3. TODO: The rest of this section.
 	
@@ -22,18 +22,22 @@ II. Messaging Protocol between BlockyTalky and the ChucK Maestro
 
 III. Messaging Protocol between the ChucK Maestro and PD Sound Driver
 	A. Playing Notes
-		1. /lpc/sound/default if
-			Message specifying one note by MIDI pitch (i) and real number duration in seconds (f).
+		1. /lpc/sound/voice1 sif NOT IMPLEMENTED
+			Message specifying an instrument to use (s) to play one note by MIDI pitch (i) and real number duration in seconds (f).
+			
+		2. /lpc/sound/voice2 sif NOT IMPLEMENTED
+			There are 8 voices, labeled voice1 - voice8.
 
-		2. /lpc/sound/INSTRUMENT_NAME if
-			INSTRUMENT_NAME specifies the name of the instrument to use as a part of the OSC message address. The message then specifies note data in its contents. 
+		3-8. /lpc/sound/voiceN sif NOT IMPLEMENTED
+			See 2.
 			
 	B. Controlling Sound
 		1. /lpc/sound/volume f NOT IMPLEMENTED
 			Message specifying the master volume multiplier as a real number between 0 and 1.
 			
-		2. /lpc/sound/INSTRUMENT_NAME/volume NOT IMPLEMENTED
-			Message specifying the desired volume of a particular instrument as a real number between 0 and 1.
+		2. /lpc/sound/voice1/volume NOT IMPLEMENTED
+			Message specifying the desired volume of a particular voice as a real number between 0 and 1.
 			
-		3. /lpc/sound/INSTRUMENT_NAME/ TODO: moooore control
+		3-9. /lpc/sound/voiceN/volume NOT IMPLEMENTED
+			See 2.
 	

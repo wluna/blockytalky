@@ -64,7 +64,7 @@ function void phrase_receive_shred() {
         
         // spawn shred dedicated to playing through the
         // given sequence
-        spork ~ play_phrase_shred(note_pitch_array, note_duration_array, 0.0, "default");
+        spork ~ play_phrase_shred(note_pitch_array, note_duration_array, 0.0, "default", 1);
     }
 }
 
