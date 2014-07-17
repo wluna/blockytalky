@@ -524,7 +524,7 @@ Blockly.Language.music_set_instrument = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("set")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", 1], ["voice 2", 2], ["voice 3", 3], ["voice 4", 4], ["voice 5", 5], ["voice 6", 6], ["voice 7", 7], ["voice 8", 8]]), "voice_select")
+			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select")
 			.appendTitle("instrument to")
 			.appendTitle(new Blockly.FieldDropdown([["koopatroopa", 1], ["yourface", 2], ["pleasechangeme", 3], ["seriously", 4]]), "instrument_select");
 		this.setInputsInline(true);
@@ -586,7 +586,7 @@ Blockly.Language.music_on_beat_play_with = {
 			.setCheck("notes");
 		this.appendDummyInput("")
 			.appendTitle("with")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", 1], ["voice 2", 2], ["voice 3", 3], ["voice 4", 4], ["voice 5", 5], ["voice 6", 6], ["voice 7", 7], ["voice 8", 8]]), "voice_select");
+			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
@@ -654,7 +654,7 @@ Blockly.Language.music_start_playing_with = {
 			.setCheck("notes");
 		this.appendDummyInput("")
 			.appendTitle("with")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", 1], ["voice 2", 2], ["voice 3", 3], ["voice 4", 4], ["voice 5", 5], ["voice 6", 6], ["voice 7", 7], ["voice 8", 8]]), "voice_select");
+			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
@@ -686,7 +686,7 @@ Blockly.Language.music_stop_playing = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("stop playing")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", 1], ["voice 2", 2], ["voice 3", 3], ["voice 4", 4], ["voice 5", 5], ["voice 6", 6], ["voice 7", 7], ["voice 8", 8]]), "voice_select");
+			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
@@ -722,7 +722,7 @@ Blockly.Language.music_on_beat_start_playing_with = {
 			.setCheck("notes");
 		this.appendDummyInput("")
 			.appendTitle("with")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", 1], ["voice 2", 2], ["voice 3", 3], ["voice 4", 4], ["voice 5", 5], ["voice 6", 6], ["voice 7", 7], ["voice 8", 8]]), "voice_select");
+			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
@@ -761,7 +761,7 @@ Blockly.Language.music_on_beat_stop_playing = {
 			.appendTitle(new Blockly.FieldDropdown([["beat", "beat"], ["1/2 beat", "half_beat"], ["1/4 beat", "quarter_beat"], ["1/8 beat", "eighth_beat"]]), "beat_select");
 		this.appendDummyInput("")
 			.appendTitle("stop playing")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", 1], ["voice 2", 2], ["voice 3", 3], ["voice 4", 4], ["voice 5", 5], ["voice 6", 6], ["voice 7", 7], ["voice 8", 8]]), "voice_select");
+			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
@@ -826,7 +826,7 @@ Blockly.Language.music_change_voice = {
 			.appendTitle("On the next")
 			.appendTitle(new Blockly.FieldDropdown([["beat", "beat"], ["1/2 beat", "half_beat"], ["1/4 beat", "quarter_beat"], ["1/8 beat", "eighth_beat"]]), "beat_select")
 			.appendTitle("change")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", 1], ["voice 2", 2], ["voice 3", 3], ["voice 4", 4], ["voice 5", 5], ["voice 6", 6], ["voice 7", 7], ["voice 8", 8]]), "voice_select")
+			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select")
 			.appendTitle("to");
 		this.appendValueInput("notes_input")
 			.setCheck("notes");
