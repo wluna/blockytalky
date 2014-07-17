@@ -1,10 +1,10 @@
 import OSC
 
-# nickOSC.py
-# Contains a number of methods to make it easier
-# to send OSC messages from blocks, especially for
-# interfacing with the 'maestro.ck' chuck module
-# running at the note_destination_hostname.
+"""nickOSC.py
+Contains a number of methods to make it easier
+to send OSC messages from blocks, especially for
+interfacing with the 'maestro.ck' chuck module
+running at the note_destination_hostname."""
 
 # hostname and port
 note_destination_hostname = "192.168.1.14"
@@ -24,15 +24,18 @@ def set_maestro_IP(maestro_IP_string):
 # address, padded. Methods can append more information onto the
 # message as needed.
 def construct_basic_phrase_message(notes, address):
+	print "constructing phrase from: " + str(notes)
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	# copy note content into message
-	for i in range(len(notes)):
-		message.append(int(notes[i][0]))
-		message.append(float(notes[i][1]))
+	if (isinstance(notes, tuple)):
+		notes = [notes]
+	for note in notes:
+		message.append(int(note[0]))
+		message.append(float(note[1]))
 	# pad message with empty notes
-	# (phrases require 64 notes sent)
-	for i in range(64 - len(notes)):
+	# (phrases require 256 notes sent)
+	for i in range(128 - len(notes)):
 		message.append(-1)
 		message.append(0.)
 	return message
@@ -50,58 +53,51 @@ def send_message_to_maestro(message, address):
 			print "Sent the second time around"
 		except OSC.OSCClientError as e:
 			print "Nope the message failed to send again. :(" + str(e)
-
-# Sends some notes to be played immediately.
-def simple_play(notes):
-	address = "/lpc/maestro/play"
-	message = construct_basic_phrase_message(notes, address)
-	send_message_to_maestro(message, address)
 			
 # Sends some notes to be played with a certain instrument
 # on a certain beat (or fraction thereof).
-def on_beat_play_with(notes, beat_fraction, instrument):
+def on_beat_play_with(notes, beat_fraction, voice):
 	address = "/lpc/maestro/play_on_beat_with"
 	message = construct_basic_phrase_message(notes, address)
 	# append beat fraction
 	message.append(float(beat_fraction))
-	# append instrument name
-	message.append(str(instrument))
+	# append voice number
+	message.append(int(voice))
 	send_message_to_maestro(message, address)
 	
 # Sends some notes to be looped with a certain instrument
 # on a certain beat (or fraction thereof).
-def on_beat_start_playing_with(notes, beat_fraction, instrument, loop_name):
+def on_beat_start_playing_with(notes, beat_fraction, voice):
 	print "at on_beat_start_playing_with"
 	address = "/lpc/maestro/loop_on_beat_with"
 	message = construct_basic_phrase_message(notes, address)
 	message.append(float(beat_fraction))
-	message.append(str(instrument))
-	message.append(str(loop_name))
+	message.append(int(voice))
 	send_message_to_maestro(message, address)
 	
 # Stops playing any notes with the specified loop name
 # on a certain beat (or fraction thereof).
-def on_beat_stop_playing(beat_fraction, loop_name):
+def on_beat_stop_playing(beat_fraction, voice):
 	print "at on_beat_stop_playing"
 	address = "/lpc/maestro/stop_playing_on_beat"
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	message.append(float(beat_fraction))
-	message.append(str(loop_name))
+	message.append(int(voice))
 	send_message_to_maestro(message, address)
 	
-def play_with(notes, instrument):
-	on_beat_play_with(notes, 0., instrument)
+def play_with(notes, voice):
+	on_beat_play_with(notes, 0., voice)
 
 # Starts looping a phrase immediately in the specified loop
-def start_playing_with(notes, instrument, loop_name):
+def start_playing_with(notes, voice):
 	print "at start_playing_with"
-	on_beat_start_playing_with(notes, 0., instrument, loop_name)
+	on_beat_start_playing_with(notes, 0., voice)
 
 # Stops playing any notes in the specified loop
-def stop_playing(loop_name):
+def stop_playing(voice):
 	print "at stop_playing"
-	on_beat_stop_playing(0., loop_name)
+	on_beat_stop_playing(0., voice)
 
 # Sets the tempo of the maestro module by sending a
 # tempo message
@@ -114,5 +110,37 @@ def set_tempo(bpm):
 	
 # combines two phrases into one
 def combine_phrase(notes1, notes2):
-	#print "combining " + str(notes1) + " and " + str(notes2)
+	if (isinstance(notes1, tuple)):
+		notes1 = [notes1]
+	if (isinstance(notes2, tuple)):
+		notes2 = [notes2]
 	return notes1 + notes2
+	
+# Set the instrument to use with a given voice
+def set_instrument(voice, instrument):
+	print "at set_instrument"
+	address = "/lpc/maestro/instrument"
+	message = OSC.OSCMessage()
+	message.setAddress(address)
+	message.append(int(voice))
+	message.append(int(instrument))
+	send_message_to_maestro(message, address)
+	
+# Changes a voice to play a different set of notes
+def change_voice(notes, beat_fraction, voice):
+	print "at change_voice"
+	address = "/lpc/maestro/change_voice"
+	message = construct_basic_phrase_message(notes, address)
+	message.append(float(beat_fraction))
+	message.append(int(voice))
+	send_message_to_maestro(message, address)
+	
+# Returns a note or list of notes with their duration(s) x 1.5
+# or None if there's an error
+def dotify_note(notes):
+	if (isinstance(notes, tuple)):
+		return (notes[0], notes[1]*1.5)
+	elif (isinstance(notes, list)):
+		return [(x[0], x[1]*1.5) for x in notes]
+	else:
+		return None

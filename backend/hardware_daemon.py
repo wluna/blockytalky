@@ -10,13 +10,14 @@ import threading
 import logging
 import socket
 import pika
+import os
 from blockytalky_id import *
 from message import *
 from BrickPi import *
 
 channel = None
 logger = logging.getLogger(__name__)
-
+os.nice(-5)
 
 class HardwareDaemon(object):
     PUBLISH_INTERVAL = 0.04
