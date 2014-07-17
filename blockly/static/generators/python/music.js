@@ -181,7 +181,7 @@ Blockly.Language.music_note = {
 		this.appendDummyInput("")
 			.appendTitle(new Blockly.FieldDropdown([["1/4", "quarter"], ["1/32", "thirty-second"], ["1/16", "sixteenth"], ["1/8", "eighth"], ["1/2", "half"], ["whole", "one"]]), "duration_select")
 			.appendTitle("note")
-			.appendTitle(new Blockly.FieldTextInput("C4"), "note_text_input")
+			.appendTitle(new Blockly.FieldTextInput("C4"), "note_text_input");
 		this.setInputsInline(true);
 		this.setOutput(true, "notes");
 		this.setTooltip("Creates a specific note of specified duration.");
@@ -328,7 +328,7 @@ Blockly.Language.music_rest = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle(new Blockly.FieldDropdown([["1/4", "quarter"], ["1/32", "thirty-second"], ["1/16", "sixteenth"], ["1/8", "eighth"], ["1/2", "half"], ["whole", "one"]]), "duration_select")
-			.appendTitle(" note rest")
+			.appendTitle(" note rest");
 		this.setInputsInline(true);
 		this.setOutput(true, "notes");
 		this.setTooltip("Generates a rest note of a specified duration.");
@@ -524,9 +524,9 @@ Blockly.Language.music_set_instrument = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("set")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", 1], ["voice 2", 2], ["voice 3", 3], ["voice 4", 4], ["voice 5", 5], ["voice 6", 6], ["voice 7", 7], ["voice 8", 8]]), "voice_select"))
+			.appendTitle(new Blockly.FieldDropdown([["voice 1", 1], ["voice 2", 2], ["voice 3", 3], ["voice 4", 4], ["voice 5", 5], ["voice 6", 6], ["voice 7", 7], ["voice 8", 8]]), "voice_select")
 			.appendTitle("instrument to")
-			.appendTitle(new Blockly.FieldDropdown([["koopatroopa", 1], ["yourface", 2], ["pleasechangeme", 3], ["seriously", 4]]), "instrument_select"));
+			.appendTitle(new Blockly.FieldDropdown([["koopatroopa", 1], ["yourface", 2], ["pleasechangeme", 3], ["seriously", 4]]), "instrument_select");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
@@ -864,7 +864,7 @@ Blockly.Language.music_dotify_note = {
   init: function() {
     this.setColour(0);
 	this.appendDummyInput("")
-		.appendTitle("dotted")
+		.appendTitle("dotted");
     this.appendValueInput('input_notes')
         .setCheck('notes');
     this.setInputsInline(true);
@@ -896,7 +896,7 @@ Blockly.Language.music_number_note = {
 			.appendTitle(new Blockly.FieldDropdown([["1/4", "quarter"], ["1/32", "thirty-second"], ["1/16", "sixteenth"], ["1/8", "eighth"], ["1/2", "half"], ["whole", "one"]]), "duration_select")
 			.appendTitle("note by number: ");
 		this.appendValueInput("midi_note_input")
-			.setCheck("Number")
+			.setCheck("Number");
 		this.setInputsInline(true);
 		this.setOutput(true, "notes");
 		this.setTooltip("Creates a specific note of specified duration.");
