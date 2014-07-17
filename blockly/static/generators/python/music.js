@@ -253,7 +253,7 @@ var text_to_midi = function(text) {
 	var octave_num = parseInt(octave);
 	if (isNaN(octave_num)) {
 		// octave couldn't be gotten, abort
-		console.log("Aborting text-to-midi conversion attempt on " + text + ", couldn't parse octave number.");
+		console.log("Couldn't parse octave number of " + text + ", assuming 4.");
 		// set to 4 by default
 		octave_num = 4
 	}
@@ -632,7 +632,7 @@ Blockly.Python.music_on_beat_play_with = function () {
 	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	code += "nickOSC.on_beat_play_with(" + value_notes_input + ", " + beat_align + ", " + voice_select + ")\n";
+	code += "nickOSC.on_beat_play_with(" + value_notes_input + ", " + beat_align + ", " + dropdown_voice_select + ")\n";
 	
 	return code;
 };
