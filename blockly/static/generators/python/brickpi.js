@@ -310,7 +310,7 @@ Blockly.Language.events_on_start = {
     // Run on start
     helpUrl: '',
     init: function() {
-	this.setColour(0);
+	this.setColour(30);
 	this.appendDummyInput("")
 	    .appendTitle('when i start');
 	this.appendStatementInput('DO')
@@ -324,7 +324,7 @@ Blockly.Language.events_run_continuously = {
     // Repeat continuously
     helpUrl: '',
     init: function() {
-	this.setColour(0);
+	this.setColour(100);
 	this.appendDummyInput("")
 	    .appendTitle('run continuously');
 	this.appendStatementInput('DO')
@@ -338,7 +338,7 @@ Blockly.Language.events_run_continuously = {
 Blockly.Language.events_while_touch= {
     helpUrl: '',
     init: function() {
-	this.setColour(0);
+	this.setColour(100);
 	this.appendDummyInput("")
             .appendTitle("while touch sensor on port")
             .appendTitle(new Blockly.FieldDropdown([["1", "1"], 
@@ -363,7 +363,7 @@ Blockly.Language.events_when_touch= {
     category: 'Events',
     helpUrl: '',
     init: function() {
-	this.setColour(0);
+	this.setColour(30);
 	this.appendDummyInput("")
             .appendTitle("when touch sensor on port")
             .appendTitle(new Blockly.FieldDropdown([["1", "1"],
@@ -388,7 +388,7 @@ Blockly.Language.events_while_sensor_value= {
     category: 'Events',
     helpUrl: '',
     init: function() {
-	this.setColour(0);
+	this.setColour(100);
 	this.appendDummyInput("")
             .appendTitle("while")
             .appendTitle(new Blockly.FieldDropdown([["sensor 1","1"],
@@ -422,7 +422,7 @@ Blockly.Language.events_when_sensor_value= {
     category: 'Events',
     helpUrl: '',
     init: function() {
-	this.setColour(0);
+	this.setColour(30);
 	this.appendDummyInput("")
             .appendTitle("when")
             .appendTitle(new Blockly.FieldDropdown([["sensor 1", "1"],
@@ -457,7 +457,7 @@ Blockly.Language.events_while_sensor_range= {
     category: 'Events',
     helpUrl: '',
     init: function() {
-	this.setColour(0);
+	this.setColour(100);
 	this.appendDummyInput("")
             .appendTitle("while")
             .appendTitle(new Blockly.FieldDropdown([["sensor 1", "1"],
@@ -490,7 +490,7 @@ Blockly.Language.events_when_sensor_range= {
     category: 'Events',
     helpUrl: '',
     init: function() {
-	this.setColour(0);
+	this.setColour(30);
 	this.appendDummyInput("")
             .appendTitle("when")
             .appendTitle(new Blockly.FieldDropdown([["sensor 1", "1"],
@@ -545,7 +545,7 @@ Blockly.Python.motor_set = function() {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor4=' +value_motor_power+ '))'+'\n'
     }
     code = code + 'toSend = Message.encode(toSend)' + '\n'
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
+    code= code + 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n';
     return code;
 };
 
@@ -571,7 +571,7 @@ Blockly.Python.light_set = function() {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor4=' +value_motor_power+ '))'+'\n'
     }
     code = code + 'toSend = Message.encode(toSend)' + '\n'
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
+    code= code + 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
     return code;
 };
 
@@ -596,7 +596,7 @@ Blockly.Python.pin_in = function() {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin22=' +pin_value+ '))'+'\n'
     }
     code = code + 'toSend = Message.encode(toSend)' + '\n'
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
+    code= code + 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n';
     return code;
 };
 
@@ -621,15 +621,14 @@ Blockly.Python.pin_out = function() {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(pin15=' +pin_value+ '))'+'\n'
     }
     code = code + 'toSend = Message.encode(toSend)' + '\n'
-    code= code + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
+    code= code + 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n';
     return code;
 };
 
 Blockly.Python.motor_all_stop= function() {
     var code= 'toSend= Message(self.hostname, None, "HwCmd", Message.createImage(motor1=0, motor2=0, motor3=0, motor4=0))'+
     '\n' + 'toSend = Message.encode(toSend)' + '\n' 
-    + 'channel.basic_publish(exchange="", routing_key="HwCmd", body=toSend)'+'\n'
-    +'time.sleep(.01)'+'\n';
+	+ 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n';
     return code;
 };
 
@@ -832,11 +831,13 @@ Blockly.Python.events_while_sensor_range = function() {
     var sensor= this.getTitleValue('s_num');    
     var lo = Blockly.Python.valueToCode(this, 'lo', Blockly.Python.ORDER_NONE);
     var hi = Blockly.Python.valueToCode(this, 'hi', Blockly.Python.ORDER_NONE);
+    console.log(lo, hi);
     if (lo > hi) {
 	var temp = hi;
 	hi = lo;
 	lo = temp;
     }
+    console.log(lo,hi);
     var code = 'def '+'wlr'+sensor+unique_id+'(self):'+'\n';
     if (sensor >= 1 && sensor <= 4) {
 	code += '    if self.robot["sensors"]['+(sensor-1)+'] in range('; 
