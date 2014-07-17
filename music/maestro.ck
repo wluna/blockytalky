@@ -4,6 +4,7 @@ Shred @ shreds[MAX_SHRED_STORAGE];
 0 => int shreds_length;
 string loop_shred_tracker[MAX_SHRED_STORAGE];
 string should_exit_tracker[MAX_SHRED_STORAGE];
+128 => int PHRASE_SIZE;
 
 // Set up OSC
 OscRecv oscReceiver;
@@ -40,22 +41,22 @@ while (true) {
 function void phrase_receive_shred() {
     
     // Set up musical phrase-receiving event
-    // message will consist of 256 ints (midi note value)
+    // message will consist of 128 ints (midi note value)
     // each followed by a float (duration in beats)
-    oscReceiver.event("/lpc/maestro/play, ifififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififif") @=> OscEvent phrase_event;
+    oscReceiver.event("/lpc/maestro/play, ifififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififif") @=> OscEvent phrase_event;
     
     while (true) {
         phrase_event => now; // wait for event signal
         <<< "Got simple play event." >>>;
         
         // arrays for storing phrase data
-        int note_pitch_array[256];
-        float note_duration_array[256];
+        int note_pitch_array[PHRASE_SIZE];
+        float note_duration_array[PHRASE_SIZE];
         
         // grab messages out of the message queue and
         // store them in two arrays
         while (phrase_event.nextMsg() != 0) {
-            for (0 => int i; i < 256; i++) {
+            for (0 => int i; i < PHRASE_SIZE; i++) {
                 phrase_event.getInt() => note_pitch_array[i];
                 phrase_event.getFloat() => note_duration_array[i];
             }
@@ -71,25 +72,25 @@ function void phrase_receive_shred() {
 function void phrase_receive_on_beat_with_shred() {
     
     // Set up musical phrase-receiving event
-    // Contains 64 notes, plus a float to specify
+    // Contains 128 notes, plus a float to specify
     // the beat alignment fraction, plus a string
     // to specify an instrument
-    oscReceiver.event("/lpc/maestro/play_on_beat_with, ififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififfs") @=> OscEvent phrase_on_beat_event;
+    oscReceiver.event("/lpc/maestro/play_on_beat_with, ififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififfs") @=> OscEvent phrase_on_beat_event;
     
     while (true) {
         phrase_on_beat_event => now; // wait for event to arrive
         <<< "Got on-beat play event." >>>;
         
         // arrays for storing phrase data
-        int note_pitch_array[256];
-        float note_duration_array[256];
+        int note_pitch_array[PHRASE_SIZE];
+        float note_duration_array[PHRASE_SIZE];
         float beat_alignment_fraction;
         string instrument_name;
         
         // grab messages out of the message queue and
         // store them in two arrays
         while (phrase_on_beat_event.nextMsg() != 0) {
-            for (0 => int i; i < 256; i++) {
+            for (0 => int i; i < PHRASE_SIZE; i++) {
                 phrase_on_beat_event.getInt() => note_pitch_array[i];
                 phrase_on_beat_event.getFloat() => note_duration_array[i];
             }
@@ -112,15 +113,15 @@ function void looping_phrase_receive_on_beat_with_shred() {
     // to specify an instrument. This function
     // listens on a "loop" address instead of just
     // a play address.
-    oscReceiver.event("/lpc/maestro/loop_on_beat_with, ififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififfss") @=> OscEvent phrase_on_beat_event;
+    oscReceiver.event("/lpc/maestro/loop_on_beat_with, ififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififfss") @=> OscEvent phrase_on_beat_event;
     
     while (true) {
         phrase_on_beat_event => now; // wait for event to arrive
         <<< "Got on-beat loop play event." >>>;
         
         // arrays for storing phrase data
-        int note_pitch_array[256];
-        float note_duration_array[256];
+        int note_pitch_array[PHRASE_SIZE];
+        float note_duration_array[PHRASE_SIZE];
         float beat_alignment_fraction;
         string instrument_name;
         string loop_name;
@@ -128,7 +129,7 @@ function void looping_phrase_receive_on_beat_with_shred() {
         // grab messages out of the message queue and
         // store them in two arrays
         while (phrase_on_beat_event.nextMsg() != 0) {
-            for (0 => int i; i < 256; i++) {
+            for (0 => int i; i < PHRASE_SIZE; i++) {
                 phrase_on_beat_event.getInt() => note_pitch_array[i];
                 phrase_on_beat_event.getFloat() => note_duration_array[i];
             }
@@ -218,7 +219,7 @@ function void play_phrase_shred(int pitches[], float durations[], float alignmen
     }
     
     // Start playing phrase
-    for (0 => int i; i < 256; i++) {
+    for (0 => int i; i < PHRASE_SIZE; i++) {
         // Send message to start the note playing
         play_note(pitches[i], durations[i], instrument_name);
         
@@ -244,7 +245,7 @@ function void loop_phrase_shred(int pitches[], float durations[], float alignmen
     
     // Start looping phrase
     while (true) {
-        for (0 => int i; i < 256; i++) {
+        for (0 => int i; i < PHRASE_SIZE; i++) {
             // if we shouldn't exit yet
             if (check_should_exit(loop_name)) {
                 me.exit();
