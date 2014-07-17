@@ -201,7 +201,6 @@ class HardwareDaemon(object):
         logger.info("hwcmd command received: " + body)
         command = Message.decode(body)
         if command.channel == "Sensor":
-            print command
             port = None
             newType = None
             sensorDict = command.getContent()

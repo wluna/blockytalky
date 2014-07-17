@@ -195,6 +195,7 @@ def convert_usercode(python_code):
     
     callback_functions = "    def init_callbacks(self): \n"
     while_functions = "    def init_whiles(self): \n"
+    variables = "\n      global "
 
     # comment out code that comes from blocks not in event blocks.
     comment = True
@@ -204,8 +205,13 @@ def convert_usercode(python_code):
             comment = False
         elif python_code[i][-7:] == " = None":
             comment = False
+            var = python_code[i][:python_code[i].index('=')-1]
+            variables += var + ", "            
+
         elif python_code[i][:4] == "def ":
             func = python_code[i][python_code[i].find(" ")+1:python_code[i].find("(")]
+            if variables != "\n      global ":
+                python_code[i] += variables[:-2]
             if func == "run_continuously":
                 python_code[i] += "\n      for f in self.whiles: \n        f() \n"    
             if func[:2] == "wl":
@@ -221,7 +227,7 @@ def convert_usercode(python_code):
         if comment == True:
             python_code[i] = "#" + python_code[i]
         i += 1
-    
+
     python_code = ["    " + x for x in python_code]
     python_code = "\n".join(python_code)
 
@@ -237,8 +243,7 @@ def convert_usercode(python_code):
     footer_text = ('if __name__ == "__main__": \n'
                    '    handle_logging(logger) \n'
                    '    uscript = UserScript() \n'
-                   '    uscript.start() \n'
-                   '    print "starting user script..." \n')
+                   '    uscript.start() \n')
 
 
     return header_text + python_code + footer_text 
