@@ -229,9 +229,10 @@ def convert_usercode(python_code):
     header_text = user_script_header.read()
     
     footer_text = ('if __name__ == "__main__": \n'
-                          '    handle_logging(logger) \n'
-                          '    uscript = UserScript() \n'
-                          '    uscript.start() \n')
+                   '    handle_logging(logger) \n'
+                   '    uscript = UserScript() \n'
+                   '    uscript.start() \n'
+                   '    print "starting user script..."')
 
 
     return header_text + python_code + footer_text 

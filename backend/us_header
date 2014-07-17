@@ -4,7 +4,6 @@ import time
 import thread
 import logging
 import socket
-import usercode
 import pika
 import atexit
 import copy
@@ -109,7 +108,7 @@ class UserScript(object):
 
         self.last_robot = copy.deepcopy(self.robot)
     
-    #this will be overwritten by user if they use those blocks
+    #this will be overwritten by user code if they use those blocks
     def run_on_start(self):
         pass
  
