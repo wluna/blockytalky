@@ -339,7 +339,7 @@ function void set_instrument_handler() {
             set_instrument_event.getInt() => voice_index;
             set_instrument_event.getInt() => instrument_index;
             
-            oscSender.startMsg("/lpc/sound/voice" + voice_index + ", i");
+            oscSender.startMsg("/lpc/sound/voice" + voice_index + "/instrument, i");
             oscSender.addInt(instrument_index);
             <<< "Instrument message passed along." >>>;
         }
