@@ -18,6 +18,7 @@ class Message(object):
                         "Message",  # Visible channel for all messages
                         "Logging",   # Data logging of user
                         "Sensor",
+                        "handshake",
                         "Server"    # Data coming from the central server
                     )
 

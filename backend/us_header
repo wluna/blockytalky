@@ -57,6 +57,8 @@ class UserScript(object):
         self.setup_hwcmd_channel()
         self.setup_hwval_channel()      
         
+        self.initialized = False
+        
         # initializes the list of callback functions for when you receive a 
         # sensor message
         self.callbacks = []
@@ -64,9 +66,15 @@ class UserScript(object):
         self.whiles = []
         self.init_whiles()
    
+
+    def handshake(self):
+        toSend = Message(self.hostname, None, "handshake", None)
+        toSend = Message.encode(toSend)
+        self.hwcmd_channel.basic_publish(exchange="HwCmd",
+                                         routing_key="", body=toSend)
+
     def start(self):
-        self.run_on_start()
-        self.schedule_run_continuously()
+        self.handshake()
         self.hwval_channel.start_consuming()
 
     def schedule_run_continuously(self):
@@ -107,10 +115,16 @@ class UserScript(object):
         for sensor in self.sensorStatus:
             self.sensorStatus[sensor] = True
 
-        for callback in self.callbacks:
-            callback()
+        if self.initialized == False:
+            self.initialized = True
+            self.run_on_start()
+            self.schedule_run_continuously()
+    
+        else:
+            for callback in self.callbacks:
+                callback()
 
-        self.last_robot = copy.deepcopy(self.robot)
+            self.last_robot = copy.deepcopy(self.robot)
     
     #this will be overwritten by user code if they use those blocks
     def run_on_start(self):
