@@ -274,23 +274,23 @@ var duration_to_float = function(text) {
 	var duration = 1;
 	
 	if (text == "thirty-second")
-		duration = 0.03125;
-	if (text == "sixteenth")
-		duration = 0.0625;
-	if (text == "eighth")
 		duration = 0.125;
-	else if (text == "quarter")
+	if (text == "sixteenth")
 		duration = 0.25;
-	else if (text == "half")
+	if (text == "eighth")
 		duration = 0.5;
-	else if (text == "one")
+	else if (text == "quarter")
 		duration = 1;
-	else if (text == "two")
+	else if (text == "half")
 		duration = 2;
-	else if (text == "three")
-		duration = 3;
-	else if (text == "four")
+	else if (text == "one")
 		duration = 4;
+	else if (text == "two")
+		duration = 8;
+	else if (text == "three")
+		duration = 12;
+	else if (text == "four")
+		duration = 16;
 		
 	return duration;
 };
