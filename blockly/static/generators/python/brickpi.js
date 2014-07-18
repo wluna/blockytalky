@@ -635,7 +635,7 @@ Blockly.Python.motor_all_stop= function() {
 Blockly.Python.motor_get_encoder= function() {
     var value_encoder= this.getTitleValue('enc');
     value_encoder-=1;
-    var code = 'self.getSensorValue("encoder", ' + value_encoder + ')';
+    var code = 'self.robot["encoders"][' + value_encoder + ']';
     return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
