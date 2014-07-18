@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 os.nice(-5)
 
 class HardwareDaemon(object):
-    PUBLISH_INTERVAL = 0.04
+    PUBLISH_INTERVAL = 0.01
     
     def __init__(self):
         logger.info('Initializing hardware daemon')
