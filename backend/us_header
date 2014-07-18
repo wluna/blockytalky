@@ -64,6 +64,13 @@ class UserScript(object):
         self.whiles = []
         self.init_whiles()
    
+
+    def handshake(self):
+        toSend = Message(self.hostname, None, "handshake", None)
+        toSend = Message.encode(toSend)
+        self.hwcmd_channel.basic_publish(exchange="HwCmd",
+                                         routing_key="", body=toSend)
+
     def start(self):
         self.run_on_start()
         self.schedule_run_continuously()

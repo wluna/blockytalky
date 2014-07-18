@@ -201,7 +201,22 @@ class HardwareDaemon(object):
     def handle_hwcmd_delivery(self, channel, method, header, body):
         logger.info("hwcmd command received: " + body)
         command = Message.decode(body)
-        if command.channel == "Sensor":
+        if command.channel == "handshake":
+            content = Message.createImage(
+                encoder1 = self.robot["encoders"][0],
+                encoder2 = self.robot["encoders"][1],
+                encoder3 = self.robot["encoders"][2],
+                encoder4 = self.robot["encoders"][3],
+                sensor1 =  self.robot["sensors"][0],
+                sensor2 =  self.robot["sensors"][0],
+                sensor3 =  self.robot["sensors"][0],
+                sensor4 =  self.robot["sensors"][0])
+            statusMessage = Message(self.hostname, None, "HwVal", content)
+            statusMessage = Message.encode(statusMessage)
+            self.hwval_channel.basic_publish(exchange='sensors', 
+                                             routing_key='', body=statusMessage)
+
+        elif command.channel == "Sensor":
             port = None
             newType = None
             sensorDict = command.getContent()
