@@ -21,6 +21,7 @@ spork ~ phrase_receive_on_beat_with_shred();
 spork ~ looping_phrase_receive_on_beat_with_shred();
 spork ~ on_beat_stop_phrase_handler();
 spork ~ on_beat_change_voice_handler();
+spork ~ set_instrument_handler();
 
 // Set up the main thread to receive TEMPO messages
 oscReceiver.event("/lpc/maestro/tempo, f") @=> OscEvent tempo_event;
@@ -321,5 +322,26 @@ function void play_note(int pitch, float duration, int voice_index) {
         oscSender.addInt(pitch);
         oscSender.addFloat(duration * (60.0 / beatsPerMinute));
         <<< "Message sent with pitch " + pitch + " and duration " + duration + " and voice " + voice_index>>>;
+    }
+}
+
+function void set_instrument_handler() {
+    oscReceiver.event("/lpc/maestro/instrument, ii") @=> OscEvent set_instrument_event;
+    
+    while (true) {
+        set_instrument_event => now; // wait for event to arrive
+        <<< "Got set instrument event." >>>;
+    
+        int voice_index;
+        int instrument_index;
+        
+        while (set_instrument_event.nextMsg() != 0) {
+            set_instrument_event.getInt() => voice_index;
+            set_instrument_event.getInt() => instrument_index;
+            
+            oscSender.startMsg("/lpc/sound/voice" + voice_index + ", i");
+            oscSender.addInt(instrument_index);
+            <<< "Instrument message passed along." >>>;
+        }
     }
 }

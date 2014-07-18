@@ -274,23 +274,23 @@ var duration_to_float = function(text) {
 	var duration = 1;
 	
 	if (text == "thirty-second")
-		duration = 0.03125;
-	if (text == "sixteenth")
-		duration = 0.0625;
-	if (text == "eighth")
 		duration = 0.125;
-	else if (text == "quarter")
+	if (text == "sixteenth")
 		duration = 0.25;
-	else if (text == "half")
+	if (text == "eighth")
 		duration = 0.5;
-	else if (text == "one")
+	else if (text == "quarter")
 		duration = 1;
-	else if (text == "two")
+	else if (text == "half")
 		duration = 2;
-	else if (text == "three")
-		duration = 3;
-	else if (text == "four")
+	else if (text == "one")
 		duration = 4;
+	else if (text == "two")
+		duration = 8;
+	else if (text == "three")
+		duration = 12;
+	else if (text == "four")
+		duration = 16;
 		
 	return duration;
 };
@@ -526,7 +526,7 @@ Blockly.Language.music_set_instrument = {
 			.appendTitle("set")
 			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select")
 			.appendTitle("instrument to")
-			.appendTitle(new Blockly.FieldDropdown([["koopatroopa", 1], ["yourface", 2], ["pleasechangeme", 3], ["seriously", 4]]), "instrument_select");
+			.appendTitle(new Blockly.FieldDropdown([["koopatroopa", "1"], ["yourface", "2"], ["pleasechangeme", "3"], ["seriously", "4"]]), "instrument_select");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
