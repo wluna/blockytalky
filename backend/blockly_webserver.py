@@ -54,35 +54,35 @@ os.chdir('/home/pi/blockytalky')
 
 max_retries = 5
 
-def load_device_settings():
-    try:
-        json_file = open('/home/coder/coder-dist/coder-base/device.json', 'r')
-        device_json = jsonpickle.decode(json_file.read())
-        device_settings = {
-                'password_hash': device_json['password_hash'],
-                'device_name': device_json['device_name'],
-                'hostname': device_json['hostname'],
-                'coder_owner': device_json['coder_owner'],
-                'coder_color': device_json['coder_color']
-                }
-        json_file.close()
-    except Exception as e:
-        logger.exception('Failed to open device settings file:')
-    return device_settings
+# def load_device_settings():
+#     try:
+#         json_file = open('/home/coder/coder-dist/coder-base/device.json', 'r')
+#         device_json = jsonpickle.decode(json_file.read())
+#         device_settings = {
+#                 'password_hash': device_json['password_hash'],
+#                 'device_name': device_json['device_name'],
+#                 'hostname': device_json['hostname'],
+#                 'coder_owner': device_json['coder_owner'],
+#                 'coder_color': device_json['coder_color']
+#                 }
+#         json_file.close()
+#     except Exception as e:
+#         logger.exception('Failed to open device settings file:')
+#     return device_settings
 
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
-            logger.info('Incorrect login attempt')
-            return authenticate()
-        return f(*args, **kwargs)
-    return decorated
+# def requires_auth(f):
+#     @wraps(f)
+#     def decorated(*args, **kwargs):
+#         auth = request.authorization
+#         if not auth or not check_auth(auth.username, auth.password):
+#             logger.info('Incorrect login attempt')
+#             return authenticate()
+#         return f(*args, **kwargs)
+#     return decorated
 
-def check_auth(username, password):
-    return (username == device_settings['device_name'] and
-            bcrypt.check_password_hash(device_settings['password_hash'], password))
+# def check_auth(username, password):
+#     return (username == device_settings['device_name'] and
+#             bcrypt.check_password_hash(device_settings['password_hash'], password))
 
 def restart_comms_module():
     cmd = ['sudo python /home/pi/blockytalky/backend/comms_module.py']
@@ -141,7 +141,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/blockly', methods = ['GET','POST'])
-@requires_auth
+#@requires_auth
 def blockly():
     startMsg = Message('name', None, 'HwCmd', Message.createImage(pin13=0))
     startMsg = Message.encode(startMsg)
@@ -152,7 +152,7 @@ def blockly():
     return render_template('code.html')
 
 @app.route('/upload', methods = ['GET', 'POST'])
-@requires_auth
+#@requires_auth
 def upload():
     startTime = None
     endTime = None
@@ -251,7 +251,7 @@ def convert_usercode(python_code):
     return header_text + python_code + footer_text 
 
 @app.route('/stop', methods = ['GET', 'POST'])
-@requires_auth
+#@requires_auth
 def stop():
     logger.info('Issuing kill command')
     stop_user_script()
@@ -290,7 +290,7 @@ def update_sensors(sensors, num_tries=0):
         retry_request(request=update_sensors, action='update sensors', num_tries=num_tries)
 
 @app.route('/update', methods = ['GET', 'POST'])
-@requires_auth
+# @requires_auth
 def update():
     sensors = [request.form['sensor1'],
                request.form['sensor2'],
@@ -301,7 +301,7 @@ def update():
     return 'OK'
 
 @app.route('/run', methods = ['GET', 'POST'])
-@requires_auth
+# @requires_auth
 def start():
     logger.info('Running code on robot')
     # commands.getstatusoutput('python /home/pi/code/test.py')
@@ -313,7 +313,7 @@ def start():
     return 'OK'
 
 @app.route('/load', methods = ['GET', 'POST'])
-@requires_auth
+#@requires_auth
 def load():
     logger.info('Loading Blockly code')
     url = url_for('static', filename='rawxml.txt', t=time.time())
@@ -337,5 +337,5 @@ if __name__ == '__main__':
     logger.addHandler(globalHandler)
     logger.setLevel(logging.INFO)
 
-    device_settings = load_device_settings()
+    #device_settings = load_device_settings()
     app.run(host = '0.0.0.0')
