@@ -324,6 +324,7 @@ Blockly.Language.music_create_phrase = {
         .appendTitle("create a phrase with");
     this.appendValueInput('ADD1');
     this.appendValueInput('ADD2');
+    this.appendValueInput('ADD3');
     this.setOutput(true, 'notes');
     this.setMutator(new Blockly.Mutator(['phrase_create_with_item']));
     this.setTooltip("Creates a list of musical notes and/or rests.");
