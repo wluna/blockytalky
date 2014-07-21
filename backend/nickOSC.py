@@ -98,15 +98,20 @@ def start_playing_with(notes, voice):
 def stop_playing(voice):
 	print "at stop_playing"
 	on_beat_stop_playing(0., voice)
-
-# Sets the tempo of the maestro module by sending a
-# tempo message
-def set_tempo(bpm):
+	
+# Sets the tempo of the maestro module, optionally
+# aligned to a beat fraction
+def on_beat_set_tempo(bpm, beat_fraction=0.):
 	address = "/lpc/maestro/tempo"
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	message.append(float(bpm))
+	message.append(float(beat_fraction))
 	send_message_to_maestro(message, address)
+
+# Sets the tempo of the maestro module
+def set_tempo(bpm):
+	on_beat_set_tempo(bpm, 0.)
 	
 # combines two phrases into one
 def combine_phrase(notes1, notes2):

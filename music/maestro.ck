@@ -6,6 +6,8 @@ int loop_shred_tracker[MAX_SHRED_STORAGE];
 int should_exit_tracker[MAX_SHRED_STORAGE];
 128 => int PHRASE_SIZE;
 
+now => time zero_time;
+
 // Set up OSC
 OscRecv oscReceiver;
 1111 => oscReceiver.port;
@@ -24,7 +26,7 @@ spork ~ on_beat_change_voice_handler();
 spork ~ set_instrument_handler();
 
 // Set up the main thread to receive TEMPO messages
-oscReceiver.event("/lpc/maestro/tempo, f") @=> OscEvent tempo_event;
+oscReceiver.event("/lpc/maestro/tempo, ff") @=> OscEvent tempo_event;
 
 // Must kill time (staying alive) to keep child threads alive
 // Here we'll also handle TEMPO message events
@@ -33,7 +35,19 @@ while (true) {
     <<< "Got tempo event." >>>;
     // assign tempo
     while (tempo_event.nextMsg() != 0) {
+        // Get data from event message
+        tempo_event.getFloat() => float newTempo;
+        tempo_event.getFloat() => float alignment_fraction;
+        
+        // wait until beat alignment if necessary
+        wait_until_alignment(alignment_fraction);
+        
         tempo_event.getFloat() => beatsPerMinute;
+        // reset zero_point in time so that
+        // tempo changes don't affect beat
+        // alignment weirdly (just starts counting
+        // from the time tempo is set)
+        now => zero_time;
         <<< "BPM set to " + beatsPerMinute >>>;
     }
 }
@@ -269,9 +283,7 @@ function void play_phrase_shred(int pitches[], float durations[], float alignmen
     }
 }
 
-// Actual phrase-looping shred
-// use beat_alignment_fraction of 0 to play now
-function void loop_phrase_shred(int pitches[], float durations[], float alignment_fraction, int voice_index) {
+function void wait_until_alignment(float alignment_fraction) {
     // if beat fraction =/= 0
     if (alignment_fraction != 0.0) {
         // calculate time until beat-fraction alignment
@@ -281,8 +293,15 @@ function void loop_phrase_shred(int pitches[], float durations[], float alignmen
         // synchronize to period of align_target
         <<< "Gonna wait for timing" >>>;
         align_target::second => dur T;
-        T - (now % T) => now;
+        T - ((now - zero_time) % T) => now;
     }
+}
+
+// Actual phrase-looping shred
+// use beat_alignment_fraction of 0 to play now
+function void loop_phrase_shred(int pitches[], float durations[], float alignment_fraction, int voice_index) {
+    // wait for beat alignment
+    wait_until_alignment(alignment_fraction);
     
     // Start looping phrase
     while (true) {
