@@ -400,7 +400,6 @@ Blockly.Language.music_create_phrase = {
     var x = 0;
     while (itemBlock) {
       var input = this.getInput('ADD' + x);
-	  console.log("Create phrase: " + input)
       itemBlock.valueConnection_ = input && input.connection.targetConnection;
       x++;
       itemBlock = itemBlock.nextConnection &&
@@ -441,7 +440,7 @@ Blockly.Python.music_create_phrase = function() {
   var code = new Array(this.itemCount_);
   for (var n = 0; n < this.itemCount_; n++) {
     code[n] = Blockly.Python.valueToCode(this, 'ADD' + n,
-        Blockly.Python.ORDER_NONE) || 'None';
+        Blockly.Python.ORDER_NONE) || "(-1, 0.0)";
   }
   code = '[' + code.join(', ') + ']';
   return [code, Blockly.Python.ORDER_ATOMIC];
