@@ -38,7 +38,7 @@ Blockly.Language.procedures_defnoreturn = {
         .appendTitle('', 'PARAMS');
     this.appendStatementInput('STACK')
         .appendTitle(Blockly.LANG_PROCEDURES_DEFNORETURN_DO);
-    this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+    //this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
     this.setTooltip(Blockly.LANG_PROCEDURES_DEFNORETURN_TOOLTIP);
     this.arguments_ = [];
   },
