@@ -108,7 +108,7 @@ Blockly.Language.motor_set= {
     init: function() {
     this.setColour(300);
     this.appendDummyInput("")
-        .appendTitle("Set motor")
+        .appendTitle("set motor")
             .appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], 
                 ["3","3"],["4","4"],["All","All"]]), 'motor_num');
       /*this.appendDummyInput()
@@ -133,7 +133,7 @@ Blockly.Language.light_set= {
     init: function() {
     this.setColour(300);
     this.appendDummyInput("")
-        .appendTitle("Set light on motor port")
+        .appendTitle("set light on motor port")
             .appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], 
                 ["3","3"],["4","4"],["All","All"]]), 'motor_num');
       /*this.appendDummyInput()
@@ -152,21 +152,17 @@ Blockly.Language.light_set= {
     }
 };
 
-
-
-Blockly.Language.motor_get_encoder= {
+Blockly.Language.motor_all_stop= {
     category: 'Motors',
-    helpUrl: '',
+    helpUrl: 'www.google.com',
     init: function() {
-    this.setColour(300);
-    this.appendDummyInput("")
-        .appendTitle("Encoder Value");
-    this.appendDummyInput("")
-        .appendTitle("Motor")
-            .appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], ["3","3"], ["4","4"]]), 'enc');
-    this.setInputsInline(true);
-    this.setOutput(true,'Number');
-    this.setTooltip('Returns absolute rotation of specified motor');
+	this.setColour(300);
+	this.appendDummyInput("")
+	    .appendTitle("stop all motors");
+	this.setOutput(false);
+	this.setPreviousStatement(true);
+	this.setNextStatement(true);
+	this.setTooltip('stop all motors');
     }
 };
 
@@ -176,10 +172,9 @@ Blockly.Language.motor_get_encoder= {
     init: function() {
     this.setColour(300);
     this.appendDummyInput("")
-        .appendTitle("Encoder Value");
+        .appendTitle("encoder value of motor");
     this.appendDummyInput("")
-        .appendTitle("Motor")
-            .appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], ["3","3"], ["4","4"]]), 'enc');
+        .appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], ["3","3"], ["4","4"]]), 'enc');
     this.setInputsInline(true);
     this.setOutput(true,'Number');
     this.setTooltip('Returns absolute rotation of specified motor');
@@ -267,6 +262,19 @@ Blockly.Language.led_set= {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip('Set LEDs');
+  }
+};  
+
+Blockly.Language.time_sleep= {
+    category: 'Time',
+    helpUrl: '',
+    init: function() {
+	this.setColour(300);
+	this.appendDummyInput("")
+	    .appendTitle('Wait for')
+            .appendTitle(new Blockly.FieldTextInput('1000', Blockly.Language.math_number.validator), 'time_sleep');
+     this.appendDummyInput("")
+	    .appendTitle('ms');
     this.setInputsInline(true);
     this.setOutput(false);
     this.setPreviousStatement(true);
@@ -880,3 +888,4 @@ Blockly.Python.events_when_sensor_range = function() {
     unique_id += 1;
     return code;
 };
+

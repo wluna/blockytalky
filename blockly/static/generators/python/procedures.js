@@ -41,7 +41,7 @@ Blockly.Python.procedures_defreturn = function() {
     }
   }
   globals = globals.length ? '  global ' + globals.join(', ') + '\n' : '';
-  var funcName = Blockly.Python.variableDB_.getName(this.getTitleValue('NAME'),
+  var funcName = '_'+Blockly.Python.variableDB_.getName(this.getTitleValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
   var branch = Blockly.Python.statementToCode(this, 'STACK');
   if (Blockly.Python.INFINITE_LOOP_TRAP) {
@@ -60,7 +60,7 @@ Blockly.Python.procedures_defreturn = function() {
     args[x] = Blockly.Python.variableDB_.getName(this.arguments_[x],
         Blockly.Variables.NAME_TYPE);
   }
-  var code = 'def ' + funcName + '(' + args.join(', ') + '):\n' +
+  var code = 'def ' + funcName + '(self,' + args.join(', ') + '):\n' +
       globals + branch + returnValue;
   code = Blockly.Python.scrub_(this, code);
   Blockly.Python.definitions_[funcName] = code;
@@ -74,27 +74,29 @@ Blockly.Python.procedures_defnoreturn =
 
 Blockly.Python.procedures_callreturn = function() {
   // Call a procedure with a return value.
-  var funcName = Blockly.Python.variableDB_.getName(this.getTitleValue('NAME'),
+  var funcName = '_'+Blockly.Python.variableDB_.getName(this.getTitleValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
   var args = [];
   for (var x = 0; x < this.arguments_.length; x++) {
     args[x] = Blockly.Python.valueToCode(this, 'ARG' + x,
         Blockly.Python.ORDER_NONE) || 'None';
   }
-  var code = funcName + '(' + args.join(', ') + ')';
+  var code = 'self.' + funcName + '(' + args.join(', ') + ')';
+  console.log(self);
   return [code, Blockly.Python.ORDER_FUNCTION_CALL];
 };
 
 Blockly.Python.procedures_callnoreturn = function() {
   // Call a procedure with no return value.
-  var funcName = Blockly.Python.variableDB_.getName(this.getTitleValue('NAME'),
+  var funcName = '_'+Blockly.Python.variableDB_.getName(this.getTitleValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
   var args = [];
   for (var x = 0; x < this.arguments_.length; x++) {
     args[x] = Blockly.Python.valueToCode(this, 'ARG' + x,
         Blockly.Python.ORDER_NONE) || 'None';
   }
-  var code = funcName + '(' + args.join(', ') + ')\n';
+  var code = 'self.' + funcName + '(' + args.join(', ') + ')\n';
+  console.log(code);
   return code;
 };
 

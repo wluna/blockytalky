@@ -50,6 +50,7 @@ connection2 = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'
 channel2 = connection2.channel()
 channel2.queue_declare(queue="Message")
 
+
 os.chdir('/home/pi/blockytalky')
 
 max_retries = 5
@@ -210,14 +211,15 @@ def convert_usercode(python_code):
 
         elif python_code[i][:4] == "def ":
             func = python_code[i][python_code[i].find(" ")+1:python_code[i].find("(")]
-            if variables != "\n      global ":
-                python_code[i] += variables[:-2]
-            if func == "run_continuously":
-                python_code[i] += "\n      for f in self.whiles: \n        f() \n"    
-            if func[:2] == "wl":
-                while_functions += "        self.whiles.append(self." + func + ") \n"
-            else:    
-                callback_functions += "        self.callbacks.append(self." + func + ") \n"
+            if func[0] != "_":
+                if variables != "\n      global ":
+                    python_code[i] += variables[:-2]
+                if func == "run_continuously":
+                    python_code[i] += "\n      for f in self.whiles: \n        f() \n"    
+                if func[:2] == "wl":
+                    while_functions += "        self.whiles.append(self." + func + ") \n"
+                else:    
+                    callback_functions += "        self.callbacks.append(self." + func + ") \n"
             comment = False
             while not (python_code[i].isspace() or python_code[i] == ""):
                 i += 1
