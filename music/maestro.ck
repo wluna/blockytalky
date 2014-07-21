@@ -36,16 +36,7 @@ while (true) {
     // assign tempo
     while (tempo_event.nextMsg() != 0) {
         // Get data from event message
-        tempo_event.getFloat() => float newTempo;
-        
-        // wait until beat alignment
-        wait_until_alignment(1.0);
-        
-        // Set 'epoch' to the current time
-        now => zero_time;
-        
-        // Actually set new tempo
-        newTempo => beatsPerMinute;
+        tempo_event.getFloat() => beatsPerMinute;
         
         <<< "BPM set to " + beatsPerMinute >>>;
     }
