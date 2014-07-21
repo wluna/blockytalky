@@ -26,7 +26,7 @@ spork ~ on_beat_change_voice_handler();
 spork ~ set_instrument_handler();
 
 // Set up the main thread to receive TEMPO messages
-oscReceiver.event("/lpc/maestro/tempo, ff") @=> OscEvent tempo_event;
+oscReceiver.event("/lpc/maestro/tempo, f") @=> OscEvent tempo_event;
 
 // Must kill time (staying alive) to keep child threads alive
 // Here we'll also handle TEMPO message events
@@ -37,17 +37,16 @@ while (true) {
     while (tempo_event.nextMsg() != 0) {
         // Get data from event message
         tempo_event.getFloat() => float newTempo;
-        tempo_event.getFloat() => float alignment_fraction;
         
-        // wait until beat alignment if necessary
-        wait_until_alignment(alignment_fraction);
+        // wait until beat alignment
+        wait_until_alignment(1.0);
         
-        tempo_event.getFloat() => beatsPerMinute;
-        // reset zero_point in time so that
-        // tempo changes don't affect beat
-        // alignment weirdly (just starts counting
-        // from the time tempo is set)
+        // Set 'epoch' to the current time
         now => zero_time;
+        
+        // Actually set new tempo
+        newTempo => beatsPerMinute;
+        
         <<< "BPM set to " + beatsPerMinute >>>;
     }
 }
@@ -157,27 +156,14 @@ function void on_beat_stop_phrase_handler() {
         // Find all shreds that need to be stopped in the shred tracking array
         // based on voice index matching
         // But first wait for beat alignment if necessary
-        if (beat_alignment_fraction != 0.0) {
-            // calculate time until beat-fraction alignment
-            60.0 / beatsPerMinute => float seconds_per_beat;
-            seconds_per_beat * beat_alignment_fraction => float align_target;
-            
-            // synchronize to period of align_target
-            <<< "Gonna wait for timing" >>>;
-            align_target::second => dur T;
-            T - (now % T) => now;
-        }
+        wait_until_alignment(beat_alignment_fraction);
         for (0 => int i; i < MAX_SHRED_STORAGE; i++) {
             // Check if shred still exists (id != 0) and also is not null
             if (shreds[i] != null) {
                 if (shreds[i].id() != 0) {
-                    <<< "shred tracker: " + loop_shred_tracker[i] >>>;
-                    <<< "voice index: " + voice_index >>>;
                     if (loop_shred_tracker[i] == voice_index) {
                         // Exit out of any shred that uses this instrument
-                        <<< "Match!" >>>;
                         voice_index => should_exit_tracker[i];
-                        <<< "Set should_exit_tracker." >>>;
                     }
                 }
             }
@@ -221,27 +207,14 @@ function void on_beat_change_voice_handler() {
         // Find all shreds that need to be stopped in the shred tracking array
         // based on instrument name matching
         // But first wait for beat alignment if necessary
-        if (beat_alignment_fraction != 0.0) {
-            // calculate time until beat-fraction alignment
-            60.0 / beatsPerMinute => float seconds_per_beat;
-            seconds_per_beat * beat_alignment_fraction => float align_target;
-            
-            // synchronize to period of align_target
-            <<< "Gonna wait for timing" >>>;
-            align_target::second => dur T;
-            T - (now % T) => now;
-        }
+        wait_until_alignment(beat_alignment_fraction);
         for (0 => int i; i < MAX_SHRED_STORAGE; i++) {
             // Check if shred still exists (id != 0) and also is not null
             if (shreds[i] != null) {
                 if (shreds[i].id() != 0) {
-                    <<< "shred tracker: " + loop_shred_tracker[i] >>>;
-                    <<< "voice index: " + voice_index >>>;
                     if (loop_shred_tracker[i] == voice_index) {
                         // Exit out of any shred that uses this instrument
-                        <<< "Match!" >>>;
                         voice_index => should_exit_tracker[i];
-                        <<< "Set should_exit_tracker." >>>;
                     }
                 }
             }
@@ -261,17 +234,8 @@ function void on_beat_change_voice_handler() {
 // Actual phrase-playing shred
 // use beat_alignment_fraction of 0 to play now
 function void play_phrase_shred(int pitches[], float durations[], float alignment_fraction, int voice_index) {
-    // if beat fraction =/= 0
-    if (alignment_fraction != 0.0) {
-        // calculate time until beat-fraction alignment
-        60.0 / beatsPerMinute => float seconds_per_beat;
-        seconds_per_beat * alignment_fraction => float align_target;
-        
-        // synchronize to period of align_target
-        <<< "Gonna wait for timing" >>>;
-        align_target::second => dur T;
-        T - (now % T) => now;
-    }
+    // wait for beat alignment
+    wait_until_alignment(alignment_fraction);
     
     // Start playing phrase
     for (0 => int i; i < PHRASE_SIZE; i++) {
@@ -340,7 +304,6 @@ function void play_note(int pitch, float duration, int voice_index) {
         oscSender.startMsg(address + ", i, f");
         oscSender.addInt(pitch);
         oscSender.addFloat(duration * (60.0 / beatsPerMinute));
-        <<< "Message sent with pitch " + pitch + " and duration " + duration + " and voice " + voice_index>>>;
     }
 }
 
