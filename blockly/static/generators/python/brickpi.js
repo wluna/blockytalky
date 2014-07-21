@@ -219,7 +219,7 @@ Blockly.Language.pin_out= {
             .appendTitle(new Blockly.FieldDropdown([["HIGH", "1"], ["LOW", "0"]]), 'gpio_out_value');
     this.setInputsInline(true);
     this.setOutput(false);
-    this.setPreviousStatemen(true);
+    this.setPreviousStatement(true);
         this.setNextStatement(true);
     }
 };
