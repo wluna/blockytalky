@@ -400,6 +400,7 @@ Blockly.Language.music_create_phrase = {
     var x = 0;
     while (itemBlock) {
       var input = this.getInput('ADD' + x);
+	  console.log("Create phrase: " + input)
       itemBlock.valueConnection_ = input && input.connection.targetConnection;
       x++;
       itemBlock = itemBlock.nextConnection &&
