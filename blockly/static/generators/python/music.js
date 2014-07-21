@@ -179,7 +179,7 @@ Blockly.Language.music_note = {
 	init: function() {
 		this.setColour(0);
 		this.appendDummyInput("")
-			.appendTitle(new Blockly.FieldDropdown([["1/4", "quarter"], ["1/32", "thirty-second"], ["1/16", "sixteenth"], ["1/8", "eighth"], ["1/2", "half"], ["whole", "one"]]), "duration_select")
+			.appendTitle(new Blockly.FieldDropdown([["1/4", "1"], ["1/32", "0.125"], ["1/16", "0.25"], ["1/8", "0.5"], ["1/2", "2"], ["whole", "4"]]), "duration_select")
 			.appendTitle("note")
 			.appendTitle(new Blockly.FieldTextInput("C4"), "note_text_input");
 		this.setInputsInline(true);
@@ -264,37 +264,6 @@ var text_to_midi = function(text) {
 	
 };
 
-// Helper function for notes
-// converts the argument text, like quarter, half, one, two..
-// to a corresponding float value (0.25, 0.5, 1, 2...)
-// Supports 1/8, 1/4, 1/2, 1, 2, 3, 4.
-// Returns 1 if given an unsupported argument.
-
-var duration_to_float = function(text) {
-	var duration = 1;
-	
-	if (text == "thirty-second")
-		duration = 0.125;
-	if (text == "sixteenth")
-		duration = 0.25;
-	if (text == "eighth")
-		duration = 0.5;
-	else if (text == "quarter")
-		duration = 1;
-	else if (text == "half")
-		duration = 2;
-	else if (text == "one")
-		duration = 4;
-	else if (text == "two")
-		duration = 8;
-	else if (text == "three")
-		duration = 12;
-	else if (text == "four")
-		duration = 16;
-		
-	return duration;
-};
-
 // Generator for Specific Note
 
 Blockly.Python.music_note = function() {
@@ -308,11 +277,7 @@ Blockly.Python.music_note = function() {
 		// We failed, will return rest
 	}
 	
-	var duration = 1;
-	// Determine note duration
-	duration = duration_to_float(dropdown_duration_select);
-	
-	var code = "(" + midi_note + ", " + duration + ")";
+	var code = "(" + midi_note + ", " + dropdown_duration_select + ")";
 	
 	return [code, Blockly.Python.ORDER_NONE];
 };
@@ -327,7 +292,7 @@ Blockly.Language.music_rest = {
 	init: function() {
 		this.setColour(0);
 		this.appendDummyInput("")
-			.appendTitle(new Blockly.FieldDropdown([["1/4", "quarter"], ["1/32", "thirty-second"], ["1/16", "sixteenth"], ["1/8", "eighth"], ["1/2", "half"], ["whole", "one"]]), "duration_select")
+			.appendTitle(new Blockly.FieldDropdown([["1/4", "1"], ["1/32", "0.125"], ["1/16", "0.25"], ["1/8", "0.5"], ["1/2", "2"], ["whole", "4"]]), "duration_select")
 			.appendTitle(" note rest");
 		this.setInputsInline(true);
 		this.setOutput(true, "notes");
@@ -340,11 +305,7 @@ Blockly.Language.music_rest = {
 Blockly.Python.music_rest = function() {
 	var dropdown_duration_select = this.getTitleValue('duration_select');
 	
-	var duration = 1;
-	// Determine note duration
-	duration = duration_to_float(dropdown_duration_select);
-	
-	var code = "(-1, " + duration + ")";
+	var code = "(-1, " + dropdown_duration_select + ")";
 	return [code, Blockly.Python.ORDER_NONE];
 };
 
@@ -366,7 +327,7 @@ Blockly.Language.music_create_phrase = {
     this.setOutput(true, 'notes');
     this.setMutator(new Blockly.Mutator(['phrase_create_with_item']));
     this.setTooltip("Creates a list of musical notes and/or rests.");
-    this.itemCount_ = 3;
+    this.itemCount_ = 4;
   },
   mutationToDom: function(workspace) {
     var container = document.createElement('mutation');
@@ -580,7 +541,7 @@ Blockly.Language.music_on_beat_play_with = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("On the next")
-			.appendTitle(new Blockly.FieldDropdown([["beat", "beat"], ["1/2 beat", "half_beat"], ["1/4 beat", "quarter_beat"], ["1/8 beat", "eighth_beat"], ["two beats", "two_beats"], ["three beats", "three_beats"], ["four beats", "four_beats"]]), "beat_select")
+			.appendTitle(new Blockly.FieldDropdown([["beat", "1"], ["1/2 beat", "0.5"], ["1/4 beat", "0.25"], ["1/8 beat", "0.125"], ["two beats", "2"], ["three beats", "3"], ["four beats", "4"]]), "beat_select")
 			.appendTitle("play");
 		this.appendValueInput("notes_input")
 			.setCheck("notes");
@@ -594,33 +555,6 @@ Blockly.Language.music_on_beat_play_with = {
 	}
 };
 
-// Helper function for notes
-// converts the argument text, like quarter, half, one, two..
-// to a corresponding float value (0.25, 0.5, 1, 2...)
-// Supports 1/8, 1/4, 1/2, 1, 2, 3, 4.
-// Returns 1 if given an unsupported argument.
-
-var beat_alignment_to_float = function(text) {
-	var beat_align = 1;
-	
-	if (text == "eighth_beat")
-		beat_align = 0.125;
-	else if (text == "quarter_beat")
-		beat_align = 0.25;
-	else if (text == "half_beat")
-		beat_align = 0.5;
-	else if (text == "beat")
-		beat_align = 1;
-	else if (text == "two_beats")
-		beat_align = 2;
-	else if (text == "three_beats")
-		beat_align = 3;
-	else if (text == "four_beats")
-		beat_align = 4;
-		
-	return beat_align;
-};
-
 // Generator for On Beat Play with Instrument
 
 Blockly.Python.music_on_beat_play_with = function () {
@@ -628,11 +562,9 @@ Blockly.Python.music_on_beat_play_with = function () {
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_NONE);
 	var dropdown_voice_select = this.getTitleValue('voice_select');
 	
-	var beat_align = beat_alignment_to_float(dropdown_beat_select);
-	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	code += "nickOSC.on_beat_play_with(" + value_notes_input + ", " + beat_align + ", " + dropdown_voice_select + ")\n";
+	code += "nickOSC.on_beat_play_with(" + value_notes_input + ", " + dropdown_beat_select + ", " + dropdown_voice_select + ")\n";
 	
 	return code;
 };
@@ -649,7 +581,7 @@ Blockly.Language.music_start_playing_with = {
 	init: function() {
 		this.setColour(0);
 		this.appendDummyInput("")
-			.appendTitle("start playing");
+			.appendTitle("start looping");
 		this.appendValueInput("notes_input")
 			.setCheck("notes");
 		this.appendDummyInput("")
@@ -715,9 +647,9 @@ Blockly.Language.music_on_beat_start_playing_with = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("On the next")
-			.appendTitle(new Blockly.FieldDropdown([["beat", "beat"], ["1/2 beat", "half_beat"], ["1/4 beat", "quarter_beat"], ["1/8 beat", "eighth_beat"]]), "beat_select");
+			.appendTitle(new Blockly.FieldDropdown([["beat", "1"], ["1/2 beat", "0.5"], ["1/4 beat", "0.25"], ["1/8 beat", "0.125"], ["two beats", "2"], ["three beats", "3"], ["four beats", "4"]]), "beat_select");
 		this.appendDummyInput("")
-			.appendTitle("start playing");
+			.appendTitle("start looping");
 		this.appendValueInput("notes_input")
 			.setCheck("notes");
 		this.appendDummyInput("")
@@ -737,11 +669,9 @@ Blockly.Python.music_on_beat_start_playing_with = function () {
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_NONE);
 	var dropdown_voice_select = this.getTitleValue('voice_select');
 	
-	var beat_align = beat_alignment_to_float(dropdown_beat_select);
-	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	code += "nickOSC.on_beat_start_playing_with(" + value_notes_input + ", " + beat_align + ", " + dropdown_voice_select + ")\n";
+	code += "nickOSC.on_beat_start_playing_with(" + value_notes_input + ", " + dropdown_beat_select + ", " + dropdown_voice_select + ")\n";
 	
 	return code;
 };
@@ -758,7 +688,7 @@ Blockly.Language.music_on_beat_stop_playing = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("On the next")
-			.appendTitle(new Blockly.FieldDropdown([["beat", "beat"], ["1/2 beat", "half_beat"], ["1/4 beat", "quarter_beat"], ["1/8 beat", "eighth_beat"]]), "beat_select");
+			.appendTitle(new Blockly.FieldDropdown([["beat", "1"], ["1/2 beat", "0.5"], ["1/4 beat", "0.25"], ["1/8 beat", "0.125"], ["two beats", "2"], ["three beats", "3"], ["four beats", "4"]]), "beat_select");
 		this.appendDummyInput("")
 			.appendTitle("stop playing")
 			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select");
@@ -775,9 +705,7 @@ Blockly.Python.music_on_beat_stop_playing = function () {
 	var dropdown_beat_select = this.getTitleValue('beat_select');
 	var dropdown_voice_select = this.getTitleValue('voice_select');
 	
-	var beat_align = beat_alignment_to_float(dropdown_beat_select);
-	
-	var code = "nickOSC.on_beat_stop_playing(" + beat_align + ", " + dropdown_voice_select + ")\n";
+	var code = "nickOSC.on_beat_stop_playing(" + dropdown_beat_select + ", " + dropdown_voice_select + ")\n";
 	
 	return code;
 };
@@ -824,7 +752,7 @@ Blockly.Language.music_change_voice = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("On the next")
-			.appendTitle(new Blockly.FieldDropdown([["beat", "beat"], ["1/2 beat", "half_beat"], ["1/4 beat", "quarter_beat"], ["1/8 beat", "eighth_beat"]]), "beat_select")
+			.appendTitle(new Blockly.FieldDropdown([["beat", "1"], ["1/2 beat", "0.5"], ["1/4 beat", "0.25"], ["1/8 beat", "0.125"], ["two beats", "2"], ["three beats", "3"], ["four beats", "4"]]), "beat_select")
 			.appendTitle("change")
 			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select")
 			.appendTitle("to");
@@ -844,11 +772,9 @@ Blockly.Python.music_change_voice = function () {
 	var dropdown_voice_select = this.getTitleValue('voice_select');
 	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_NONE);
 	
-	var beat_align = beat_alignment_to_float(dropdown_beat_select);
-	
 	var code = "";
 	code += "print " + value_notes_input + "\n"; // DEBUG
-	code += "nickOSC.change_voice(" + value_notes_input + ", " + beat_align + ", " + dropdown_voice_select + ")\n";
+	code += "nickOSC.change_voice(" + value_notes_input + ", " + dropdown_beat_select + ", " + dropdown_voice_select + ")\n";
 	
 	return code;
 };
@@ -893,7 +819,7 @@ Blockly.Language.music_number_note = {
 	init: function() {
 		this.setColour(0);
 		this.appendDummyInput("")
-			.appendTitle(new Blockly.FieldDropdown([["1/4", "quarter"], ["1/32", "thirty-second"], ["1/16", "sixteenth"], ["1/8", "eighth"], ["1/2", "half"], ["whole", "one"]]), "duration_select")
+			.appendTitle(new Blockly.FieldDropdown([["1/4", "1"], ["1/32", "0.125"], ["1/16", "0.25"], ["1/8", "0.5"], ["1/2", "2"], ["whole", "4"]]), "duration_select")
 			.appendTitle("note by number: ");
 		this.appendValueInput("midi_note_input")
 			.setCheck("Number");
@@ -909,11 +835,7 @@ Blockly.Python.music_number_note = function() {
 	var value_midi_note_input = Blockly.Python.valueToCode(this, 'midi_note_input', Blockly.Python.ORDER_NONE);
 	var dropdown_duration_select = this.getTitleValue('duration_select');
 	
-	var duration = 1;
-	// Determine note duration
-	duration = duration_to_float(dropdown_duration_select);
-	
-	var code = "(" + value_midi_note_input + ", " + duration + ")";
+	var code = "(" + value_midi_note_input + ", " + dropdown_duration_select + ")";
 	
 	return [code, Blockly.Python.ORDER_NONE];
 };
