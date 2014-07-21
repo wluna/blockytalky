@@ -64,7 +64,7 @@ Blockly.Language.music_set_tempo = {
 
 Blockly.Python.music_set_tempo = function () {
 	var text_tempo = this.getTitleValue('tempo');
-	var code = "nickOSC.set_tempo(" + text_tempo + ", 0.)\n";
+	var code = "nickOSC.set_tempo(" + text_tempo + ")\n";
 	return code;
 };
 
