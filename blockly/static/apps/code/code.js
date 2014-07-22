@@ -47,14 +47,14 @@ function getScript(url, success) {
     done = false;
     // Attach handlers for all browsers
     script.onload = script.onreadystatechange = function() {
-	if (!done && (!this.readyState
+  if (!done && (!this.readyState
            || this.readyState == 'loaded'
-		      || this.readyState == 'complete')) {
+          || this.readyState == 'complete')) {
             done = true;
             success();
             script.onload = script.onreadystatechange = null;
             head.removeChild(script);
-	}
+  }
     };
     head.appendChild(script);
 }
@@ -74,140 +74,140 @@ showPrevButton: true,
 
 steps: [
     {
-	title: "Welcome to BlockyTalky",
-	content: "This is a guided tour of BlockyTalky. Press next to continue.",
-	target: "btimg",
-	placement: "right"
+  title: "Welcome to BlockyTalky",
+  content: "This is a guided tour of BlockyTalky. Press next to continue.",
+  target: "btimg",
+  placement: "right"
     },
     {
-	title: "The Toolbox",
-	content: "This is the toolbox, which contains all of the blocks you will need to program your BTU (BlockyTalky Unit).",
-	target: "toolbox",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 70
+  title: "The Toolbox",
+  content: "This is the toolbox, which contains all of the blocks you will need to program your BTU (BlockyTalky Unit).",
+  target: "toolbox",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 70
     },
     {
-	title: "The Toolbox: Logic",
-	content: "If statements, logical comparators, and more.",
-	target: "Logic",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 100
+  title: "The Toolbox: Logic",
+  content: "If statements, logical comparators, and more.",
+  target: "Logic",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 100
     },
     {
-	title: "The Toolbox: Loops",
-	content: "While loops, counters, for-each loops.",
-	target: "Loops",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 120
+  title: "The Toolbox: Loops",
+  content: "While loops, counters, for-each loops.",
+  target: "Loops",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 120
     },
     {
-	title: "The Toolbox: BT Messaging",
-	content: "Sending messages between BTUs.",
-	target: "BTM",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 145
+  title: "The Toolbox: BT Messaging",
+  content: "Sending messages between BTUs.",
+  target: "BTM",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 145
     },
     {
-	title: "The Toolbox: Facebook",
-	content: "Get information from your Facebook account.",
-	target: "FB",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 165
+  title: "The Toolbox: Facebook",
+  content: "Get information from your Facebook account.",
+  target: "FB",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 165
     },
     {
-	title: "The Toolbox: Motors",
-	content: "Control motors and read in encoder values.",
-	target: "Motors",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 190
+  title: "The Toolbox: Motors",
+  content: "Control motors and read in encoder values.",
+  target: "Motors",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 190
     },
     {
-	title: "The Toolbox: Sensors/LEDs",
-	content: "Read in from NXT sensors and control the LEDs on the BrickPi.",
-	target: "SLED",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 210
+  title: "The Toolbox: Sensors/LEDs",
+  content: "Read in from NXT sensors and control the LEDs on the BrickPi.",
+  target: "SLED",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 210
     },
     {
-	title: "The Toolbox: GPIO",
-	content: "Use the GPIO (General Purpose Input/Output) pins of the Raspberry Pi.",
-	target: "GPIO",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 230
+  title: "The Toolbox: GPIO",
+  content: "Use the GPIO (General Purpose Input/Output) pins of the Raspberry Pi.",
+  target: "GPIO",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 230
     },
     {
-	title: "The Toolbox: Math",
-	content: "Numbers, calculations, trig functions, and random number generators.",
-	target: "Math",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 250
+  title: "The Toolbox: Math",
+  content: "Numbers, calculations, trig functions, and random number generators.",
+  target: "Math",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 250
     },
     {
-	title: "The Toolbox: Variables",
-	content: "Set and get variables.",
-	target: "Variables",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 275
+  title: "The Toolbox: Variables",
+  content: "Set and get variables.",
+  target: "Variables",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 275
     },
     {
-	title: "The Toolbox: Procedures",
-	content: "Create and call procedures.",
-	target: "Procedures",
-	placement: "right",
-	xOffset: 120,
-	yOffset: 295
+  title: "The Toolbox: Procedures",
+  content: "Create and call procedures.",
+  target: "Procedures",
+  placement: "right",
+  xOffset: 120,
+  yOffset: 295
     },
     {
-	title: "Controlling your BTU: Running code",
-	content: "Run the current code on the BlockyTalky unit",
-	target: "runButton",
-	placement: "bottom"
+  title: "Controlling your BTU: Running code",
+  content: "Run the current code on the BlockyTalky unit",
+  target: "runButton",
+  placement: "bottom"
     },
     {
-	title: "Controlling your BTU: Stopping code",
-	content: "Stop the currently running code on the BlockyTalky unit",
-	target: "stopButton",
-	placement: "bottom"
+  title: "Controlling your BTU: Stopping code",
+  content: "Stop the currently running code on the BlockyTalky unit",
+  target: "stopButton",
+  placement: "bottom"
     },
     {
-	title: "Controlling your BTU: Uploading code",
-	content: "Upload your current code to the BlockyTalky unit",
-	target: "uploadButton",
-	placement: "bottom"
+  title: "Controlling your BTU: Uploading code",
+  content: "Upload your current code to the BlockyTalky unit",
+  target: "uploadButton",
+  placement: "bottom"
     },
     {
-	title: "Controlling your BTU: Loading code",
-	content: "Load the existing code on the BlockyTalky unit",
-	target: "loadButton",
-	placement: "bottom"
+  title: "Controlling your BTU: Loading code",
+  content: "Load the existing code on the BlockyTalky unit",
+  target: "loadButton",
+  placement: "bottom"
     },
     {
-	title: "Controlling your BTU: Clearing workspace",
-	content: "Delete all blocks in the workspace",
-	target: "trashButton",
-	placement: "bottom"
+  title: "Controlling your BTU: Clearing workspace",
+  content: "Delete all blocks in the workspace",
+  target: "trashButton",
+  placement: "bottom"
     },
     {
-	title: "Status Bar",
-	content: "Shows the current status of your BTU.",
-	target: "status",
-	placement: "left"
+  title: "Status Bar",
+  content: "Shows the current status of your BTU.",
+  target: "status",
+  placement: "left"
     },
     {
-	title: "That's it!",
-	content: "Time to try BlockyTalky yourself!",
-	target: "btimg",
-	placement: "right"
+  title: "That's it!",
+  content: "Time to try BlockyTalky yourself!",
+  target: "btimg",
+  placement: "right"
     }
       
   ]
@@ -296,6 +296,8 @@ function init(blockly) {
   loadCode();
   updateSensors();
 
+
+
   // Add to reserved word list: Local variables in execution evironment (runJS)
   // and the infinite loop detection function.
   Blockly.JavaScript.addReservedWords('code,timeouts,checkTimeout');
@@ -303,6 +305,12 @@ function init(blockly) {
   var client = Stomp.over(ws);
   client.heartbeat.outgoing = 0;
   client.heartbeat.incoming = 0;
+  var btname = window.location.hostname;
+  var namecheck = btname.substring(btname.length - 6);
+  if(namecheck == ".local"){
+    btname = btname.substring(0, btname.length - 6);
+  }
+  $("#unitname").text(btname);
 
 var d = new Date();
 var previousTime = d.getTime();
@@ -325,21 +333,21 @@ var on_message = function(m) {
         currentTime = d.getTime();
         if((currentTime - previousTime) > 1){
         if(s1 == "none"){
-          $("#sensorval1").val("-");}
+          $("#sensorval1").text("-");}
         if(s1 != "none"){
-          $("#sensorval1").val(values.content.sensors[0]);}
+          $("#sensorval1").text(values.content.sensors[0]);}
         if(s2 == "none"){
-          $("#sensorval2").val("-");}
+          $("#sensorval2").text("-");}
         if(s2 != "none"){
-          $("#sensorval2").val(values.content.sensors[1]);}
+          $("#sensorval2").text(values.content.sensors[1]);}
         if(s3 == "none"){
-          $("#sensorval3").val("-");}
+          $("#sensorval3").text("-");}
         if(s3 != "none"){
-          $("#sensorval3").val(values.content.sensors[2]);}
+          $("#sensorval3").text(values.content.sensors[2]);}
         if(s4 == "none"){
-          $("#sensorval4").val("-");}
+          $("#sensorval4").text("-");}
         if(s4 != "none"){
-          $("#sensorval4").val(values.content.sensors[3]);}
+          $("#sensorval4").text(values.content.sensors[3]);}
         previousTime = d.getTime(); }
 
 }
@@ -420,19 +428,19 @@ function finishUpload()
    var xml = getXML();
     var url = getIP()+"upload";
     $.ajax({
-	type: 'POST',
-	async: false,
-	url: url,
-	data: {
+  type: 'POST',
+  async: false,
+  url: url,
+  data: {
         'python': python,
         'xml': xml
     },
-	success: function(response){
-	    console.log(response);
-	},
-	error: function(response) {
-	    console.log(response);
-	}
+  success: function(response){
+      console.log(response);
+  },
+  error: function(response) {
+      console.log(response);
+  }
     });
     
     $("#status").text("Code uploaded to robot");
@@ -442,15 +450,15 @@ function runRobot() {
     var xml = "a";
     var url = getIP()+"run";   
     $.ajax({
-	type: 'POST',
-	url: url,
-	data: xml,
-	success: function(response){
-	    console.log(response);
-	},
-	error: function(response) {
-	    console.log(response);
-	}
+  type: 'POST',
+  url: url,
+  data: xml,
+  success: function(response){
+      console.log(response);
+  },
+  error: function(response) {
+      console.log(response);
+  }
     });
 
   $("#status").text("Code running on robot...");
@@ -472,10 +480,10 @@ function getXML() {
     //console.log(xmlText);
     //console.log(xmlText[4]);
     if(xmlText[4]== ">") {
-	xmlText= xmlText.substring(5);
-	var url= '<xml xmlns="http://www.w3.org/1999/xhtml">';
-	xmlText= url+xmlText;
-	//console.log(xmlText);
+  xmlText= xmlText.substring(5);
+  var url= '<xml xmlns="http://www.w3.org/1999/xhtml">';
+  xmlText= url+xmlText;
+  //console.log(xmlText);
     }
     var plainxml= removeWhite(xmlText);
     return plainxml;
@@ -517,15 +525,15 @@ function stopRobot() {
     var url = getIP()+"stop";
    var xml = "a"
     $.ajax({
-	type: 'POST',
-	url: url,
-	data: xml,
-	success: function(response){
-	    console.log(response);
-	},
-	error: function(response) {
-	    console.log(response);
-	}
+  type: 'POST',
+  url: url,
+  data: xml,
+  success: function(response){
+      console.log(response);
+  },
+  error: function(response) {
+      console.log(response);
+  }
     });
 
   document.getElementById('tab_xml').style.display = 'none';
@@ -541,16 +549,16 @@ function removeWhite(data) {
     var newData= "";
     var b= false;
     for(var i=0; i<data.length;i++) {
-	if(data.charAt(i)=='\n') {
-	    b= true;
+  if(data.charAt(i)=='\n') {
+      b= true;
         }
-	else if((b==true) && (data.charAt(i)== '<')) {
-	    b= false;
+  else if((b==true) && (data.charAt(i)== '<')) {
+      b= false;
             newData+=data[i];
         }
-	else if(b==false) {
-	    newData+=data[i];
-	}
+  else if(b==false) {
+      newData+=data[i];
+  }
     }
   //  console.log(newData);
     return newData;
@@ -560,10 +568,10 @@ function loadCode() {
     $("#status").text("Code loaded from robot");
 
     $.get('/load', function(data) {
-	$("#tab_xml").click();
-	$("#textarea_xml").val(data);
-	//alert(data);
-	$("#tab_blocks").click();
+  $("#tab_xml").click();
+  $("#textarea_xml").val(data);
+  //alert(data);
+  $("#tab_blocks").click();
     });
 }
 
@@ -579,29 +587,29 @@ function toPython(data) {
     var id= 'tab_python';
     // If the XML tab was open, save and render the content.
     if (document.getElementById('tab_xml').className == 'tabon') {
-	var xmlTextarea = document.getElementById('textarea_xml');
-	var xmlText = data;
-	var xmlDom = null;
-	try {
-	    xmlDom = Blockly.Xml.textToDom(xmlText);
-	} catch (e) {
-	        var q =
-		window.confirm(MSG.badXml.replace('%1', e));
-	    if (!q) {
-		// Leave the user on the XML tab.
-		return;
-	    }
-	}
-	if (xmlDom) {
-	    Blockly.mainWorkspace.clear();
-	    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xmlDom);
-	}
+  var xmlTextarea = document.getElementById('textarea_xml');
+  var xmlText = data;
+  var xmlDom = null;
+  try {
+      xmlDom = Blockly.Xml.textToDom(xmlText);
+  } catch (e) {
+          var q =
+    window.confirm(MSG.badXml.replace('%1', e));
+      if (!q) {
+    // Leave the user on the XML tab.
+    return;
+      }
+  }
+  if (xmlDom) {
+      Blockly.mainWorkspace.clear();
+      Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xmlDom);
+  }
     }
 
     // Deselect all tabs and hide all panes.
     for (var x in TABS_) {
-	document.getElementById('tab_' + TABS_[x]).className = 'taboff';
-	document.getElementById('content_' + TABS_[x]).style.display = 'none';
+  document.getElementById('tab_' + TABS_[x]).className = 'taboff';
+  document.getElementById('content_' + TABS_[x]).style.display = 'none';
     }
     // Select the active tab.
     selected = id.replace('tab_', '');

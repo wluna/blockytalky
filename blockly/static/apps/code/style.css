@@ -31,11 +31,17 @@ input[type="text"]
     font-size:24px;
 }
 
-/* Tabs */
-#tabRow>td {
-  border: 1px solid #ccc;
+#unitname {
+  font-size: 28px;
 }
+  
+.devname{
+  display: table-cell;
+  vertical-align: middle;
+}
+
 td.tabon {
+  border: 1px solid #ccc;
   border-bottom-color: #ddd !important;
   background-color: #ddd;
   padding: 5px 19px;
@@ -157,3 +163,4 @@ button.disabled {
 #status{
   font-size: 20px;
 }
+
