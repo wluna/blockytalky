@@ -125,9 +125,9 @@ def set_instrument(voice, instrument):
 	message.append(int(instrument))
 	send_message_to_maestro(message, address)
 
-def set_volume(voice, percentage):
-	print "at set_volume"
-	address = "/lpc/maestro/volume"
+def set_property(voice, percentage, property):
+	print "at set_property"
+	address = "/lpc/maestro/" + property
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	message.append(int(voice))

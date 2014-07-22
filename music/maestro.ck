@@ -25,6 +25,7 @@ spork ~ on_beat_stop_phrase_handler();
 spork ~ on_beat_change_voice_handler();
 spork ~ set_instrument_handler();
 spork ~ set_volume_handler();
+spork ~ set_bandpassfilter_handler();
 
 // Set up the main thread to receive TEMPO messages
 oscReceiver.event("/lpc/maestro/tempo, f") @=> OscEvent tempo_event;
@@ -352,6 +353,27 @@ function void set_volume_handler() {
             oscSender.startMsg("/lpc/sound/voice" + voice_index + "/volume, f");
             oscSender.addFloat(volume_arg);
             <<< "Volume message passed along." >>>;
+        }
+    }
+}
+
+function void set_bandpassfilter_handler() {
+    oscReceiver.event("/lpc/maestro/bandpassfilter, if") @=> OscEvent set_bandpassfilter_event;
+    
+    while (true) {
+        set_bandpassfilter_event => now; // wait for event to arrive
+        <<< "Got set bandpassfilter event." >>>;
+    
+        int voice_index;
+        float property_arg;
+        
+        while (set_bandpassfilter_event.nextMsg() != 0) {
+            set_bandpassfilter_event.getInt() => voice_index;
+            set_bandpassfilter_event.getFloat() => property_arg;
+            
+            oscSender.startMsg("/lpc/sound/voice" + voice_index + "/bandpassfilter, f");
+            oscSender.addFloat(property_arg);
+            <<< "Bandpassfilter message passed along." >>>;
         }
     }
 }
