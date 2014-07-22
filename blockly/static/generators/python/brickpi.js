@@ -877,11 +877,11 @@ Blockly.Python.events_when_sensor_range = function() {
     var code = 'def '+'wnr'+sensor+unique_id+'(self):'+'\n';
     if (sensor >= 1 && sensor <= 4) {
 	code += '  if self.robot["sensors"]['+(sensor-1)+'] in range('; 
-	code += lo+','+hi+') and self.robot["sensors"]['+(sensor-1);
+	code += lo+','+hi+') and self.last_robot["sensors"]['+(sensor-1);
 	code += '] not in range('+lo+','+hi+'): \n' + branch;
     } else if (sensor >= 5 && sensor <= 8) {
 	code += '  if self.robot["encoders"]['+(sensor-5)+'] in range('; 
-	code += lo+','+hi+') and self.robot["encoders"]['+(sensor-5);
+	code += lo+','+hi+') and self.last_robot["encoders"]['+(sensor-5);
 	code += '] not in range('+lo+','+hi+'): \n' + branch;
     }
 

@@ -34,7 +34,7 @@ device_settings = {
         'coder_color': ''
         }
 
-app.debug = True
+#app.debug = True
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
@@ -51,7 +51,6 @@ toSend = Message.encode(toSend)
 upMsg = Message('name', None, 'HwCmd', Message.createImage(pin13=1))
 upMsg = Message.encode(upMsg)
 channel.basic_publish(exchange='HwCmd', routing_key='', body=upMsg)
-
 
 os.chdir('/home/pi/blockytalky')
 
@@ -226,15 +225,14 @@ def convert_usercode(python_code):
 
         elif python_code[i][:4] == "def ":
             func = python_code[i][python_code[i].find(" ")+1:python_code[i].find("(")]
-            if func[0] != "_":
-                if variables != "\n      global ":
-                    python_code[i] += variables[:-2]
-                if func == "run_continuously":
-                    python_code[i] += "\n      for f in self.whiles: \n        f() \n"    
-                if func[:2] == "wl":
-                    while_functions += "        self.whiles.append(self." + func + ") \n"
-                else:    
-                    callback_functions += "        self.callbacks.append(self." + func + ") \n"
+            if variables != "\n      global ":
+                python_code[i] += variables[:-2]
+            if func == "run_continuously":
+                python_code[i] += "\n      for f in self.whiles: \n        f() \n"    
+            if func[:2] == "wl":
+                while_functions += "        self.whiles.append(self." + func + ") \n"
+            else:    
+                callback_functions += "        self.callbacks.append(self." + func + ") \n"
             comment = False
             while not (python_code[i].isspace() or python_code[i] == ""):
                 i += 1
@@ -250,8 +248,6 @@ def convert_usercode(python_code):
 
     callback_functions += "        if self.run_on_start in self.callbacks: self.callbacks.remove(self.run_on_start) \n        if self.run_continuously in self.callbacks: self.callbacks.remove(self.run_continuously) \n"
     
-    while_functions += "        True \n"
-
     python_code += "\n" + callback_functions + "\n" + while_functions + "\n"
 
     print python_code
