@@ -248,6 +248,8 @@ def convert_usercode(python_code):
 
     callback_functions += "        if self.run_on_start in self.callbacks: self.callbacks.remove(self.run_on_start) \n        if self.run_continuously in self.callbacks: self.callbacks.remove(self.run_continuously) \n"
     
+    while_functions += "        True \n"
+
     python_code += "\n" + callback_functions + "\n" + while_functions + "\n"
 
     print python_code
