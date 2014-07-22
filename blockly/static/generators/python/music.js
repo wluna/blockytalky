@@ -792,7 +792,7 @@ Blockly.Language.music_set_property = {
 		this.setColour(0);
 		this.appendDummyInput("")
 			.appendTitle("set")
-			.appendTitle(new Blockly.FieldDropdown([["volume", "1"], ["band pass filter", "2"]]), "effect_select")
+			.appendTitle(new Blockly.FieldDropdown([["volume", "volume"], ["band pass filter", "bandpassfilter"]]), "effect_select")
 			.appendTitle("of")
 			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select")
 			.appendTitle("to");
@@ -813,18 +813,7 @@ Blockly.Python.music_set_property = function () {
 	var value_number_input = Blockly.Python.valueToCode(this, 'value_input', Blockly.Python.ORDER_NONE);
 	
 	var code = "";
-	var property = "";
-	var nocode = false;
-	switch (dropdown_effect_select) {
-		case ("1"): 
-			property = "volume"
-		case ("2"):
-			property = "bandpassfilter"
-		default:
-			nocode = true;
-	}
-	if (!nocode)
-		code += "nickOSC.set_property(" + dropdown_voice_select + ", " + value_number_input + ", " + property + ")\n";
+	code += "nickOSC.set_property(" + dropdown_voice_select + ", " + value_number_input + ", " + dropdown_effect_select + ")\n";
 	
 	return code;
 };
