@@ -345,12 +345,12 @@ function void set_volume_handler() {
         int voice_index;
         float volume_arg;
         
-        while (set_instrument_event.nextMsg() != 0) {
-            set_instrument_event.getInt() => voice_index;
-            set_instrument_event.getFloat() => volume_arg;
+        while (set_volume_event.nextMsg() != 0) {
+            set_volume_event.getInt() => voice_index;
+            set_volume_event.getFloat() => volume_arg;
             
             oscSender.startMsg("/lpc/sound/voice" + voice_index + "/volume, f");
-            oscSender.addInt(volume_arg);
+            oscSender.addFloat(volume_arg);
             <<< "Volume message passed along." >>>;
         }
     }
