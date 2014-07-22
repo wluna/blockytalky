@@ -333,21 +333,21 @@ var on_message = function(m) {
         currentTime = d.getTime();
         if((currentTime - previousTime) > 1){
         if(s1 == "none"){
-          $("#sensorval1").text("-");}
+          $("#sensorval1").val("-");}
         if(s1 != "none"){
-          $("#sensorval1").text(values.content.sensors[0]);}
+          $("#sensorval1").val(values.content.sensors[0]);}
         if(s2 == "none"){
-          $("#sensorval2").text("-");}
+          $("#sensorval2").val("-");}
         if(s2 != "none"){
-          $("#sensorval2").text(values.content.sensors[1]);}
+          $("#sensorval2").val(values.content.sensors[1]);}
         if(s3 == "none"){
-          $("#sensorval3").text("-");}
+          $("#sensorval3").val("-");}
         if(s3 != "none"){
-          $("#sensorval3").text(values.content.sensors[2]);}
+          $("#sensorval3").val(values.content.sensors[2]);}
         if(s4 == "none"){
-          $("#sensorval4").text("-");}
+          $("#sensorval4").val("-");}
         if(s4 != "none"){
-          $("#sensorval4").text(values.content.sensors[3]);}
+          $("#sensorval4").val(values.content.sensors[3]);}
         previousTime = d.getTime(); }
 
 }
