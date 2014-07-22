@@ -124,6 +124,15 @@ def set_instrument(voice, instrument):
 	message.append(int(voice))
 	message.append(int(instrument))
 	send_message_to_maestro(message, address)
+
+def set_volume(voice, percentage):
+	print "at set_volume"
+	address = "/lpc/maestro/volume"
+	message = OSC.OSCMessage()
+	message.setAddress(address)
+	message.append(int(voice))
+	message.append(float(percentage))
+	send_message_to_maestro(message, address)
 	
 # Changes a voice to play a different set of notes
 def change_voice(notes, beat_fraction, voice):

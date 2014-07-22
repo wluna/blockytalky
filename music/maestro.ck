@@ -24,6 +24,7 @@ spork ~ looping_phrase_receive_on_beat_with_shred();
 spork ~ on_beat_stop_phrase_handler();
 spork ~ on_beat_change_voice_handler();
 spork ~ set_instrument_handler();
+spork ~ set_volume_handler();
 
 // Set up the main thread to receive TEMPO messages
 oscReceiver.event("/lpc/maestro/tempo, f") @=> OscEvent tempo_event;
@@ -297,7 +298,7 @@ function int check_should_exit(int voice_index) {
 function void play_note(int pitch, float duration, int voice_index) {
     // play if note is not silent
     if (pitch != -1) {
-        "/lpc/sound/voice" + voice_index => string address;
+        "/lpc/sound/voice" + voice_index + "/play" => string address;
         oscSender.startMsg(address + ", i, f");
         oscSender.addInt(pitch);
         oscSender.addFloat(duration * (60.0 / beatsPerMinute));
@@ -330,6 +331,27 @@ function void set_instrument_handler() {
             oscSender.startMsg("/lpc/sound/voice" + voice_index + "/instrument, i");
             oscSender.addInt(instrument_index);
             <<< "Instrument message passed along." >>>;
+        }
+    }
+}
+
+function void set_volume_handler() {
+    oscReceiver.event("/lpc/maestro/volume, if") @=> OscEvent set_volume_event;
+    
+    while (true) {
+        set_volume_event => now; // wait for event to arrive
+        <<< "Got set volume event." >>>;
+    
+        int voice_index;
+        float volume_arg;
+        
+        while (set_instrument_event.nextMsg() != 0) {
+            set_instrument_event.getInt() => voice_index;
+            set_instrument_event.getFloat() => volume_arg;
+            
+            oscSender.startMsg("/lpc/sound/voice" + voice_index + "/volume, f");
+            oscSender.addInt(volume_arg);
+            <<< "Volume message passed along." >>>;
         }
     }
 }
