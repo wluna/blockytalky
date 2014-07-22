@@ -20,6 +20,8 @@ from flask.ext.bcrypt import Bcrypt
 from message import *
 import time, commands, subprocess, pika
 import jsonpickle
+import requests
+import socket
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -32,23 +34,23 @@ device_settings = {
         'coder_color': ''
         }
 
-#app.debug = True
+app.debug = True
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
 
-channel.queue_declare(queue='HwCmd')
+channel.exchange_declare(exchange='HwCmd', type='fanout')
+result = channel.queue_declare(exclusive=True)
+queue_name = result.method.queue
+
+channel.queue_bind(exchange='HwCmd', queue=queue_name)
+
 toSend = Message('name', None, 'HwCmd', Message.createImage(motor1=0, motor2=0, motor3=0, motor4=0, pin13=0))
 toSend = Message.encode(toSend)
 
 upMsg = Message('name', None, 'HwCmd', Message.createImage(pin13=1))
 upMsg = Message.encode(upMsg)
-channel.basic_publish(exchange='', routing_key='HwCmd', body=upMsg)
-
-
-connection2 = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-channel2 = connection2.channel()
-channel2.queue_declare(queue="Message")
+channel.basic_publish(exchange='HwCmd', routing_key='', body=upMsg)
 
 
 os.chdir('/home/pi/blockytalky')
@@ -106,10 +108,6 @@ def restart_comms_module():
 
 def stop_user_script():
     try:
-        channel2.queue_purge(queue='Message')
-    except Exception as e:
-        logger.exception('Failed to purge Message queue:')
-    try:
         subprocess.call(['sudo pkill -15 -f user_script.py'], shell = True)
     except Exception as e:
         logger.exception('Failed to stop Blockly code, trying again more forcefully:')
@@ -147,7 +145,7 @@ def blockly():
     startMsg = Message('name', None, 'HwCmd', Message.createImage(pin13=0))
     startMsg = Message.encode(startMsg)
     try:    
-	    channel.basic_publish(exchange='', routing_key='HwCmd', body=startMsg)
+	    channel.basic_publish(exchange='HwCmd', routing_key='', body=startMsg)
     except:
         logger.exception('Failed to start Blockly:')
     return render_template('code.html')
@@ -180,6 +178,7 @@ def upload_code(xml_data, python_data):
     code_to_file(xml_data, 'code/rawxml.txt', 'XML')
     #code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
     code_to_file(convert_usercode(python_data), 'backend/user_script.py', 'Python')
+    remote_code_upload(xml_data)
     startTime = time.time()
     logger.info('Issuing kill command before uploading code')
     stop_user_script()
@@ -188,12 +187,28 @@ def upload_code(xml_data, python_data):
 
     logger.info('Upload took '+ str(time.time() - uploadStart) + ' s')
 
+def remote_code_upload(code):
+    logger.debug('Sending code to remote server')
+    unitname = socket.gethostname()
+    headers = {'unit-name': unitname}
+
+    try:
+        request = requests.post("http://104.131.249.150:5000", data=code, headers=headers)
+    except:
+        pass
+    os.chdir('/home/pi/blockytalky/usercode')
+    filename = socket.gethostname() + "-" + str(int(round(time.time() * 1000)))
+    fo = open(filename, 'wb')
+    fo.write(code)
+    fo.close()
+    os.chdir('/home/pi/blockytalky')
+
+
 def convert_usercode(python_code):
     # Need to use two-space tabs for consistency with Blockly conversion
     python_code = "\n%s" % python_code
     python_code += "\n"
     python_code = python_code.splitlines()
-    
     callback_functions = "    def init_callbacks(self): \n"
     while_functions = "    def init_whiles(self): \n"
     variables = "\n      global "
