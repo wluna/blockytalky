@@ -299,6 +299,7 @@ function void play_note(int pitch, float duration, int voice_index) {
         oscSender.startMsg(address + ", i, f");
         oscSender.addInt(pitch);
         oscSender.addFloat(duration * (60.0 / beatsPerMinute));
+        <<< "Note sent with pitch " + pitch + " and duration " + duration + " and voice " + voice_index>>>;
     }
 }
 
@@ -307,6 +308,7 @@ function void stop_note(int voice_index) {
     "/lpc/sound/voice" + voice_index + "/stop" => string address;
     oscSender.startMsg(address + ", i");
     oscSender.addInt(voice_index);
+    <<< "Note stopped" >>>;
 }
 
 function void set_instrument_handler() {
