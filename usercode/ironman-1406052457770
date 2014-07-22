@@ -1,0 +1,1 @@
+<xml xmlns="http://www.w3.org/1999/xhtml"><block type="events_on_start" x="47" y="4"><statement name="DO"><block type="music_play_with" inline="true"><title name="voice_select">1</title><value name="notes_input"><block type="music_note"><title name="duration_select">quarter</title><title name="note_text_input">C4</title></block></value></block></statement></block></xml>
