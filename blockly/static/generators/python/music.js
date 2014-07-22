@@ -488,7 +488,7 @@ Blockly.Language.music_set_instrument = {
 			.appendTitle("set")
 			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select")
 			.appendTitle("instrument to")
-			.appendTitle(new Blockly.FieldDropdown([["koopatroopa", "1"], ["yourface", "2"], ["pleasechangeme", "3"], ["seriously", "4"]]), "instrument_select");
+			.appendTitle(new Blockly.FieldDropdown([["bass", "1"], ["bassAlt", "2"], ["classic1", "4"], ["classic2", "5"], ["classic3","6"], ["default", "9"], ["electric", "10"], ["drill", "14"], ["metalworks", "20"], ["organ", "21"], ["perc", "25"], ["piano", "26"], ["rising", "27"], ["cats", "29"], ["synthy", "32"], ["synthy2", "33"], ["synthy3", "35"], ["wahwah", "37"], ["woodwind", "38"]]), "instrument_select");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
