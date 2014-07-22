@@ -274,7 +274,9 @@ function void loop_phrase_shred(int pitches[], float durations[], float alignmen
                 // Wait for the note to finish
                 (durations[i] / beatsPerMinute * 60)::second => now;
                 
-                stop_note(voice_index);
+                if (pitches[i] != -1) {
+                    stop_note(voice_index);
+                }
             }
         }
     }
