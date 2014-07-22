@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 os.nice(-5)
 
 class HardwareDaemon(object):
-    PUBLISH_INTERVAL = 0.04
+    PUBLISH_INTERVAL = 0.01
     
     def __init__(self):
         logger.info('Initializing hardware daemon')
@@ -31,6 +31,8 @@ class HardwareDaemon(object):
         self.hwval_channel = None
         self.hwcmd_channel = None
         
+        self.encoder_offsets = [0,0,0,0]
+
         parameters = pika.ConnectionParameters()
         self.connection = pika.BlockingConnection(parameters)
         self.setup_hwval_channel()
@@ -164,6 +166,12 @@ class HardwareDaemon(object):
             else:
                 value4 = s4
 
+            # offset encoders back to zero
+            encoders[0] -= self.encoder_offsets[0]
+            encoders[1] -= self.encoder_offsets[1]
+            encoders[2] -= self.encoder_offsets[2]
+            encoders[3] -= self.encoder_offsets[3]
+
             # Send a status message with the updated values.
             content = Message.createImage(
                                             encoder1 = encoders[0],
@@ -177,7 +185,6 @@ class HardwareDaemon(object):
                                          )
             statusMessage = Message(self.hostname, None, "HwVal", content)
             statusMessage = Message.encode(statusMessage)
-            #print("Writing hardware update to sensors/HwVal: " + statusMessage)
             self.hwval_channel.basic_publish(exchange='sensors', routing_key='', body=statusMessage)
 
 
@@ -202,11 +209,16 @@ class HardwareDaemon(object):
         logger.info("hwcmd command received: " + body)
         command = Message.decode(body)
         if command.channel == "handshake":
+            self.encoder_offsets = [self.robot["encoders"][0], 
+                                    self.robot["encoders"][1],
+                                    self.robot["encoders"][2], 
+                                    self.robot["encoders"][3]]
+            print self.encoder_offsets
             content = Message.createImage(
-                encoder1 = self.robot["encoders"][0],
-                encoder2 = self.robot["encoders"][1],
-                encoder3 = self.robot["encoders"][2],
-                encoder4 = self.robot["encoders"][3],
+                encoder1 = self.robot["encoders"][0]-self.encoder_offsets[0],
+                encoder2 = self.robot["encoders"][1]-self.encoder_offsets[1],
+                encoder3 = self.robot["encoders"][2]-self.encoder_offsets[2],
+                encoder4 = self.robot["encoders"][3]-self.encoder_offsets[3],
                 sensor1 =  self.robot["sensors"][0],
                 sensor2 =  self.robot["sensors"][0],
                 sensor3 =  self.robot["sensors"][0],
