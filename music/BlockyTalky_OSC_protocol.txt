@@ -21,7 +21,7 @@ II. Messaging Protocol between BlockyTalky and the ChucK Maestro
 	
 	B. Controlling Sound
 		1. /lpc/maestro/tempo f
-			The real number argument specifies the user's desired song tempo in beats per minute.
+			The real number argument specifies the user's desired song tempo in beats per minute. Due to the nature of the ChucK module, changing this setting while a loop is playing will break any on-beat synchronization with new phrases played after the tempo change.
 			
 		2. TODO: The rest of this section.
 

@@ -267,10 +267,14 @@ function void loop_phrase_shred(int pitches[], float durations[], float alignmen
             }
             else {
                 // Send message to start the note playing
-                play_note(pitches[i], durations[i], voice_index);
+                if (pitches[i] != -1) {
+                    play_note(pitches[i], durations[i], voice_index);
+                }
                 
                 // Wait for the note to finish
                 (durations[i] / beatsPerMinute * 60)::second => now;
+                
+                stop_note(voice_index);
             }
         }
     }
@@ -296,6 +300,13 @@ function void play_note(int pitch, float duration, int voice_index) {
         oscSender.addInt(pitch);
         oscSender.addFloat(duration * (60.0 / beatsPerMinute));
     }
+}
+
+// Stopping a note
+function void stop_note(int voice_index) {
+    "/lpc/sound/voice" + voice_index + "/stop" => string address;
+    oscSender.startMsg(address + ", i");
+    oscSender.addInt(voice_index);
 }
 
 function void set_instrument_handler() {
