@@ -816,9 +816,9 @@ Blockly.Python.music_set_property = function () {
 	var property = "";
 	var nocode = false;
 	switch (dropdown_effect_select) {
-		case (1): 
+		case ("1"): 
 			property = "volume"
-		case (2):
+		case ("2"):
 			property = "bandpassfilter"
 		default:
 			nocode = true;
