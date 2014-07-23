@@ -144,8 +144,16 @@ def create_drum_sequence(sequence_data):
 	print "finished making sixteen rests"
 	sequence = list(sixteen_rests)
 	print "sequence init"
+	sequence.bop = True
+	print "sequence bop"
+	sequence.bloop = True
+	print "sequence bloop"
+	sequence.beep = True
+	print "sequence beep"
 	sequence.is_drums = True
 	print "set is_drums"
+	sequence2 = list(sixteen_rests)
+	print "sequence2"
 	sequence.snare = list(sixteen_rests)
 	print "sequence snare init"
 	sequence.conga = list(sixteen_rests)
