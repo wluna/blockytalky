@@ -967,9 +967,9 @@ Blockly.Python.music_drum_sequence = function() {
 	// Construct list of lists of ones and zeroes
 	// corresponding to sequence data.
 	var sequence_data = "[";
-	for (int i = 1; i < 8; i++) {
+	for (var i = 1; i < 8; i++) {
 		sequence_data.concat("[");
-		for (int j = 0; j < 16; j++) {
+		for (var j = 0; j < 16; j++) {
 			one_or_zero_str = this.getFieldValue(intToDrumkitNoteString(i) + j)
 						== True ? "1" : "0";
 			sequence_data.concat(one_or_zero_str);
