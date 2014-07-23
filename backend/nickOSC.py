@@ -150,6 +150,10 @@ def create_drum_sequence(sequence_data):
 	sequence4 = list(sixteen_rests)
 	print "sequence4"
 	print "sequence init"
+	truthyness = True
+	print "SURELY this will print"
+	truthyness.truer = True
+	print "Will THIS print?"
 	sequence.bop = True
 	print "sequence bop"
 	sequence.bloop = True
