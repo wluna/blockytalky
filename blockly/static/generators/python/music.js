@@ -829,7 +829,7 @@ Blockly.Language.music_drum_sequence = {
     this.setColour(0);
 	this.appendDummyInput("")
 		.appendTitle("Create a drum sequence as a phrase");
-	this.appendDummyInput("")
+	/*this.appendDummyInput("")
         .appendTitle("Bass   ")
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass1")
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass2")
@@ -954,7 +954,7 @@ Blockly.Language.music_drum_sequence = {
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride13")
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride14")
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride15")
-        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride16");
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride16");*/
     this.setOutput(true, "notes");
     this.setTooltip("Returns a phrase of playable drum sequence data.");
   }
@@ -1001,10 +1001,6 @@ Blockly.Python.music_drum_sequence = function() {
 		for (var j = 0; j < 16; j++) {
 			var one_or_zero_str = this.getTitleValue(intToDrumkitNoteString(i).concat(String(j+1)))
 						== "TRUE" ? "1" : "0";
-			console.log(intToDrumkitNoteString(i).concat(String(j+1)));
-			console.log(this.getTitleValue(intToDrumkitNoteString(i).concat(String(j+1))));
-			console.log(this.getTitleValue(intToDrumkitNoteString(i).concat(String(j+1))) == "TRUE");
-			console.log(this.getTitleValue(intToDrumkitNoteString(i).concat(String(j+1))) == true);
 			sequence_data = sequence_data.concat(one_or_zero_str);
 			if (j < 15)
 				sequence_data = sequence_data.concat(", ");
@@ -1019,8 +1015,8 @@ Blockly.Python.music_drum_sequence = function() {
 	// Create Python drum sequence object with drum sequence data
 	var code = "nickOSC.create_drum_sequence(" + sequence_data + ")";
 	
-	return [code, Blockly.Python.ORDER_NONE]
-}
+	return [code, Blockly.Python.ORDER_NONE];
+};
 
 // === Dotify Note ===
 // music_dotify_note
