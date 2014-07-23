@@ -960,33 +960,6 @@ Blockly.Language.music_drum_sequence = {
   }
 };
 
-// Generator for Create Drum Sequence
-
-Blockly.Python.music_drum_sequence = function() {
-	
-	// Construct list of lists of ones and zeroes
-	// corresponding to sequence data.
-	var sequence_data = "[";
-	for (var i = 1; i < 8; i++) {
-		sequence_data.concat("[");
-		for (var j = 0; j < 16; j++) {
-			one_or_zero_str = this.getFieldValue(intToDrumkitNoteString(i) + j)
-						== True ? "1" : "0";
-			sequence_data.concat(one_or_zero_str);
-			if (j < 15)
-				sequence_data.concat(", ");
-		}
-		sequence_data.concat("]");
-		if (i < 7) {
-			sequence_data.concat(", ");
-		}
-	}
-	sequence_data.concat("]");
-	
-	// Create Python drum sequence object with drum sequence data
-	var code = "nickOSC.create_drum_sequence(" + sequence_data + ")\n";
-}
-
 var intToDrumkitNoteString = function(i) {
 	switch (i) {
 		case 1:
@@ -1014,6 +987,33 @@ var intToDrumkitNoteString = function(i) {
 			console.log("Bad argument converting int to drumkit string " + i);
 			return -1;
 	}
+};
+
+// Generator for Create Drum Sequence
+
+Blockly.Python.music_drum_sequence = function() {
+	
+	// Construct list of lists of ones and zeroes
+	// corresponding to sequence data.
+	var sequence_data = "[";
+	for (var i = 1; i < 8; i++) {
+		sequence_data.concat("[");
+		for (var j = 0; j < 16; j++) {
+			one_or_zero_str = this.getFieldValue(intToDrumkitNoteString(i) + j)
+						== True ? "1" : "0";
+			sequence_data.concat(one_or_zero_str);
+			if (j < 15)
+				sequence_data.concat(", ");
+		}
+		sequence_data.concat("]");
+		if (i < 7) {
+			sequence_data.concat(", ");
+		}
+	}
+	sequence_data.concat("]");
+	
+	// Create Python drum sequence object with drum sequence data
+	var code = "nickOSC.create_drum_sequence(" + sequence_data + ")\n";
 }
 
 // === Dotify Note ===
