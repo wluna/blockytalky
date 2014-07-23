@@ -1013,7 +1013,7 @@ Blockly.Python.music_drum_sequence = function() {
 	sequence_data.concat("]");
 	
 	// Create Python drum sequence object with drum sequence data
-	var code = "nickOSC.create_drum_sequence(" + sequence_data + ")\n";
+	var code = ["nickOSC.create_drum_sequence(" + sequence_data + ")\n", Blockly.Python.ORDER_NONE]
 }
 
 // === Dotify Note ===
