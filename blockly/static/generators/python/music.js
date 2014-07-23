@@ -988,7 +988,7 @@ Blockly.Python.music_drum_sequence = function() {
 }
 
 function intToDrumkitNoteString(i) {
-	switch (i):
+	switch (i) {
 		case 1:
 			return "bass";
 			break;
@@ -1013,6 +1013,7 @@ function intToDrumkitNoteString(i) {
 		default:
 			console.log("Bad argument converting int to drumkit string " + i);
 			return -1;
+	}
 }
 
 // === Dotify Note ===
