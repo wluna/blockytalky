@@ -999,12 +999,12 @@ Blockly.Python.music_drum_sequence = function() {
 	for (var i = 1; i < 8; i++) {
 		sequence_data = sequence_data.concat("[");
 		for (var j = 0; j < 16; j++) {
-			var one_or_zero_str = this.getTitleValue(intToDrumkitNoteString(i) + j+1)
+			var one_or_zero_str = this.getTitleValue(intToDrumkitNoteString(i).concat(String(j+1)))
 						== "TRUE" ? "1" : "0";
-			console.log(intToDrumkitNoteString(i));
-			console.log(this.getTitleValue(intToDrumkitNoteString(i) + j+1));
-			console.log(this.getTitleValue(intToDrumkitNoteString(i) + j+1) == "TRUE");
-			console.log(this.getTitleValue(intToDrumkitNoteString(i) + j+1) == true);
+			console.log(intToDrumkitNoteString(i).concat(String(j+1)));
+			console.log(this.getTitleValue(intToDrumkitNoteString(i).concat(String(j+1))));
+			console.log(this.getTitleValue(intToDrumkitNoteString(i).concat(String(j+1))) == "TRUE");
+			console.log(this.getTitleValue(intToDrumkitNoteString(i).concat(String(j+1))) == true);
 			sequence_data = sequence_data.concat(one_or_zero_str);
 			if (j < 15)
 				sequence_data = sequence_data.concat(", ");
