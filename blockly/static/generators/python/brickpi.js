@@ -839,20 +839,13 @@ Blockly.Python.events_while_sensor_range = function() {
     var sensor= this.getTitleValue('s_num');    
     var lo = Blockly.Python.valueToCode(this, 'lo', Blockly.Python.ORDER_NONE);
     var hi = Blockly.Python.valueToCode(this, 'hi', Blockly.Python.ORDER_NONE);
-    console.log(lo, hi);
-    if (lo > hi) {
-	var temp = hi;
-	hi = lo;
-	lo = temp;
-    }
-    console.log(lo,hi);
     var code = 'def '+'wlr'+sensor+unique_id+'(self):'+'\n';
     if (sensor >= 1 && sensor <= 4) {
-	code += '  if self.robot["sensors"]['+(sensor-1)+'] in range('; 
-	code += lo+','+hi+'): \n' + branch;
+	code += '  if self.robot["sensors"]['+(sensor-1)+'] in range(int('; 
+	code += lo+'),int('+hi+')): \n' + branch;
     } else if (sensor >= 5 && sensor <= 8) {
-	code += '  if self.robot["encoders"]['+(sensor-5)+'] in range('; 
-	code += lo+','+hi+'): \n' + branch;
+	code += '  if self.robot["encoders"]['+(sensor-5)+'] in range(int('; 
+	code += lo+'),int('+hi+')): \n' + branch;
     }
 
     unique_id += 1;
@@ -869,20 +862,15 @@ Blockly.Python.events_when_sensor_range = function() {
     var sensor= this.getTitleValue('s_num');    
     var lo = Blockly.Python.valueToCode(this, 'lo', Blockly.Python.ORDER_NONE);
     var hi = Blockly.Python.valueToCode(this, 'hi', Blockly.Python.ORDER_NONE);
-    if (lo > hi) {
-	var temp = hi;
-	hi = lo;
-	lo = temp;
-    }
     var code = 'def '+'wnr'+sensor+unique_id+'(self):'+'\n';
     if (sensor >= 1 && sensor <= 4) {
-	code += '  if self.robot["sensors"]['+(sensor-1)+'] in range('; 
-	code += lo+','+hi+') and self.last_robot["sensors"]['+(sensor-1);
-	code += '] not in range('+lo+','+hi+'): \n' + branch;
+	code += '  if self.robot["sensors"]['+(sensor-1)+'] in range(int('; 
+	code += lo+'),int('+hi+')) and self.last_robot["sensors"]['+(sensor-1);
+	code += '] not in range(int('+lo+'),int('+hi+')): \n' + branch;
     } else if (sensor >= 5 && sensor <= 8) {
-	code += '  if self.robot["encoders"]['+(sensor-5)+'] in range('; 
-	code += lo+','+hi+') and self.last_robot["encoders"]['+(sensor-5);
-	code += '] not in range('+lo+','+hi+'): \n' + branch;
+	code += '  if self.robot["encoders"]['+(sensor-5)+'] in range(int('; 
+	code += lo+'),int('+hi+')) and self.last_robot["encoders"]['+(sensor-5);
+	code += '] not in range(int('+lo+'),int('+hi+')): \n' + branch;
     }
 
     unique_id += 1;
