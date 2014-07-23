@@ -135,7 +135,9 @@ def set_property(voice, percentage, property):
 	send_message_to_maestro(message, address)
 	
 def create_drum_sequence(sequence_data):
+
 	# initialize sequence
+	print "initializing sequence"
 	sixteen_rests = []
 	for i in range(16):
 		sixteen_rests.append((-1, 0.25))
@@ -150,6 +152,7 @@ def create_drum_sequence(sequence_data):
 	
 	# attempt to populate sequence with sequence_data
 	# bass
+	print "bass"
 	for i in range(16):
 		if sequence_data[0][i] == 1:
 			sequence[i] = (1, 0.25)
@@ -157,34 +160,34 @@ def create_drum_sequence(sequence_data):
 	# snare
 	for i in range(16):
 		if sequence_data[1][i] == 1:
-			sequence.snare = (1, 0.25)
+			sequence.snare[i] = (1, 0.25)
 	
 	# conga
 	for i in range(16):
 		if sequence_data[2][i] == 1:
-			sequence.conga = (1, 0.25)
+			sequence.conga[i] = (1, 0.25)
 	
 	# tom
+	print "tom"
 	for i in range(16):
 		if sequence_data[3][i] == 1:
-			sequence.tom = (1, 0.25)
+			sequence.tom[i] = (1, 0.25)
 	
 	# hat
 	for i in range(16):
 		if sequence_data[4][i] == 1:
-			sequence.hat = (1, 0.25)
+			sequence.hat[i] = (1, 0.25)
 	
 	# hit
 	for i in range(16):
 		if sequence_data[5][i] == 1:
-			sequence.hit = (1, 0.25)
+			sequence.hit[i] = (1, 0.25)
 	
 	# ride
+	print "ride"
 	for i in range(16):
 		if sequence_data[6][i] == 1:
-			sequence.ride = (1, 0.25)
-	
-	print sequence
+			sequence.ride[i] = (1, 0.25)
 	
 	return sequence
 	
