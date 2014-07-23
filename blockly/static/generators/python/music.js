@@ -818,12 +818,208 @@ Blockly.Python.music_set_property = function () {
 	return code;
 };
 
+// === Create Drum Sequence ===
+// music_drum_sequence
+// Returns a phrase containing drum sequence data.
+
+Blockly.Language.music_drum_sequence = {
+  category: 'Music',
+  helpUrl: '',
+  init: function() {
+    this.setColour(0);
+	this.appendDummyInput("")
+		.appendTitle("Create a drum sequence as a phrase");
+	this.appendDummyInput("")
+        .appendTitle("Bass   ")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass1")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass2")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass3")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass4")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass5")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass6")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass7")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass8")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass9")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass10")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass11")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass12")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass13")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass14")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass15")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass16");
+    this.appendDummyInput("")
+        .appendTitle("Snare  ")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare1")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare2")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare3")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare4")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare5")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare6")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare7")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare8")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare9")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare10")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare11")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare12")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare13")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare14")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare15")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "snare16");
+    this.appendDummyInput("")
+        .appendTitle("Conga ")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga1")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga2")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga3")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga4")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga5")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga6")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga7")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga8")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga9")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga10")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga11")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga12")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga13")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga14")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga15")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "conga16");
+    this.appendDummyInput("")
+        .appendTitle("Tom    ")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom1")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom2")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom3")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom4")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom5")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom6")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom7")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom8")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom9")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom10")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom11")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom12")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom13")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom14")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom15")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "tom16");
+    this.appendDummyInput("")
+        .appendTitle("Hat      ")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat1")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat2")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat3")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat4")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat5")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat6")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat7")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat8")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat9")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat10")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat11")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat12")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat13")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat14")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat15")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hat16");
+    this.appendDummyInput("")
+        .appendTitle("Hit       ")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit1")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit2")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit3")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit4")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit5")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit6")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit7")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit8")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit9")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit10")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit11")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit12")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit13")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit14")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit15")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "hit16");
+    this.appendDummyInput("")
+        .appendTitle("Ride    ")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride1")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride2")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride3")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride4")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride5")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride6")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride7")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride8")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride9")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride10")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride11")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride12")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride13")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride14")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride15")
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride16");
+    this.setOutput(true, "notes");
+    this.setTooltip("Returns a phrase of playable drum sequence data.");
+  }
+};
+
+// Generator for Create Drum Sequence
+
+Blockly.Python.music_drum_sequence = function() {
+	
+	// Construct list of lists of ones and zeroes
+	// corresponding to sequence data.
+	var sequence_data = "[";
+	for (int i = 1; i < 8; i++) {
+		sequence_data.concat("[");
+		for (int j = 0; j < 16; j++) {
+			one_or_zero_str = this.getFieldValue(intToDrumkitNoteString(i) + j)
+						== True ? "1" : "0";
+			sequence_data.concat(one_or_zero_str);
+			if (j < 15)
+				sequence_data.concat(", ");
+		}
+		sequence_data.concat("]");
+		if (i < 7) {
+			sequence_data.concat(", ");
+		}
+	}
+	sequence_data.concat("]");
+	
+	// Create Python drum sequence object with drum sequence data
+	var code = "nickOSC.create_drum_sequence(" + sequence_data + ")\n";
+}
+
+function intToDrumkitNoteString(i) {
+	switch (i):
+		case 1:
+			return "bass";
+			break;
+		case 2:
+			return "snare";
+			break;
+		case 3:
+			return "conga";
+			break;
+		case 4:
+			return "tom";
+			break;
+		case 5:
+			return "hat";
+			break;
+		case 6:
+			return "hit";
+			break;
+		case 7:
+			return "ride";
+			break;
+		default:
+			console.log("Bad argument converting int to drumkit string " + i);
+			return -1;
+}
+
 // === Dotify Note ===
 // music_dotify_note
 // Returns a dotted form(s) of the input note or phrase.
 
 Blockly.Language.music_dotify_note = {
-  // Create a list with any number of elements of any type.
   category: 'Music',
   helpUrl: '',
   init: function() {

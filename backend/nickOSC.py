@@ -134,6 +134,60 @@ def set_property(voice, percentage, property):
 	message.append(float(percentage))
 	send_message_to_maestro(message, address)
 	
+def create_drum_sequence(sequence_data):
+	# initialize sequence
+	sixteen_rests = []
+	for i in range(16):
+		sixteen_rests.append((-1, 0.25))
+	sequence = list(sixteen_rests)
+	sequence.is_drums = True
+	sequence.snare = list(sixteen_rests)
+	sequence.conga = list(sixteen_rests)
+	sequence.tom = list(sixteen_rests)
+	sequence.hat = list(sixteen_rests)
+	sequence.hit = list(sixteen_rests)
+	sequence.ride = list(sixteen_rests)
+	
+	# attempt to populate sequence with sequence_data
+	# bass
+	for i in range(16):
+		if sequence_data[0][i] == 1:
+			sequence[i] = (1, 0.25)
+			
+	# snare
+	for i in range(16):
+		if sequence_data[1][i] == 1:
+			sequence.snare = (1, 0.25)
+	
+	# conga
+	for i in range(16):
+		if sequence_data[2][i] == 1:
+			sequence.conga = (1, 0.25)
+	
+	# tom
+	for i in range(16):
+		if sequence_data[3][i] == 1:
+			sequence.tom = (1, 0.25)
+	
+	# hat
+	for i in range(16):
+		if sequence_data[4][i] == 1:
+			sequence.hat = (1, 0.25)
+	
+	# hit
+	for i in range(16):
+		if sequence_data[5][i] == 1:
+			sequence.hit = (1, 0.25)
+	
+	# ride
+	for i in range(16):
+		if sequence_data[6][i] == 1:
+			sequence.ride = (1, 0.25)
+	
+	print sequence
+	
+	return sequence
+	
 # Changes a voice to play a different set of notes
 def change_voice(notes, beat_fraction, voice):
 	# print "at change_voice"
