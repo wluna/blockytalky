@@ -141,14 +141,22 @@ def create_drum_sequence(sequence_data):
 	sixteen_rests = []
 	for i in range(16):
 		sixteen_rests.append((-1, 0.25))
+	print "finished making sixteen rests"
 	sequence = list(sixteen_rests)
+	print "sequence init"
 	sequence.is_drums = True
 	sequence.snare = list(sixteen_rests)
+	print "sequence snare init"
 	sequence.conga = list(sixteen_rests)
+	print "sequence conga init"
 	sequence.tom = list(sixteen_rests)
+	print "sequence tom init"
 	sequence.hat = list(sixteen_rests)
+	print "sequence hat init"
 	sequence.hit = list(sixteen_rests)
+	print "sequence hit init"
 	sequence.ride = list(sixteen_rests)
+	print "sequence ride init"
 	
 	# attempt to populate sequence with sequence_data
 	# bass
