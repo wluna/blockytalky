@@ -9,6 +9,7 @@ import atexit
 import copy
 import os
 import nickOSC
+import random
 from blockytalky_id import *
 from message import *
 import urllib2
