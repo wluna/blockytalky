@@ -829,7 +829,7 @@ Blockly.Language.music_drum_sequence = {
     this.setColour(0);
 	this.appendDummyInput("")
 		.appendTitle("Create a drum sequence as a phrase");
-	/*this.appendDummyInput("")
+	this.appendDummyInput("")
         .appendTitle("Bass   ")
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass1")
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass2")
@@ -954,7 +954,7 @@ Blockly.Language.music_drum_sequence = {
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride13")
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride14")
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride15")
-        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride16");*/
+        .appendTitle(new Blockly.FieldCheckbox("FALSE"), "ride16");
     this.setOutput(true, "notes");
     this.setTooltip("Returns a phrase of playable drum sequence data.");
   }
