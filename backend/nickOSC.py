@@ -143,6 +143,12 @@ def create_drum_sequence(sequence_data):
 		sixteen_rests.append((-1, 0.25))
 	print "finished making sixteen rests"
 	sequence = list(sixteen_rests)
+	sequence2 = list(sixteen_rests)
+	print "sequence2"
+	sequence3 = list(sixteen_rests)
+	print "sequence3"
+	sequence4 = list(sixteen_rests)
+	print "sequence4"
 	print "sequence init"
 	sequence.bop = True
 	print "sequence bop"
@@ -152,8 +158,6 @@ def create_drum_sequence(sequence_data):
 	print "sequence beep"
 	sequence.is_drums = True
 	print "set is_drums"
-	sequence2 = list(sixteen_rests)
-	print "sequence2"
 	sequence.snare = list(sixteen_rests)
 	print "sequence snare init"
 	sequence.conga = list(sixteen_rests)
