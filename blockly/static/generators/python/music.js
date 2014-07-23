@@ -970,7 +970,7 @@ Blockly.Python.music_drum_sequence = function() {
 	for (var i = 1; i < 8; i++) {
 		sequence_data.concat("[");
 		for (var j = 0; j < 16; j++) {
-			one_or_zero_str = this.getFieldValue(Blockly.Python.intToDrumkitNoteString(i) + j)
+			one_or_zero_str = this.getFieldValue(intToDrumkitNoteString(i) + j)
 						== True ? "1" : "0";
 			sequence_data.concat(one_or_zero_str);
 			if (j < 15)
@@ -987,7 +987,7 @@ Blockly.Python.music_drum_sequence = function() {
 	var code = "nickOSC.create_drum_sequence(" + sequence_data + ")\n";
 }
 
-Blockly.Python.intToDrumkitNoteString = function(i) {
+var intToDrumkitNoteString = function(i) {
 	switch (i) {
 		case 1:
 			return "bass";
