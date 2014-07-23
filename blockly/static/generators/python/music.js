@@ -999,7 +999,7 @@ Blockly.Python.music_drum_sequence = function() {
 	for (var i = 1; i < 8; i++) {
 		sequence_data.concat("[");
 		for (var j = 0; j < 16; j++) {
-			one_or_zero_str = this.getFieldValue(intToDrumkitNoteString(i) + j)
+			one_or_zero_str = this.getTitleValue(intToDrumkitNoteString(i) + j)
 						== True ? "1" : "0";
 			sequence_data.concat(one_or_zero_str);
 			if (j < 15)
