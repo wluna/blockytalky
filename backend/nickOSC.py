@@ -110,7 +110,6 @@ def on_beat_start_playing_with(notes, beat_fraction, voice):
 	address = "/lpc/maestro/loop_on_beat_with"
 	try:
 		if (notes.is_drums):  # drum sequence
-			print "it was drums"
 			# bass drum notes
 			message = construct_basic_phrase_message(notes, address)
 			message.append(float(beat_fraction))
