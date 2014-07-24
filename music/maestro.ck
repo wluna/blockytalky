@@ -301,6 +301,9 @@ function void play_note(int pitch, float duration, int voice_index) {
     // play if note is not silent
     if (pitch != -1) {
         "/lpc/sound/voice" + voice_index + "/play" => string address;
+        if (pitch <= -10) { // drum support
+            "/lpc/sound/voice" + voice_index + "/drums" => string address;
+        }
         oscSender.startMsg(address + ", i, f");
         oscSender.addInt(pitch);
         oscSender.addFloat(duration * (60.0 / beatsPerMinute));

@@ -44,7 +44,7 @@ def construct_basic_phrase_message(notes, address):
 def send_message_to_maestro(message, address):
 	try:
 		osc_client.sendto(message, (note_destination_hostname, note_destination_port))
-		print "message sent to " + note_destination_hostname + " at " + address + ", content " + message
+		# print "message sent to " + note_destination_hostname + " at " + address + ", content " + str(message)
 	except OSC.OSCClientError as e:
 		print "Error while sending: " + str(e)
 		print "Trying again."
@@ -234,37 +234,37 @@ def create_drum_sequence(sequence_data):
 	# bass
 	for i in range(16):
 		if sequence_data[0][i] == 1:
-			sequence[i] = (1, 0.25)
+			sequence[i] = (-10, 0.25)
 			
 	# snare
 	for i in range(16):
 		if sequence_data[1][i] == 1:
-			sequence.snare[i] = (1, 0.25)
+			sequence.snare[i] = (-11, 0.25)
 	
 	# conga
 	for i in range(16):
 		if sequence_data[2][i] == 1:
-			sequence.conga[i] = (1, 0.25)
+			sequence.conga[i] = (-12, 0.25)
 	
 	# tom
 	for i in range(16):
 		if sequence_data[3][i] == 1:
-			sequence.tom[i] = (1, 0.25)
+			sequence.tom[i] = (-13, 0.25)
 	
 	# hat
 	for i in range(16):
 		if sequence_data[4][i] == 1:
-			sequence.hat[i] = (1, 0.25)
+			sequence.hat[i] = (-14, 0.25)
 	
 	# hit
 	for i in range(16):
 		if sequence_data[5][i] == 1:
-			sequence.hit[i] = (1, 0.25)
+			sequence.hit[i] = (-15, 0.25)
 	
 	# ride
 	for i in range(16):
 		if sequence_data[6][i] == 1:
-			sequence.ride[i] = (1, 0.25)
+			sequence.ride[i] = (-16, 0.25)
 	
 	return sequence
 	
