@@ -58,22 +58,100 @@ def send_message_to_maestro(message, address):
 # on a certain beat (or fraction thereof).
 def on_beat_play_with(notes, beat_fraction, voice):
 	address = "/lpc/maestro/play_on_beat_with"
-	message = construct_basic_phrase_message(notes, address)
-	# append beat fraction
-	message.append(float(beat_fraction))
-	# append voice number
-	message.append(int(voice))
-	send_message_to_maestro(message, address)
+	try:
+		if (notes.is_drums):  # drum sequence
+			# bass drum notes
+			message = construct_basic_phrase_message(notes, address)
+			message.append(float(beat_fraction))
+			message.append(int(voice))
+			# snare drum notes
+			message2 = construct_basic_phrase_message(notes.snare, address)
+			message2.append(float(beat_fraction))
+			message2.append(int(voice))
+			# conga drum notes
+			message3 = construct_basic_phrase_message(notes.conga, address)
+			message3.append(float(beat_fraction))
+			message3.append(int(voice))
+			# tom drum notes
+			message4 = construct_basic_phrase_message(notes.tom, address)
+			message4.append(float(beat_fraction))
+			message4.append(int(voice))
+			# hat drum notes
+			message5 = construct_basic_phrase_message(notes.hat, address)
+			message5.append(float(beat_fraction))
+			message5.append(int(voice))
+			# hit drum notes
+			message6 = construct_basic_phrase_message(notes.hit, address)
+			message6.append(float(beat_fraction))
+			message6.append(int(voice))
+			# ride drum notes
+			message7 = construct_basic_phrase_message(notes.ride, address)
+			message7.append(float(beat_fraction))
+			message7.append(int(voice))
+			# send all those messages
+			send_message_to_maestro(message, address)
+			send_message_to_maestro(message2, address)
+			send_message_to_maestro(message3, address)
+			send_message_to_maestro(message4, address)
+			send_message_to_maestro(message5, address)
+			send_message_to_maestro(message6, address)
+			send_message_to_maestro(message7, address)
+	except NameError:  # normal notes
+		message = construct_basic_phrase_message(notes, address)
+		message.append(float(beat_fraction))
+		message.append(int(voice))
+		send_message_to_maestro(message, address)
+	
 	
 # Sends some notes to be looped with a certain instrument
 # on a certain beat (or fraction thereof).
 def on_beat_start_playing_with(notes, beat_fraction, voice):
 	# print "at on_beat_start_playing_with"
 	address = "/lpc/maestro/loop_on_beat_with"
-	message = construct_basic_phrase_message(notes, address)
-	message.append(float(beat_fraction))
-	message.append(int(voice))
-	send_message_to_maestro(message, address)
+	try:
+		if (notes.is_drums):  # drum sequence
+			print "it was drums"
+			# bass drum notes
+			message = construct_basic_phrase_message(notes, address)
+			message.append(float(beat_fraction))
+			message.append(int(voice))
+			# snare drum notes
+			message2 = construct_basic_phrase_message(notes.snare, address)
+			message2.append(float(beat_fraction))
+			message2.append(int(voice))
+			# conga drum notes
+			message3 = construct_basic_phrase_message(notes.conga, address)
+			message3.append(float(beat_fraction))
+			message3.append(int(voice))
+			# tom drum notes
+			message4 = construct_basic_phrase_message(notes.tom, address)
+			message4.append(float(beat_fraction))
+			message4.append(int(voice))
+			# hat drum notes
+			message5 = construct_basic_phrase_message(notes.hat, address)
+			message5.append(float(beat_fraction))
+			message5.append(int(voice))
+			# hit drum notes
+			message6 = construct_basic_phrase_message(notes.hit, address)
+			message6.append(float(beat_fraction))
+			message6.append(int(voice))
+			# ride drum notes
+			message7 = construct_basic_phrase_message(notes.ride, address)
+			message7.append(float(beat_fraction))
+			message7.append(int(voice))
+			# send all those messages
+			send_message_to_maestro(message, address)
+			send_message_to_maestro(message2, address)
+			send_message_to_maestro(message3, address)
+			send_message_to_maestro(message4, address)
+			send_message_to_maestro(message5, address)
+			send_message_to_maestro(message6, address)
+			send_message_to_maestro(message7, address)
+	except NameError:  # normal notes
+		message = construct_basic_phrase_message(notes, address)
+		message.append(float(beat_fraction))
+		message.append(int(voice))
+		send_message_to_maestro(message, address)
 	
 # Stops playing any notes with the specified loop name
 # on a certain beat (or fraction thereof).
@@ -187,8 +265,6 @@ def create_drum_sequence(sequence_data):
 	for i in range(16):
 		if sequence_data[6][i] == 1:
 			sequence.ride[i] = (1, 0.25)
-			
-	print sequence
 	
 	return sequence
 	

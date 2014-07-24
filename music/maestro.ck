@@ -1,5 +1,5 @@
 // Stoppable shred storage
-16 => int MAX_SHRED_STORAGE;
+24 => int MAX_SHRED_STORAGE;
 Shred @ shreds[MAX_SHRED_STORAGE];
 0 => int shreds_length;
 int loop_shred_tracker[MAX_SHRED_STORAGE];
