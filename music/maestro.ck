@@ -57,30 +57,32 @@ function void phrase_receive_on_beat_with_shred() {
         phrase_on_beat_event => now; // wait for event to arrive
         <<< "Got on-beat play event." >>>;
         
-        // arrays for storing phrase data
-        int note_pitch_array[PHRASE_SIZE];
-        float note_duration_array[PHRASE_SIZE];
-        float beat_alignment_fraction;
-        int voice_index;
-        
         // grab messages out of the message queue and
         // store them in two arrays
         while (phrase_on_beat_event.nextMsg() != 0) {
+            
+            // arrays for storing phrase data
+            int note_pitch_array[PHRASE_SIZE];
+            float note_duration_array[PHRASE_SIZE];
+            float beat_alignment_fraction;
+            int voice_index;
+            
+            <<< "Operating on event." >>>;
             for (0 => int i; i < PHRASE_SIZE; i++) {
                 phrase_on_beat_event.getInt() => note_pitch_array[i];
                 phrase_on_beat_event.getFloat() => note_duration_array[i];
             }
             phrase_on_beat_event.getFloat() => beat_alignment_fraction;
             phrase_on_beat_event.getInt() => voice_index;
-        }
         
-        // spawn shred dedicated to playing through the
-        // given sequence
-        // also, store the shred so we can stop it later
-        spork ~ play_phrase_shred(note_pitch_array, note_duration_array, beat_alignment_fraction, voice_index);
-        voice_index => loop_shred_tracker[shreds_length];
-        1 +=> shreds_length;
-        MAX_SHRED_STORAGE %=> shreds_length;
+            // spawn shred dedicated to playing through the
+            // given sequence
+            // also, store the shred so we can stop it later
+            spork ~ play_phrase_shred(note_pitch_array, note_duration_array, beat_alignment_fraction, voice_index);
+            voice_index => loop_shred_tracker[shreds_length];
+            1 +=> shreds_length;
+            MAX_SHRED_STORAGE %=> shreds_length;
+        }
     }
 }
 
@@ -99,29 +101,30 @@ function void looping_phrase_receive_on_beat_with_shred() {
         phrase_on_beat_event => now; // wait for event to arrive
         <<< "Got on-beat loop play event." >>>;
         
-        // arrays for storing phrase data
-        int note_pitch_array[PHRASE_SIZE];
-        float note_duration_array[PHRASE_SIZE];
-        float beat_alignment_fraction;
-        int voice_index;
-        
         // grab messages out of the message queue and
         // store them in two arrays
         while (phrase_on_beat_event.nextMsg() != 0) {
+        
+            // arrays for storing phrase data
+            int note_pitch_array[PHRASE_SIZE];
+            float note_duration_array[PHRASE_SIZE];
+            float beat_alignment_fraction;
+            int voice_index;
+            
             for (0 => int i; i < PHRASE_SIZE; i++) {
                 phrase_on_beat_event.getInt() => note_pitch_array[i];
                 phrase_on_beat_event.getFloat() => note_duration_array[i];
             }
             phrase_on_beat_event.getFloat() => beat_alignment_fraction;
             phrase_on_beat_event.getInt() => voice_index;
-        }
         
-        // spawn shred dedicated to looping the given phrase
-        // also, store the shred so we can stop it later
-        spork ~ loop_phrase_shred(note_pitch_array, note_duration_array, beat_alignment_fraction, voice_index) @=> shreds[shreds_length];
-        voice_index => loop_shred_tracker[shreds_length];
-        1 +=> shreds_length;
-        MAX_SHRED_STORAGE %=> shreds_length;
+            // spawn shred dedicated to looping the given phrase
+            // also, store the shred so we can stop it later
+            spork ~ loop_phrase_shred(note_pitch_array, note_duration_array, beat_alignment_fraction, voice_index) @=> shreds[shreds_length];
+            voice_index => loop_shred_tracker[shreds_length];
+            1 +=> shreds_length;
+            MAX_SHRED_STORAGE %=> shreds_length;
+        }
     }
 }
 
@@ -232,6 +235,7 @@ function void play_phrase_shred(int pitches[], float durations[], float alignmen
     
     // Start playing phrase
     for (0 => int i; i < PHRASE_SIZE; i++) {
+        
         // Send message to start the note playing
         play_note(pitches[i], durations[i], voice_index);
         
@@ -241,8 +245,10 @@ function void play_phrase_shred(int pitches[], float durations[], float alignmen
 }
 
 function void wait_until_alignment(float alignment_fraction) {
-    // if beat fraction =/= 0
-    if (alignment_fraction != 0.0) {
+    if (alignment_fraction == 0.0) {
+        return;
+    }
+    else {
         // calculate time until beat-fraction alignment
         60.0 / beatsPerMinute => float seconds_per_beat;
         seconds_per_beat * alignment_fraction => float align_target;
@@ -276,6 +282,7 @@ function void loop_phrase_shred(int pitches[], float durations[], float alignmen
                 // Wait for the note to finish
                 (durations[i] / beatsPerMinute * 60)::second => now;
                 
+                // stop the note
                 if (pitches[i] != -1) {
                     stop_note(voice_index);
                 }
