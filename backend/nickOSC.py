@@ -44,7 +44,7 @@ def construct_basic_phrase_message(notes, address):
 def send_message_to_maestro(message, address):
 	try:
 		osc_client.sendto(message, (note_destination_hostname, note_destination_port))
-		# print "message sent to " + note_destination_hostname + " at " + address
+		print "message sent to " + note_destination_hostname + " at " + address + ", content " + message
 	except OSC.OSCClientError as e:
 		print "Error while sending: " + str(e)
 		print "Trying again."
