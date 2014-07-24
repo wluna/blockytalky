@@ -133,51 +133,27 @@ def set_property(voice, percentage, property):
 	message.append(int(voice))
 	message.append(float(percentage))
 	send_message_to_maestro(message, address)
+
+class DrumSequence(list):
+	pass
 	
 def create_drum_sequence(sequence_data):
 
 	# initialize sequence
-	print "initializing sequence"
 	sixteen_rests = []
 	for i in range(16):
 		sixteen_rests.append((-1, 0.25))
-	print "finished making sixteen rests"
-	sequence = list(sixteen_rests)
-	sequence2 = list(sixteen_rests)
-	print "sequence2"
-	sequence3 = list(sixteen_rests)
-	print "sequence3"
-	sequence4 = list(sixteen_rests)
-	print "sequence4"
-	print "sequence init"
-	truthyness = True
-	print "SURELY this will print"
-	truthyness.truer = True
-	print "Will THIS print?"
-	sequence.bop = True
-	print "sequence bop"
-	sequence.bloop = True
-	print "sequence bloop"
-	sequence.beep = True
-	print "sequence beep"
+	sequence = DrumSequence(sixteen_rests)
 	sequence.is_drums = True
-	print "set is_drums"
 	sequence.snare = list(sixteen_rests)
-	print "sequence snare init"
 	sequence.conga = list(sixteen_rests)
-	print "sequence conga init"
 	sequence.tom = list(sixteen_rests)
-	print "sequence tom init"
 	sequence.hat = list(sixteen_rests)
-	print "sequence hat init"
 	sequence.hit = list(sixteen_rests)
-	print "sequence hit init"
 	sequence.ride = list(sixteen_rests)
-	print "sequence ride init"
 	
 	# attempt to populate sequence with sequence_data
 	# bass
-	print "bass"
 	for i in range(16):
 		if sequence_data[0][i] == 1:
 			sequence[i] = (1, 0.25)
@@ -193,7 +169,6 @@ def create_drum_sequence(sequence_data):
 			sequence.conga[i] = (1, 0.25)
 	
 	# tom
-	print "tom"
 	for i in range(16):
 		if sequence_data[3][i] == 1:
 			sequence.tom[i] = (1, 0.25)
@@ -209,10 +184,11 @@ def create_drum_sequence(sequence_data):
 			sequence.hit[i] = (1, 0.25)
 	
 	# ride
-	print "ride"
 	for i in range(16):
 		if sequence_data[6][i] == 1:
 			sequence.ride[i] = (1, 0.25)
+			
+	print sequence
 	
 	return sequence
 	
