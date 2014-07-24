@@ -297,16 +297,16 @@ function int check_should_exit(int voice_index) {
 
 // Playing a note with a specific instrument
 function void play_note(int pitch, float duration, int voice_index) {
-    <<< "Got play note with pitch " + pitch >>>;
     // play if note is not silent
     if (pitch != -1) {
         "/lpc/sound/voice" + voice_index + "/play" => string address;
         if (pitch <= -10) { // drum support
-            "/lpc/sound/voice" + voice_index + "/drums" => string address;
+            "/lpc/sound/voice" + voice_index + "/drums" => address;
         }
         oscSender.startMsg(address + ", i, f");
         oscSender.addInt(pitch);
         oscSender.addFloat(duration * (60.0 / beatsPerMinute));
+        <<< "Address: " + address >>>;
         <<< "Note sent with pitch " + pitch + " and duration " + duration + " and voice " + voice_index>>>;
     }
 }

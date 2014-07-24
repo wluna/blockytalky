@@ -115,37 +115,36 @@ def on_beat_start_playing_with(notes, beat_fraction, voice):
 			message = construct_basic_phrase_message(notes, address)
 			message.append(float(beat_fraction))
 			message.append(int(voice))
+			send_message_to_maestro(message, address)
 			# snare drum notes
 			message2 = construct_basic_phrase_message(notes.snare, address)
 			message2.append(float(beat_fraction))
 			message2.append(int(voice))
+			send_message_to_maestro(message2, address)
 			# conga drum notes
 			message3 = construct_basic_phrase_message(notes.conga, address)
 			message3.append(float(beat_fraction))
 			message3.append(int(voice))
+			send_message_to_maestro(message3, address)
 			# tom drum notes
 			message4 = construct_basic_phrase_message(notes.tom, address)
 			message4.append(float(beat_fraction))
 			message4.append(int(voice))
+			send_message_to_maestro(message4, address)
 			# hat drum notes
 			message5 = construct_basic_phrase_message(notes.hat, address)
 			message5.append(float(beat_fraction))
 			message5.append(int(voice))
+			send_message_to_maestro(message5, address)
 			# hit drum notes
 			message6 = construct_basic_phrase_message(notes.hit, address)
 			message6.append(float(beat_fraction))
 			message6.append(int(voice))
+			send_message_to_maestro(message6, address)
 			# ride drum notes
 			message7 = construct_basic_phrase_message(notes.ride, address)
 			message7.append(float(beat_fraction))
 			message7.append(int(voice))
-			# send all those messages
-			send_message_to_maestro(message, address)
-			send_message_to_maestro(message2, address)
-			send_message_to_maestro(message3, address)
-			send_message_to_maestro(message4, address)
-			send_message_to_maestro(message5, address)
-			send_message_to_maestro(message6, address)
 			send_message_to_maestro(message7, address)
 	except NameError:  # normal notes
 		message = construct_basic_phrase_message(notes, address)
