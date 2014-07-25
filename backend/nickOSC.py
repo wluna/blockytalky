@@ -274,6 +274,8 @@ def combine_phrase(notes1, notes2):
 		notes2 = [notes2]
 	if (isinstance(notes1, DrumSequence)):
 		print "Combining drum sequences"
+		print "notes1: " + str(notes1)
+		print "notes2: " + str(notes2)
 		# both MUST be drum sequences
 		try:
 			newDrumSequence = DrumSequence(notes1)
