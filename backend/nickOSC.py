@@ -273,9 +273,6 @@ def combine_phrase(notes1, notes2):
 	if (isinstance(notes2, tuple)):
 		notes2 = [notes2]
 	if (isinstance(notes1, DrumSequence)):
-		print "Combining drum sequences"
-		print "notes1: " + str(notes1)
-		print "notes2: " + str(notes2)
 		# both MUST be drum sequences
 		try:
 			newDrumSequence = DrumSequence(notes1)
@@ -284,22 +281,22 @@ def combine_phrase(notes1, notes2):
 			newDrumSequence.is_drums = True
 			newDrumSequence.snare = list(notes1.snare)
 			for i in range(len(notes2.snare)):
-				newDrumSequence.append(notes2.snare[i])
+				newDrumSequence.snare.append(notes2.snare[i])
 			newDrumSequence.conga = list(notes1.conga)
 			for i in range(len(notes2.conga)):
-				newDrumSequence.append(notes2.conga[i])
+				newDrumSequence.conga.append(notes2.conga[i])
 			newDrumSequence.tom = list(notes1.tom)
 			for i in range(len(notes2.tom)):
-				newDrumSequence.append(notes2.tom[i])
+				newDrumSequence.tom.append(notes2.tom[i])
 			newDrumSequence.hat = list(notes1.hat)
 			for i in range(len(notes2.hat)):
-				newDrumSequence.append(notes2.hat[i])
+				newDrumSequence.hat.append(notes2.hat[i])
 			newDrumSequence.hit = list(notes1.hit)
 			for i in range(len(notes2.hit)):
-				newDrumSequence.append(notes2.hit[i])
+				newDrumSequence.hit.append(notes2.hit[i])
 			newDrumSequence.ride = list(notes1.ride)
 			for i in range(len(notes2.ride)):
-				newDrumSequence.append(notes2.ride[i])
+				newDrumSequence.ride.append(notes2.ride[i])
 			return newDrumSequence
 		except NameError:
 			print "Error combining drum sequence, maybe they're not both drums?"
