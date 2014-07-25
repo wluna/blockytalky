@@ -183,14 +183,6 @@ def set_tempo(bpm):
 	message.append(float(bpm))
 	send_message_to_maestro(message, address)
 	
-# combines two phrases into one
-def combine_phrase(notes1, notes2):
-	if (isinstance(notes1, tuple)):
-		notes1 = [notes1]
-	if (isinstance(notes2, tuple)):
-		notes2 = [notes2]
-	return notes1 + notes2
-	
 # Set the instrument to use with a given voice
 def set_instrument(voice, instrument):
 	# print "at set_instrument"
@@ -273,6 +265,44 @@ def create_drum_sequence(sequence_data):
 			sequence.ride[i] = (-16, 0.25)
 	
 	return sequence
+	
+# combines two phrases into one
+def combine_phrase(notes1, notes2):
+	if (isinstance(notes1, tuple)):
+		notes1 = [notes1]
+	if (isinstance(notes2, tuple)):
+		notes2 = [notes2]
+	if (isinstance(notes1, DrumSequence)):
+		print "Combining drum sequences"
+		# both MUST be drum sequences
+		try:
+			newDrumSequence = DrumSequence(notes1)
+			for i in range(len(notes2)):
+				newDrumSequence.append(notes2[i])
+			newDrumSequence.is_drums = True
+			newDrumSequence.snare = list(notes1.snare)
+			for i in range(len(notes2.snare):
+				newDrumSequence.append(notes2.snare[i])
+			newDrumSequence.conga = list(notes1.conga)
+			for i in range(len(notes2.conga):
+				newDrumSequence.append(notes2.conga[i])
+			newDrumSequence.tom = list(notes1.tom)
+			for i in range(len(notes2.tom):
+				newDrumSequence.append(notes2.tom[i])
+			newDrumSequence.hat = list(notes1.hat)
+			for i in range(len(notes2.hat):
+				newDrumSequence.append(notes2.hat[i])
+			newDrumSequence.hit = list(notes1.hit)
+			for i in range(len(notes2.hit):
+				newDrumSequence.append(notes2.hit[i])
+			newDrumSequence.ride = list(notes1.ride)
+			for i in range(len(notes2.ride):
+				newDrumSequence.append(notes2.ride[i])
+			return newDrumSequence
+		except NameError:
+			print "Error combining drum sequence, maybe they're not both drums?"
+			return [(-1, 0.25)]
+	return notes1 + notes2
 	
 # Changes a voice to play a different set of notes
 def change_voice(notes, beat_fraction, voice):
