@@ -7,28 +7,28 @@
 ;
 #X obj 4 13 cnv 15 270 80 empty empty OSC1 220 12 0 14 -13330 -262144
 0;
-#X obj 8 45 hradio 15 1 0 6 \$0-wave1-s \$0-wave1-r triangle 0 -8 0
-10 -1 -4034 -4034 0;
+#X obj 8 45 hradio 15 1 0 6 \$0-wave1-s \$0-wave1-r sawtooth 0 -8 0
+10 -1 -4034 -4034 2;
 #X obj 8 73 hradio 15 1 0 6 \$0-range1-s \$0-range1-r pitch_range 0
--8 0 10 -1 -4034 -4034 3;
+-8 0 10 -1 -4034 -4034 4;
 #X obj 240 45 tgl 15 0 \$0-on1-s \$0-on1-r ON 17 7 0 10 -1 -4034 -4034
 1 1;
 #X obj 105 45 hsl 128 15 0 1 0 0 \$0-vol1-s \$0-vol1-r volume 10 8
-0 10 -1 -4034 -260097 9200 1;
+0 10 -1 -4034 -260097 7200 1;
 #X obj 4 96 cnv 15 270 80 empty empty OSC2 220 12 0 14 -13330 -262144
 0;
 #X obj 4 179 cnv 15 270 80 empty empty OSC3 220 12 0 14 -13330 -262144
 0;
-#X obj 8 130 hradio 15 1 0 6 \$0-wave2-s \$0-wave2-r triangle 0 -8
-0 10 -1 -4034 -4034 0;
-#X obj 8 211 hradio 15 1 0 6 \$0-wave3-s \$0-wave3-r triangle 0 -8
-0 10 -1 -4034 -4034 0;
+#X obj 8 130 hradio 15 1 0 6 \$0-wave2-s \$0-wave2-r saw-triangle 0
+-8 0 10 -1 -4034 -4034 1;
+#X obj 8 211 hradio 15 1 0 6 \$0-wave3-s \$0-wave3-r square 0 -8 0
+10 -1 -4034 -4034 3;
 #X obj 105 157 hsl 128 15 0 1 0 0 \$0-freqctrl2-s \$0-freqctrl2-r pitch
-10 8 0 10 -1 -4034 -4034 9900 1;
+10 8 0 10 -1 -4034 -4034 6000 1;
 #X obj 105 239 hsl 128 15 0 1 0 0 \$0-freqctrl3-s \$0-freqctrl3-r pitch
-10 8 0 10 -1 -4034 -4034 12700 1;
+10 8 0 10 -1 -4034 -4034 6000 1;
 #X obj 8 157 hradio 15 1 0 6 \$0-range2-s \$0-range2-r pitch_range
-0 -8 0 10 -1 -4034 -4034 4;
+0 -8 0 10 -1 -4034 -4034 3;
 #X obj 8 239 hradio 15 1 0 6 \$0-range3-s \$0-range3-r pitch_range
 0 -8 0 10 -1 -4034 -4034 3;
 #X obj 240 130 tgl 15 0 \$0-on2-s \$0-on2-r ON 17 7 0 10 -1 -4034 -4034
@@ -36,49 +36,49 @@
 #X obj 240 211 tgl 15 0 \$0-on3-s \$0-on3-r ON 17 7 0 10 -1 -4034 -4034
 1 1;
 #X obj 105 130 hsl 128 15 0 1 0 0 \$0-vol2-s \$0-vol2-r volume 10 8
-0 10 -1 -4034 -4034 6200 1;
+0 10 -1 -4034 -4034 6900 1;
 #X obj 105 211 hsl 128 15 0 1 0 0 \$0-vol3-s \$0-vol3-r volume 10 8
-0 10 -1 -4034 -4034 9200 1;
+0 10 -1 -4034 -4034 6200 1;
 #X obj 240 239 tgl 15 0 \$0-osc3ctrl-s \$0-osc3ctrl-r ctl 17 7 0 10
 -1 -4034 -4034 1 1;
 #X obj 4 262 cnv 15 270 41 empty empty NOISE 220 12 0 14 -13330 -262144
 0;
 #X obj 239 284 tgl 15 0 \$0-noiseon-s \$0-noiseon-r ON 17 7 0 10 -1
--4034 -4034 0 1;
+-4034 -4034 1 1;
 #X obj 104 284 hsl 128 15 0 1 0 0 \$0-noisevol-s \$0-noisevol-r volume
-10 8 0 10 -1 -4034 -4034 9400 1;
-#X obj 8 284 tgl 15 0 \$0-noiseselect-s \$0-noiseselect-r pink 17 7
-0 10 -1 -4034 -4034 1 1;
+10 8 0 10 -1 -4034 -4034 0 1;
+#X obj 8 284 tgl 15 0 \$0-noiseselect-s \$0-noiseselect-r white 17
+7 0 10 -1 -4034 -4034 0 1;
 #X obj 282 13 cnv 15 460 100 empty empty FILTER 390 12 0 14 -13330
 -262144 0;
 #X obj 297 47 hsl 128 15 0 1 0 0 \$0-filterfreq-s \$0-filterfreq-r
-cutoff 10 8 0 10 -1 -4034 -4034 0 1;
+cutoff 10 8 0 10 -1 -4034 -4034 7200 1;
 #X obj 448 47 hsl 128 15 0 1 0 0 \$0-resonance-s \$0-resonance-r resonance
-10 8 0 10 -1 -4034 -4034 8800 1;
+10 8 0 10 -1 -4034 -4034 5600 1;
 #X obj 599 47 hsl 128 15 0 1 0 0 \$0-contour-s \$0-contour-r contour
-10 8 0 10 -1 -4034 -4034 0 1;
+10 8 0 10 -1 -4034 -4034 12700 1;
 #X obj 297 68 hsl 128 15 0 1 0 0 \$0-filterattack-s \$0-filterattack-r
-attack 10 8 0 10 -1 -4034 -4034 1000 1;
+attack 10 8 0 10 -1 -4034 -4034 1300 1;
 #X obj 448 68 hsl 128 15 0 1 0 0 \$0-filterdecay-s \$0-filterdecay-r
-decay 10 8 0 10 -1 -4034 -4034 5600 1;
+decay 10 8 0 10 -1 -4034 -4034 2600 1;
 #X obj 297 89 hsl 128 15 0 1 0 0 \$0-filtertracking-s \$0-filtertracking-r
-tracking 10 8 0 10 -1 -4034 -4034 10100 1;
+tracking 10 8 0 10 -1 -4034 -4034 12700 1;
 #X obj 599 68 hsl 128 15 0 1 0 0 \$0-filtersustain-s \$0-filtersustain-r
-sustain 10 8 0 10 -1 -4034 -4034 9000 1;
+sustain 10 8 0 10 -1 -4034 -4034 7600 1;
 #X obj 282 121 cnv 15 460 50 empty empty LOUDNESS_CONTOUR 310 12 0
 14 -13330 -262144 0;
 #X obj 297 148 hsl 128 15 0 1 0 0 \$0-ampattack-s \$0-ampattack-r attack
-10 8 0 10 -1 -4034 -4034 3200 1;
+10 8 0 10 -1 -4034 -4034 800 1;
 #X obj 448 148 hsl 128 15 0 1 0 0 \$0-ampdecay-s \$0-ampdecay-r decay
-10 8 0 10 -1 -4034 -4034 6000 1;
+10 8 0 10 -1 -4034 -4034 6700 1;
 #X obj 599 148 hsl 128 15 0 1 0 0 \$0-ampsustain-s \$0-ampsustain-r
-sustain 10 8 0 10 -1 -4034 -4034 8200 1;
+sustain 10 8 0 10 -1 -4034 -4034 9200 1;
 #X obj 440 179 cnv 15 302 124 empty empty KEYBOARD 220 12 0 14 -13330
 -262144 0;
 #X obj 451 218 hsl 128 15 0 1 0 0 \$0-glide-s \$0-glide-r glide 10
-8 0 10 -1 -4034 -4034 5500 1;
+8 0 10 -1 -4034 -4034 0 1;
 #X obj 451 249 hsl 128 15 0 1 0 0 \$0-detune-s \$0-detune-r detune
-10 8 0 10 -1 -4034 -4034 11000 1;
+10 8 0 10 -1 -4034 -4034 12200 1;
 #X obj 451 280 hsl 128 15 0 1 0 0 \$0-tuner-s \$0-tuner-r tuner 10
 8 0 10 -1 -4034 -4034 6100 1;
 #X obj 282 179 cnv 15 150 124 empty empty MODULATION 50 12 0 14 -13330
@@ -100,29 +100,29 @@ sustain 10 8 0 10 -1 -4034 -4034 8200 1;
 #X obj 290 379 cnv 15 140 80 empty empty DELAY 10 12 0 14 -86277 -262144
 0;
 #X obj 297 415 hsl 128 15 0 1 0 0 \$0-delay-time-s \$0-delay-time-r
-delay_time 10 8 0 10 -1 -4034 -4034 0 1;
+delay_time 10 8 0 10 -1 -4034 -4034 1500 1;
 #X obj 297 436 hsl 128 15 0 1 0 0 \$0-delay-fb-s \$0-delay-fb-r feedback
-10 8 0 10 -1 -4034 -4034 0 1;
+10 8 0 10 -1 -4034 -4034 7900 1;
 #X obj 147 379 cnv 15 140 80 empty empty PHASER 10 12 0 14 -86277 -262144
 0;
 #X obj 154 414 hsl 128 15 0 1 0 0 \$0-phaser-freq-s \$0-phaser-freq-r
-freq 10 8 0 10 -1 -4034 -4034 0 1;
+freq 10 8 0 10 -1 -4034 -4034 3400 1;
 #X obj 153 436 hsl 128 15 0 1 0 0 \$0-phaser-depth-s \$0-phaser-depth-r
 depth 10 8 0 10 -1 -4034 -4034 0 1;
 #X obj 433 379 cnv 15 140 80 empty empty REVERB 10 12 0 14 -86277 -262144
 0;
 #X obj 439 436 hsl 128 15 0 1 0 0 \$0-reverb-wet-s \$0-reverb-wet-r
-dry/wet 10 8 0 10 -1 -4034 -4034 0 1;
+dry/wet 10 8 0 10 -1 -4034 -4034 9700 1;
 #X obj 437 415 hradio 15 1 0 6 \$0-reverb-preset-s \$0-reverb-preset-r
-tadada 0 -8 0 10 -1 -4034 -4034 5;
+huge 0 -8 0 10 -1 -4034 -4034 3;
 #X obj 293 218 hsl 128 15 0 1 0 0 \$0-freqmod-s \$0-freqmod-r freq_modulation
 10 8 0 10 -1 -4034 -4034 0 1;
 #X obj 4 379 cnv 15 140 80 empty empty CHORUS 10 12 0 14 -86277 -262144
 0;
 #X obj 11 414 hsl 128 15 0 1 0 0 \$0-chorus-freq-s \$0-chorus-freq-r
-freq 10 8 0 10 -1 -4034 -4034 1500 1;
+freq 10 8 0 10 -1 -4034 -4034 0 1;
 #X obj 10 436 hsl 128 15 0 1 0 0 \$0-chorus-depth-s \$0-chorus-depth-r
-depth 10 8 0 10 -1 -4034 -4034 10700 1;
+depth 10 8 0 10 -1 -4034 -4034 0 1;
 #X obj 4 311 cnv 15 460 60 empty empty ARPEGGIATOR 10 12 0 14 -45076
 -262144 0;
 #X obj 251 324 hradio 15 1 1 4 \$0-arp-octaves-s \$0-arp-octaves-r
@@ -155,8 +155,8 @@ down/up 0 -8 0 10 -1 -4034 -4034 1;
 -4034 -4034 0 1;
 #X obj 519 351 tgl 15 0 \$0-seq-play-s \$0-seq-play-r play 0 -6 0 10
 -1 -4034 -4034 0 1;
-#X obj 580 379 cnv 15 161 80 empty \$0-presetname-r soft_synth3 5 12
-0 15 -13330 -262144 0;
+#X obj 580 379 cnv 15 161 80 empty \$0-presetname-r default 5 12 0
+15 -13330 -262144 0;
 #X obj 585 436 bng 15 250 50 0 \$0-save-s \$0-save-r save 17 7 0 10
 -1 -4034 -4034;
 #X obj 585 411 bng 15 250 50 0 \$0-load-s \$0-load-r load_preset 17
@@ -166,7 +166,7 @@ down/up 0 -8 0 10 -1 -4034 -4034 1;
 #X obj 580 462 cnv 15 161 37 empty empty empty 20 12 0 14 -13330 -66577
 0;
 #X obj 586 476 hsl 128 15 0 1 0 0 \$0-volume-s \$0-volume-r master-volume
-10 8 0 10 -1 -4034 -4034 0 1;
+10 8 0 10 -1 -4034 -4034 12700 1;
 #X obj 721 476 tgl 15 0 \$0-rec empty REC 0 -5 0 10 -1 -4034 -4034
 0 1;
 #X obj 196 465 piano3;
@@ -1790,7 +1790,7 @@ down/up 0 -8 0 10 -1 -4034 -4034 1;
 #X msg 200 315 clear;
 #X msg 7 310 add \$1;
 #X msg 503 125 rewind;
-#X msg 533 178 read soft_synth3.txt;
+#X msg 533 178 read default.txt;
 #X obj 488 216 until;
 #X obj 70 435 pack f f;
 #X obj 488 294 f;
@@ -4471,6 +4471,14 @@ License along with this program. If not \, see <http://www.gnu.org/licenses/>.
 #X connect 98 0 99 0;
 #X restore 8 477 pd guts;
 #X obj 353 18 r filter1;
+#X obj 531 412 r verbamount1;
+#X obj 480 388 r verbsize1;
+#X obj 353 393 r delaytime1;
+#X obj 220 383 r delayfeed1;
 #X connect 83 0 86 0;
 #X connect 85 0 81 0;
 #X connect 87 0 24 0;
+#X connect 88 0 54 0;
+#X connect 89 0 55 0;
+#X connect 90 0 48 0;
+#X connect 91 0 49 0;

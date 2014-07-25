@@ -209,6 +209,14 @@ def set_property(voice, percentage, property):
 	message.append(int(voice))
 	message.append(float(percentage))
 	send_message_to_maestro(message, address)
+	
+def set_drum_volume(drum, percentage):
+	address = "/lpc/maestro/drum_volume"
+	message = OSC.OSCMessage()
+	message.setAddress(address)
+	message.append(int(drum))
+	message.append(float(percentage))
+	send_message_to_maestro(message, address)
 
 class DrumSequence(list):
 	pass
