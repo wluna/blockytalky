@@ -341,7 +341,7 @@
 #X connect 96 0 61 0;
 #X connect 98 0 100 0;
 #X connect 98 0 113 0;
-#X connect 98 0 206 0;
+#X connect 98 0 99 0;
 #X connect 99 0 206 0;
 #X connect 100 0 207 0;
 #X connect 108 0 109 0;
