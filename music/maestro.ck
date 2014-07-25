@@ -23,6 +23,7 @@ spork ~ phrase_receive_on_beat_with_shred();
 spork ~ looping_phrase_receive_on_beat_with_shred();
 spork ~ on_beat_stop_phrase_handler();
 spork ~ on_beat_change_voice_handler();
+spork ~ on_beat_change_voice_handler_drums();
 spork ~ set_instrument_handler();
 spork ~ set_volume_handler();
 spork ~ set_bandpassfilter_handler();
@@ -233,16 +234,16 @@ function void on_beat_change_voice_handler_drums() {
     // Set up voice change message receiving event
     oscReceiver.event("/lpc/maestro/change_voice_drums, ififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififfi") @=> OscEvent voice_change_event;
     
+    // There are seven distinct drum sounds, and each is considered
+    // its own loop. So doing a "change voice" on a drumline is more
+    // complicated bcause it must happen simultaneously for seven
+    // different voices.
+    7 => int NUM_DRUMS;
+    0 => int num_drums_loaded; // index tracking, when this is 7 the arrays are full
+    
     while (true) {
         voice_change_event => now; // wait for voice change event to arrive
         <<< "Got on-beat DRUM voice change event." >>>;
-        
-        // There are seven distinct drum sounds, and each is considered
-        // its own loop. So doing a "change voice" on a drumline is more
-        // complicated bcause it must happen simultaneously for seven
-        // different voices.
-        7 => int NUM_DRUMS;
-        0 => int num_drums_loaded; // index tracking, when this is 7 the arrays are full
     
         // vars for storing message data
         int drums_note_pitch_array[NUM_DRUMS][PHRASE_SIZE];
