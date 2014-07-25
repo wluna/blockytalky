@@ -227,6 +227,93 @@ function void on_beat_change_voice_handler() {
     }
 }
 
+// Voice phrase-changing event handler ON BEAT -- FOR DRUMS
+function void on_beat_change_voice_handler_drums() {
+    
+    // Set up voice change message receiving event
+    oscReceiver.event("/lpc/maestro/change_voice_drums, ififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififififfi") @=> OscEvent voice_change_event;
+    
+    while (true) {
+        voice_change_event => now; // wait for voice change event to arrive
+        <<< "Got on-beat DRUM voice change event." >>>;
+        
+        // There are seven distinct drum sounds, and each is considered
+        // its own loop. So doing a "change voice" on a drumline is more
+        // complicated bcause it must happen simultaneously for seven
+        // different voices.
+        7 => int NUM_DRUMS;
+        0 => int num_drums_loaded; // index tracking, when this is 7 the arrays are full
+    
+        // vars for storing message data
+        int drums_note_pitch_array[NUM_DRUMS][PHRASE_SIZE];
+        float drums_note_duration_array[NUM_DRUMS][PHRASE_SIZE];
+        float drums_beat_alignment_fraction[NUM_DRUMS];
+        int drums_voice_index[NUM_DRUMS];
+        
+        // Grab messages out of the message queue and store
+        // message data
+        while (voice_change_event.nextMsg() != 0) {
+            <<< "Operating on DRUM voice change event." >>>;
+            for (0 => int i; i < PHRASE_SIZE; i++) {
+                voice_change_event.getInt() => drums_note_pitch_array[num_drums_loaded][i];
+                voice_change_event.getFloat() => drums_note_duration_array[num_drums_loaded][i];
+            }
+            voice_change_event.getFloat() => drums_beat_alignment_fraction[num_drums_loaded];
+            voice_change_event.getInt() => drums_voice_index[num_drums_loaded];
+            1 +=> num_drums_loaded;
+        }
+        
+        // We're finished loading all of the data of a new drumline
+        // if the number of drums loaded is 7, otherwise we must
+        // continue to wait for more drum data to arrive.
+        if (num_drums_loaded == 7) {
+            <<< "All drums loaded. Performing change... " >>>;
+            0 => num_drums_loaded;
+            
+            // To change a phrase that is currently playing, we'll stop
+            // the voice (as if a stop message was received for that phrase)
+            // and then immediately start a new phrase with the same voice
+            // and the new message data.
+            
+            // First, stop the voice:
+            // Find all shreds that need to be stopped in the shred tracking array
+            // based on instrument name matching
+            // But first wait for beat alignment if necessary
+            wait_until_alignment(drums_beat_alignment_fraction[0]);  // all drums must be aligned to the same beat D:<
+            for (0 => int i; i < MAX_SHRED_STORAGE; i++) {
+                // Check if shred still exists (id != 0) and also is not null
+                if (shreds[i] != null) {
+                    if (shreds[i].id() != 0) {
+                        if (loop_shred_tracker[i] == drums_voice_index[0]) {  // all drums must also be on the same voice D:<
+                            // Exit out of any shred that uses this instrument
+                            drums_voice_index[0] => should_exit_tracker[i];
+                        }
+                    }
+                }
+            }
+            
+            // Now we yield computation time to other shreds
+            // This gives the exit-tracking shred time to remove all
+            // voices set in the exit tracker before we start the new voice
+            <<< "Voice change shred: Yielding for exiting shreds." >>>;
+            me.yield();
+            
+            // With should_exit_tracker set, the voice will be stopped by the 
+            // phrase-playing thread(s) currently playing with that voice. Now we
+            // start the new shred to play the new phrase.
+            // Pass 0.0 as beat alignment fraction because we already waited up above!!
+            // We must do this seven times to add all seven types of drums as their own loops.
+            for (0 => int i; i < NUM_DRUMS; i++) {
+                spork ~ loop_phrase_shred(drums_note_pitch_array[i], drums_note_duration_array[i], 0.0, drums_voice_index[i]) @=> shreds[shreds_length];
+                drums_voice_index[i] => loop_shred_tracker[shreds_length];
+                1 +=> shreds_length;
+                MAX_SHRED_STORAGE %=> shreds_length;
+            }
+            <<< "Voice change shred action complete" >>>;
+        }
+    }
+}
+
 // Actual phrase-playing shred
 // use beat_alignment_fraction of 0 to play now
 function void play_phrase_shred(int pitches[], float durations[], float alignment_fraction, int voice_index) {

@@ -7,7 +7,7 @@ interfacing with the 'maestro.ck' chuck module
 running at the note_destination_hostname."""
 
 # hostname and port
-note_destination_hostname = "192.168.1.14"
+note_destination_hostname = ""
 note_destination_port = 1111
 
 # OSC client used by various methods to send messages
@@ -309,41 +309,42 @@ def change_voice(notes, beat_fraction, voice):
 	address = "/lpc/maestro/change_voice"
 	try:
 		if (notes.is_drums):  # drum sequence
+			drum_address = "/lpc/maestro/change_voice_drums"
 			# bass drum notes
-			message = construct_basic_phrase_message(notes, address)
+			message = construct_basic_phrase_message(notes, drum_address)
 			message.append(float(beat_fraction))
 			message.append(int(voice))
-			send_message_to_maestro(message, address)
+			send_message_to_maestro(message, drum_address)
 			# snare drum notes
-			message2 = construct_basic_phrase_message(notes.snare, address)
+			message2 = construct_basic_phrase_message(notes.snare, drum_address)
 			message2.append(float(beat_fraction))
 			message2.append(int(voice))
-			send_message_to_maestro(message2, address)
+			send_message_to_maestro(message2, drum_address)
 			# conga drum notes
-			message3 = construct_basic_phrase_message(notes.conga, address)
+			message3 = construct_basic_phrase_message(notes.conga, drum_address)
 			message3.append(float(beat_fraction))
 			message3.append(int(voice))
-			send_message_to_maestro(message3, address)
+			send_message_to_maestro(message3, drum_address)
 			# tom drum notes
-			message4 = construct_basic_phrase_message(notes.tom, address)
+			message4 = construct_basic_phrase_message(notes.tom, drum_address)
 			message4.append(float(beat_fraction))
 			message4.append(int(voice))
-			send_message_to_maestro(message4, address)
+			send_message_to_maestro(message4, drum_address)
 			# hat drum notes
-			message5 = construct_basic_phrase_message(notes.hat, address)
+			message5 = construct_basic_phrase_message(notes.hat, drum_address)
 			message5.append(float(beat_fraction))
 			message5.append(int(voice))
-			send_message_to_maestro(message5, address)
+			send_message_to_maestro(message5, drum_address)
 			# hit drum notes
-			message6 = construct_basic_phrase_message(notes.hit, address)
+			message6 = construct_basic_phrase_message(notes.hit, drum_address)
 			message6.append(float(beat_fraction))
 			message6.append(int(voice))
-			send_message_to_maestro(message6, address)
+			send_message_to_maestro(message6, drum_address)
 			# ride drum notes
-			message7 = construct_basic_phrase_message(notes.ride, address)
+			message7 = construct_basic_phrase_message(notes.ride, drum_address)
 			message7.append(float(beat_fraction))
 			message7.append(int(voice))
-			send_message_to_maestro(message7, address)
+			send_message_to_maestro(message7, drum_address)
 	except NameError:  # normal notes
 		message = construct_basic_phrase_message(notes, address)
 		message.append(float(beat_fraction))
