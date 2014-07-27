@@ -36,15 +36,42 @@ The master loop is initialized in the beginning of the program
 The master loop is modified by OSC phrase commands
 
 // processing play voice messages
+init globally:
+	notes_added[NUM_VOICES][2048]
+	notes_added_start[NUM_VOICES]
+
+on master_loop consumes a voice note:
+	remove_note(that note from that voice)
+	increment notes_added_start[that voice] by 1
+	notes_added_start[that voice] %= 2048 you know
+	
+on stop_event[voice]:
+	set should_exit(voice)
+	do_exit(voice)
+
 set index = master loop index + beat alignment
 set notes_added_index = 0
 for each note in the phrase data
 	add the note to the master loop
 	add index to notes_added[voice][notes_added_index]
 	increment index by the duration processed
+	increment notes_added_index by 1
 	index %= master loop beat size
+	notes_added_index %= master loop beat size
 	if should_exit(this voice)
+		break!
+	if looping && last note added:
+		wait total_duration_processed
+		if should_exit(this voice)
+			break!
+		reset note index
+	
 		
+do_exit(voice):
+	for (note in notes_added[voice]), starting at notes_added_start[voice]:
+		if note is already empty:
+			break!
+		remove_note(that note from that voice)
 
 10 // start note, end note
 1_ // start note
