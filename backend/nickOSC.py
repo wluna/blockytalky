@@ -96,7 +96,7 @@ def on_beat_play_with(notes, beat_fraction, voice):
 			send_message_to_maestro(message5, address)
 			send_message_to_maestro(message6, address)
 			send_message_to_maestro(message7, address)
-	except NameError:  # normal notes
+	except AttributeError:  # normal notes
 		message = construct_basic_phrase_message(notes, address)
 		message.append(float(beat_fraction))
 		message.append(int(voice))
@@ -145,7 +145,7 @@ def on_beat_start_playing_with(notes, beat_fraction, voice):
 			message7.append(float(beat_fraction))
 			message7.append(int(voice))
 			send_message_to_maestro(message7, address)
-	except NameError:  # normal notes
+	except AttributeError:  # normal notes
 		message = construct_basic_phrase_message(notes, address)
 		message.append(float(beat_fraction))
 		message.append(int(voice))
@@ -298,7 +298,7 @@ def combine_phrase(notes1, notes2):
 			for i in range(len(notes2.ride)):
 				newDrumSequence.ride.append(notes2.ride[i])
 			return newDrumSequence
-		except NameError:
+		except AttributeError:
 			print "Error combining drum sequence, maybe they're not both drums?"
 			return [(-1, 0.25)]
 	return notes1 + notes2
@@ -345,7 +345,7 @@ def change_voice(notes, beat_fraction, voice):
 			message7.append(float(beat_fraction))
 			message7.append(int(voice))
 			send_message_to_maestro(message7, drum_address)
-	except NameError:  # normal notes
+	except AttributeError:  # normal notes
 		message = construct_basic_phrase_message(notes, address)
 		message.append(float(beat_fraction))
 		message.append(int(voice))
