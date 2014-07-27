@@ -6,7 +6,7 @@ I. Preface
 	
 II. Messaging Protocol between BlockyTalky and the ChucK Maestro
 	A. Playing Notes
-		/lpc/maestro/voice/play if*8*16 i(voice) i(should_loop) i(should_overlay) f(beat_delay) f(beat_align_fraction)
+		/lpc/maestro/voice/play if*8*16 i(voice) i(should_loop) f(beat_align_fraction)
 			This command replaces the specified voice with the new voice data and plays it, or attempts to overlay the new voice data on top of the old, and continues playing.
 			Message containing 128 notes, where each note is identified by an integer (i) and a float (f). Such a construct is considered a "phrase," and will be henceforth named thusly in this document. A phrase may contain empty notes; such notes take no time to play and produce no sound, and can be specified with a pitch of -1 and a duration of 0.
 			This message also contains a float specifying a "beat alignment fraction" and an int (1-8) specifying the voice to be used to play the notes in the phrase. 0 can be passed as the beat alignment fraction, in which case no beat alignment will occur and the phase will play without any delay.
@@ -15,7 +15,7 @@ II. Messaging Protocol between BlockyTalky and the ChucK Maestro
 			Stops playing the specified voice.
 			As before, this command allows for beat alignment; pass 0 to ignore alignment and stop immediately.
 			
-		/lpc/maestro/drums/play i*7*16 i(should_loop) i(should_overlay) f(beat_delay) f(beat_align_fraction)
+		/lpc/maestro/drums/play i*7*32 i(should_loop) f(beat_align_fraction)
 			Replaces the drumline with the new drumline data and plays it, or attempts to overlay the new drumline on top of the old and continues playing it. See voiceX/play for more information on other arguments.
 			
 		/lpc/maestro/drums/stop f(beat_align_fraction)

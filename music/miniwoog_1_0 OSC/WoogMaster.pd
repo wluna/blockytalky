@@ -1,4 +1,4 @@
-#N canvas 1057 20 835 551 10;
+#N canvas 988 8 848 511 10;
 #X declare -path presets;
 #X declare -lib mrpeach;
 #X declare -path data;
@@ -274,6 +274,8 @@
 #X floatatom -254 475 5 0 0 0 - - -;
 #X obj -234 313 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
+#X obj 351 245 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
 #X connect 1 0 3 0;
 #X connect 1 0 6 0;
 #X connect 3 0 5 0;
@@ -299,6 +301,7 @@
 #X connect 10 0 11 0;
 #X connect 10 0 24 0;
 #X connect 12 0 8 0;
+#X connect 12 0 232 0;
 #X connect 13 0 18 0;
 #X connect 16 0 32 0;
 #X connect 16 0 34 0;
