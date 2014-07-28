@@ -36,8 +36,8 @@ def construct_basic_phrase_message(notes, address):
 	# pad message with empty notes
 	# (phrases require 256 notes sent)
 	for i in range(128 - len(notes)):
-		message.append((int)0)
-		message.append((float)0.)
+		message.append(int(0))
+		message.append(float(0.))
 	return message
 
 # Because who likes code duplication?
