@@ -187,14 +187,6 @@ def upload_code(xml_data, python_data):
     logger.info('Upload took '+ str(time.time() - uploadStart) + ' s')
 
 def remote_code_upload(code):
-    logger.debug('Sending code to remote server')
-    unitname = socket.gethostname()
-    headers = {'unit-name': unitname}
-
-    try:
-        request = requests.post("http://104.131.249.150:5000", data=code, headers=headers)
-    except:
-        pass
     os.chdir('/home/pi/blockytalky/usercode')
     filename = socket.gethostname() + "-" + str(int(round(time.time() * 1000)))
     fo = open(filename, 'wb')
