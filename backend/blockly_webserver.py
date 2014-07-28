@@ -144,7 +144,7 @@ def blockly():
     startMsg = Message('name', None, 'HwCmd', Message.createImage(pin13=0))
     startMsg = Message.encode(startMsg)
     try:    
-	    channel.basic_publish(exchange='HwCmd', routing_key='', body=startMsg)
+        channel.basic_publish(exchange='HwCmd', routing_key='', body=startMsg)
     except:
         logger.exception('Failed to start Blockly:')
     return render_template('code.html')
@@ -177,7 +177,7 @@ def upload_code(xml_data, python_data):
     code_to_file(xml_data, 'code/rawxml.txt', 'XML')
     #code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
     code_to_file(convert_usercode(python_data), 'backend/user_script.py', 'Python')
-    remote_code_upload(xml_data)
+    save_locally(xml_data)
     startTime = time.time()
     logger.info('Issuing kill command before uploading code')
     stop_user_script()
@@ -186,7 +186,7 @@ def upload_code(xml_data, python_data):
 
     logger.info('Upload took '+ str(time.time() - uploadStart) + ' s')
 
-def remote_code_upload(code):
+def save_locally(code):
     os.chdir('/home/pi/blockytalky/usercode')
     filename = socket.gethostname() + "-" + str(int(round(time.time() * 1000)))
     fo = open(filename, 'wb')
