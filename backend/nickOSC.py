@@ -65,6 +65,7 @@ def play_voice_message(notes, voice, should_loop, beat_align):
 def stop_voice_message(voice, beat_align):
 	address = "/lpc/maestro/voice/stop"
 	message = OSC.OSCMessage()
+	message.setAddress(address)
 	message.append(int(voice))
 	message.append(float(beat_align))
 	send_message_to_maestro(message, address)
