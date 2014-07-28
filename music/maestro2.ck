@@ -696,7 +696,8 @@ function void stop_voice_message_processor(
         int voice, float beat_alignment) {
     
     if (DEBUG_PRINTING) {
-        <<< "Processing stop. First waiting for beat align." >>>;
+        <<< "Processing stop for voice " + 1
+        + ". First waiting for beat align." >>>;
         <<< "I'll wait "
                 + current_beat_align_offset(beat_alignment)
                 + " beat fractions." >>>;
