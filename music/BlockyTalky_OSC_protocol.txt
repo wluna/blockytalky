@@ -29,6 +29,9 @@ II. Messaging Protocol between BlockyTalky and the ChucK Maestro
 		/lpc/maestro/voice/volume i(voice) i(value) f(beat_align_fraction)
 			Sets the volume of the specified voice.
 			
+		/lpc/maestro/voice/instrument i(voice) i(value)
+			Sets the instrument to use for the specified voice.
+			
 		/lpc/maestro/drums/volume i(value)*7
 			Sets the volume of the drums, individually (there are 7 different drum sounds).
 			

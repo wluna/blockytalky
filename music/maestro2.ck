@@ -130,6 +130,8 @@ OSC_receiver.event("/lpc/maestro/tempo, f")
                    @=> OscEvent tempo_event;
 OSC_receiver.event("/lpc/maestro/voice/volume, iif")
                    @=> OscEvent voice_volume_event;
+OSC_receiver.event("/lpc/maestro/voice/instrument, iif")
+                   @=> OscEvent voice_instrument_event;
 OSC_receiver.event("/lpc/maestro/voice/bandpassfilter, iif")
                    @=> OscEvent voice_bandpassfilter_event;
 OSC_receiver.event("/lpc/maestro/drums/volume, iiiiiii")
@@ -140,7 +142,7 @@ spork ~ play_voice_message_handler_shred();
 spork ~ stop_voice_message_handler_shred();
 
 // ====================================================
-// ||                MAESTRO LOGIC                   ||
+// ||                MAESTRO LOGIC                   ||==--
 // ====================================================
 
 // Assign current tempo in BPM
@@ -544,6 +546,10 @@ function void set_tempo_message_handler_shred() {
 }
 
 function void set_voice_volume_message_handler_shred() {
+    // TODO: Implement
+}
+
+function void set_voice_instrument_message_handler_shred() {
     // TODO: Implement
 }
 
