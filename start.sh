@@ -28,7 +28,8 @@ sudo chown pi /home/pi/cm.log
 sudo chmod 664 /home/pi/cm.log
 
 sudo python /home/pi/blockytalky/backend/blockly_webserver.py &>/dev/null
+sudo python /home/pi/blockytalky/backend/code_uploader.py &>/dev/null
 #sudo python /home/pi/blockytalky/backend/comms_module.py &>/dev/null
-sudo python /home/pi/blockytalky/backend/hardware_daemon.py &>/dev/null
+#sudo python /home/pi/blockytalky/backend/hardware_daemon.py &>/dev/null
 
 echo BlockyTalky running.

@@ -225,7 +225,7 @@ def combine_phrase(notes1, notes2):
 			for i in range(len(notes2.ride)):
 				newDrumSequence.ride.append(notes2.ride[i])
 			return newDrumSequence
-		except NameError:
+		except AttributeError:
 			print "Error combining drum sequence, maybe they're not both drums?"
 			return [(-1, 0.25)]
 	return notes1 + notes2
@@ -272,7 +272,7 @@ def change_voice(notes, beat_align, voice):
 			message7.append(float(beat_align))
 			message7.append(int(voice))
 			send_message_to_maestro(message7, drum_address)
-	except NameError:  # normal notes
+	except AttributeError:  # normal notes
 		message = construct_basic_phrase_message(notes, address)
 		message.append(float(beat_align))
 		message.append(int(voice))
