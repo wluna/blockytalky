@@ -26,12 +26,20 @@ class HardwareDaemon(object):
         logger.info('Initializing hardware daemon')
         self.hostname = BlockyTalkyID()
         self.robot = Message.initStatus()
-        self.sensorList = [0,0,0,0]
         self.sensorsRequested = False
         self.hwval_channel = None
         self.hwcmd_channel = None
-        
         self.encoder_offsets = [0,0,0,0]
+
+        os.chdir("/home/pi/blockytalky/backend/")
+        f = open("sensors", "r")
+        slist = f.read()
+        f.close()
+        slist = slist.split(",")
+        processedlist = map(int, slist)
+        self.sensorList = processedlist
+        BrickPi.SensorType = processedlist
+        os.chdir("/home/pi/blockytalky/")
 
         parameters = pika.ConnectionParameters()
         self.connection = pika.BlockingConnection(parameters)
@@ -249,7 +257,20 @@ class HardwareDaemon(object):
                             newType = TYPE_SENSOR_LIGHT_OFF
 
                         BrickPi.SensorType[index] = newType 
-                        self.sensorList[index] = newType   
+                        self.sensorList[index] = newType
+                        os.chdir("/home/pi/blockytalky/backend/")
+                        sensorString = ""
+                        for item in self.sensorList:
+                            sensorString = sensorString + "," + str(item)
+                        
+                        sensorString = sensorString[1:]
+                        print "sensorString: " + str(sensorString)
+                        fo = open("sensors", "wb")
+                        fo.write(sensorString)
+                        fo.close()
+
+                        os.chdir("/home/pi/blockytalky/")
+
             time.sleep(.01)
             BrickPiSetupSensors()
             self.sensorsRequested = True
