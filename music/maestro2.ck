@@ -46,46 +46,91 @@
 1 => int DEBUG_PRINTING;
 
 // ====================================================
-// ||        INTERNAL PROTOCOL SPECIFICATION         ||
+// ||        INTERNAL PROTOCOL SPECIFICATIONS        ||
 // ====================================================
 
-// NOTES:
-// Notes are arrays of length 2: [int pitch, int duration]
-//
-// NOTE PITCH:
+// THE MASTER LOOP
+// Maestro operates by counting an index at equal intervals
+// of time. Every interval, it checks an RAM-stored,
+// three-dimensional array of integers called the "master loop"
+// for what voice notes to play, what commands to send, and
+// what drum notes to play at any given time.
+// The first dimension specifies the 'track.' By default,
+// there are 8 voice tracks, 8 command tracks, and 7 drumtype
+// tracks.
+
+// VOICE TRACKS
+// A voice track specifies notes along its second and third
+// dimensions (pitch, duration) for a single voice.
+
+// COMMAND TRACKS
+// A command track specifies commands along its second and
+// third dimensions.
+// (pitch -> command type, duration -> argument value).
+
+// DRUM TRACKS
+// A drum track specifies triggers for a particular type of drum
+// sound along its second dimension (third dimension ignored).
+// (pitch -> drumnote).
+// Clarity on terminology:
+// drumtype = number between 0 and 6 specifying type of drum
+// drumnote = number between -10 and -16 also specifying type of drum
+// drumtype = 0 - drumnote - 10
+// drumnote is used inside the master loop as pitch values.
+// drumtype is used when doing indexing logic for the master loop.
+// Yeah, it's a little silly. Sorry.
+
+// VOICE NOTES
+// Voice notes are arrays of length 2: [int pitch, int duration]
+
+// NOTE PITCH
 // Pitch values > 0 are interpreted as notes normally.
 // Pitches <= 0, by contrast, are interpreted as special
 // commands:
 // 0: Rest, or an "empty note" if the note's duration is 0.
-// -1: Rest, or an "empty note" if the note's duration is 0.
+// -1: Unspecified.
 // -2: Specifies a set volume command, encoded in duration. (0-100)
-// -3: Specifies a set bandpassfilter command, encoded in duration. (0-100)
+// -3: Specifies a set bandpassfilter command, encoded in duration.
 // -4 - -9: Unspecified property setting commands.
-// -10 - -16: Drum notes
+// -10 - -16: Drum notes. -10 corresponds to drumtype 0.
 // -17+: Unspecified.
-//
+
 // NOTE DURATION
 // Duration values are specified internally in fractions of a beat,
 // specifically, whole number multiples of the
+// BEAT_RESOLUTION_FRACTION. Messages containing duration values
+// are sent to this system as floats, whereupon they are converted
+// to their closest integer representation as a multiple of the
 // BEAT_RESOLUTION_FRACTION.
 
-// SETTING PROPERTIES
+// SETTING PROPERTIES (command track notes)
 // pitches from -2 to -9 specify properties to set.
 // The duration value of the note then determines
 // both the VOICE and the VALUE of the property
 // message. See below:
-// duration = 0-100  = voice 1 property
-//         1000-1100 = voice 2 property
-//         2000-2100 = voice 3 property
-//         3000-3100 = voice 4 property
-//         4000-4100 = voice 5 property
-//         5000-5100 = voice 6 property
-//         6000-6100 = voice 7 property
-//         7000-7100 = voice 8 property
+// duration = 0-100   = voice 1 property
+//         1000-1100  = voice 2 property
+//         2000-2100  = voice 3 property
+//         3000-3100  = voice 4 property
+//         4000-4100  = voice 5 property
+//         5000-5100  = voice 6 property
+//         6000-6100  = voice 7 property
+//         7000-7100  = voice 8 property
+//         8000-8100  = drum 0 property (if supported)
+//         9000-9100  = drum 1 property (if supported)
+//        10000-10100 = drum 2 property (if supported)
+//        11000-11100 = drum 3 property (if supported)
+//        12000-12100 = drum 4 property (if supported)
+//        13000-13100 = drum 5 property (if supported)
+//        14000-14100 = drum 6 property (if supported)
+//        15000-15100 = all drums property (if supported)
 // Duration values outside of the specified ranges
 // will round down to 100 for the corresponding voice
-// or will be ignored for negative durations.
-// TODO: Implement and test the above
+// or will be ignored for negative durations
+// or will be ignored if > 16000.
+// TODO: Right now THERE IS NO BEAT ALIGNMENT for property
+// setting. Messages are simply passed along as soon as they are
+// received! THEY AREN'T PLACED IN THE MASTER LOOP.
 
 // ====================================================
 // ||               OSC INITIALIZATION               ||
@@ -115,34 +160,43 @@ OSC_receiver.event(
 OSC_receiver.event("/lpc/maestro/voice/stop, if")
                    @=> OscEvent voice_stop_event;
 OSC_receiver.event(
-        "/lpc/maestro/drums/play, iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-                               + "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-                               + "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-                               + "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-                               + "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-                               + "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-                               + "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-                               + "if")
+        "/lpc/maestro/drums/play, iiiiiiii"
+                               + "iiiiiiii"
+                               + "iiiiiiii"
+                               + "iiiiiiii"
+                               + "iiiiiiii"
+                               + "iiiiiiii"
+                               + "iiiiiiii"
+                               + "iif")
                    @=> OscEvent drums_play_event;
-OSC_receiver.event("/lpc/maestro/drums/stop, if")
+OSC_receiver.event("/lpc/maestro/drums/stop, f")
                    @=> OscEvent drums_stop_event;
 OSC_receiver.event("/lpc/maestro/tempo, f")
                    @=> OscEvent tempo_event;
-OSC_receiver.event("/lpc/maestro/voice/volume, iif")
+OSC_receiver.event("/lpc/maestro/voice/volume, ii")
                    @=> OscEvent voice_volume_event;
-OSC_receiver.event("/lpc/maestro/voice/instrument, iif")
+OSC_receiver.event("/lpc/maestro/voice/instrument, ii")
                    @=> OscEvent voice_instrument_event;
-OSC_receiver.event("/lpc/maestro/voice/bandpassfilter, iif")
+OSC_receiver.event("/lpc/maestro/voice/bandpassfilter, ii")
                    @=> OscEvent voice_bandpassfilter_event;
 OSC_receiver.event("/lpc/maestro/drums/volume, iiiiiii")
                    @=> OscEvent drums_volume_event;
                    
 // Spork event-listening shreds
+// voices
 spork ~ play_voice_message_handler_shred();
 spork ~ stop_voice_message_handler_shred();
+// drums
+spork ~ play_drums_message_handler_shred();
+spork ~ stop_drums_message_handler_shred();
+// setting properties
+spork ~ set_tempo_message_handler_shred();
+spork ~ set_voice_volume_message_handler_shred();
+spork ~ set_voice_instrument_message_handler_shred();
+spork ~ set_voice_bandpassfilter_message_handler_shred();
 
 // ====================================================
-// ||                MAESTRO LOGIC                   ||==--
+// ||                MAESTRO LOGIC                   ||
 // ====================================================
 
 // Assign current tempo in BPM
@@ -173,14 +227,23 @@ int master_loop
 if (DEBUG_PRINTING)
     <<< "Master loop initialized." >>>;
         
-// Tracking notes added so they can be
+// Tracking voice notes added so they can be
 // easily removed on a stop command
 int notes_added[NUM_VOICES][master_loop_length()];
 int notes_added_start_index[NUM_VOICES];
 
+// Tracking drum notes added so they can be
+// easily removed on a stop command
+int drum_notes_added[NUM_DRUMS][master_loop_length()];
+int drum_notes_added_start_index[NUM_DRUMS];
+
 // Tracking whether or not a voice should
 // stop looping
 int voice_should_exit[NUM_VOICES];
+
+// Tracking whether or not the drums should
+// stop looping
+int drums_should_exit;
 
 // wait a second before starting
 1::second => now;
@@ -247,7 +310,7 @@ function void maestro_shred() {
                     0 => master_loop[i][master_loop_index][0];
                     0 => master_loop[i][master_loop_index][1];
                 }
-                else if (noteslot[0] == -3) {  // set-bandpassfilter note
+                else if (noteslot[0] == -3) {  // set-bandpassfilter
                     noteslot[0] => cmd_package[i-8][0];
                     noteslot[1] => cmd_package[i-8][1];
                     1 => should_process_packages;
@@ -262,6 +325,22 @@ function void maestro_shred() {
                              [drumnote_from_pitch(noteslot[0])]
                              [0];
                     1 => should_process_packages;
+                             
+                    // Consume the drum note
+                    0 => master_loop[i][master_loop_index][0];
+                    0 => master_loop[i][master_loop_index][1];
+                    // Do note tracking logistics.
+                    // When we consume a note, we should
+                    // increment the notes_added starting
+                    // index so we don't waste time trying
+                    // to zero that note out on a "stop"
+                    // command because we've already played
+                    // it and zeroed it out.
+                    1 +=> drum_notes_added_start_index
+                            [i - (NUM_VOICES+NUM_COMMANDS)];
+                    master_loop_length()
+                                 %=> drum_notes_added_start_index
+                                     [i - (NUM_VOICES+NUM_COMMANDS)];       
                 }
             }
         }
@@ -285,8 +364,6 @@ function void maestro_shred() {
                 <<< "Beat. "
                         + (master_loop_index+1)
                         / BEAT_RESOLUTION_DIVIDER >>>;
-                <<< "Voice 1 exit: "
-                        + voice_should_exit[0] >>>;
             }
         }
         
@@ -485,7 +562,7 @@ function void stop_voice_message_handler_shred() {
                                  => message_beat_alignment;
             
             // Actually process the event.
-            stop_voice_message_processor(
+            spork ~ stop_voice_message_processor(
                     message_voice_index, message_beat_alignment);
         }
     }
@@ -502,62 +579,188 @@ function void play_drums_message_handler_shred() {
         }
         
         // Initialize message data buffers.
-        int message_phrase_data[112][2];
+        8 => int ints_per_drum; //  the number of 32-bit integers used
+                                //  to store phrase data for each drum
+        int message_bass_data[ints_per_drum];
+        int message_snare_data[ints_per_drum];
+        int message_conga_data[ints_per_drum];
+        int message_tom_data[ints_per_drum];
+        int message_hat_data[ints_per_drum];
+        int message_hit_data[ints_per_drum];
+        int message_ride_data[ints_per_drum];
         int message_voice_index;
         int message_should_loop_flag;
-        int message_should_overlay_flag;
-        float message_beat_delay;
+        int message_phrase_length;
         float message_beat_alignment;
         
         // Process each message.
-        while (voice_play_event.nextMsg() != 0) {
+        while (drums_play_event.nextMsg() != 0) {
             
             // Read message data into buffers.
-            for (0 => int i; i < 112; i++) {
-                voice_play_event.getInt()
-                                 => message_phrase_data[i][0];
-                parse_duration(voice_play_event.getFloat())
-                                 => message_phrase_data[i][1];
+            for (0 => int i; i < ints_per_drum; i++) {
+                drums_play_event.getInt()
+                                 => message_bass_data[i];
             }
-            voice_play_event.getInt() - 1
-                                 => message_voice_index;
-            voice_play_event.getInt()
+            for (0 => int i; i < ints_per_drum; i++) {
+                drums_play_event.getInt()
+                                 => message_snare_data[i];
+            }
+            for (0 => int i; i < ints_per_drum; i++) {
+                drums_play_event.getInt()
+                                 => message_conga_data[i];
+            }
+            for (0 => int i; i < ints_per_drum; i++) {
+                drums_play_event.getInt()
+                                 => message_tom_data[i];
+            }
+            for (0 => int i; i < ints_per_drum; i++) {
+                drums_play_event.getInt()
+                                 => message_hat_data[i];
+            }
+            for (0 => int i; i < ints_per_drum; i++) {
+                drums_play_event.getInt()
+                                 => message_hit_data[i];
+            }
+            for (0 => int i; i < ints_per_drum; i++) {
+                drums_play_event.getInt()
+                                 => message_ride_data[i];
+            }
+            drums_play_event.getInt()
                                  => message_should_loop_flag;
-            voice_play_event.getFloat()
+            drums_play_event.getInt()
+                                 => message_phrase_length;
+            drums_play_event.getFloat()
                                  => message_beat_alignment;
             
             // Spawn thread dedicated to updating
             // the master loop using this message
             // data.
-            spork ~ play_voice_message_processor(
-                    message_phrase_data, message_voice_index,
+            spork ~ play_drums_message_processor(
+                    message_bass_data, message_snare_data,
+                    message_conga_data, message_tom_data,
+                    message_hat_data, message_hit_data,
+                    message_ride_data,
                     message_should_loop_flag,
+                    message_phrase_length,
                     message_beat_alignment);
         }
     }
 }
 
 function void stop_drums_message_handler_shred() {
-    
+    while (true) {
+        // Receive message(s).
+        drums_stop_event => now;
+        
+        // DEBUG Print message receipt.
+        if (DEBUG_PRINTING) {
+            <<< "Received drums_stop_event." >>>;
+        }
+        
+        // Initialize message data buffers.
+        float message_beat_alignment;
+        
+        // Process each message in the queue.
+        while (drums_stop_event.nextMsg() != 0) {
+            
+            // Read message data into buffers.
+            drums_stop_event.getFloat()
+                                 => message_beat_alignment;
+            
+            // Actually process the event.
+            spork ~ stop_drums_message_processor(
+                    message_beat_alignment);
+        }
+    }
 }
 
 function void set_tempo_message_handler_shred() {
-    
+    while (true) {
+        // Receive message(s).
+        tempo_event => now;
+        
+        // DEBUG Print message recept.
+        if (DEBUG_PRINTING) {
+            <<< "Received tempo_event." >>>;
+        }
+        
+        // Initialize message data buffers.
+        float message_bpm;
+        
+        // Process each message in the queue.
+        while (tempo_event.nextMsg() != 0) {
+            
+            // Read message data into buffers.
+            tempo_event.getFloat() => message_bpm;
+            
+            // Actually process the event.
+            spork ~ set_tempo_message_processor(
+                    message_bpm);
+        }
+    }
 }
 
 function void set_voice_volume_message_handler_shred() {
-    // TODO: Implement
+    while (true) {
+        // Receive message(s).
+        voice_volume_event => now;
+        
+        // DEBUG Print message recept.
+        if (DEBUG_PRINTING) {
+            <<< "Received voice_volume_event." >>>;
+        }
+        
+        // Initialize message data buffers.
+        int message_voice;
+        int message_value;
+        
+        // Process each message in the queue.
+        while (voice_volume_event.nextMsg() != 0) {
+            
+            // Read message data into buffers.
+            voice_volume_event.getInt() => message_voice;
+            voice_volume_event.getInt() => message_value;
+            
+            // Actually process the event.
+            spork ~ set_voice_volume_message_processor(
+                    message_voice, message_value);
+        }
+    }
 }
 
 function void set_voice_instrument_message_handler_shred() {
+    while (true) {
+        // Receive message(s).
+        voice_instrument_event => now;
+        
+        // DEBUG Print message recept.
+        if (DEBUG_PRINTING) {
+            <<< "Received voice_instrument_event." >>>;
+        }
+        
+        // Initialize message data buffers.
+        int message_voice;
+        int message_value;
+        
+        // Process each message in the queue.
+        while (voice_instrument_event.nextMsg() != 0) {
+            
+            // Read message data into buffers.
+            voice_instrument_event.getInt() => message_voice;
+            voice_instrument_event.getInt() => message_value;
+            
+            // Actually process the event.
+            spork ~ set_voice_instrument_message_processor(
+                    message_voice, message_value);
+        }
+    }
+}
+
+function void set_voice_bandpassfilter_message_handler_shred() {
     // TODO: Implement
 }
 
 function void set_drums_volume_message_handler_shred() {
-    // TODO: Implement
-}
-
-function void set_voice_bandpassfilter_message_handler_shred() {
     // TODO: Implement
 }
 
@@ -696,7 +899,7 @@ function void stop_voice_message_processor(
         int voice, float beat_alignment) {
     
     if (DEBUG_PRINTING) {
-        <<< "Processing stop for voice " + 1
+        <<< "Processing stop for voice " + voice
         + ". First waiting for beat align." >>>;
         <<< "I'll wait "
                 + current_beat_align_offset(beat_alignment)
@@ -760,6 +963,361 @@ function void stop_voice_message_processor(
     0 => voice_should_exit[voice];
 }
 
+function void play_drums_message_processor(int bass_data[],
+        int snare_data[], int conga_data[], int tom_data[],
+        int hat_data[], int hit_data[], int ride_data[], int should_loop,
+        int length, float beat_alignment) {
+    
+    // Get starting index of note placement based
+    // on beat alignment.
+    beat_align(master_loop_index + 1, beat_alignment)
+                         => int index;
+            
+    if (DEBUG_PRINTING) {
+        <<< "Processing drums play. First waiting for beat align." >>>;
+        <<< "I'll wait until "
+                + index >>>;
+    }
+    
+    // First, wait for beat alignment
+    beat_fractions_to_seconds(
+            current_beat_align_offset(beat_alignment))
+            ::second
+                     => now;
+    
+    if (DEBUG_PRINTING) {
+        <<< "Done waiting for alignment to play drums." >>>;
+        <<< "Drum sequence length is " + length >>>;
+        <<< "Bass drum data to play: " >>>;
+        "" => string bass_output;
+        for (0 => int i; i < 16 * length; i++) {
+            bit_value_at(bass_data[i / 32], i % 32) +=> bass_output;
+        }
+        <<< bass_output >>>;
+    }
+    
+    // Prepare to iterate across drum phrase data.
+    for (0 => int i; i < NUM_DRUMS; i++)
+        0 => drum_notes_added_start_index[i];
+    int drum_notes_added_index[NUM_DRUMS];
+    0 => int total_duration_processed;
+    0 => int should_stop;
+    for (0 => int i; i < 16 * length; i++) {
+        // Check should_stop status first
+        if (should_stop) {
+            break;
+        }
+        // Get whether to trigger the bass.
+        bit_value_at(bass_data[i / 32], i % 32) => int bass;
+        if (DEBUG_PRINTING) {
+            <<< "Bass value for i = " + i + " is " + bass >>>;
+        }
+        // Get whether to trigger the snare.
+        bit_value_at(snare_data[i / 32], i % 32) => int snare;
+        // Get whether to trigger the conga.
+        bit_value_at(conga_data[i / 32], i % 32) => int conga;
+        // Get whether to trigger the tom.
+        bit_value_at(tom_data[i / 32], i % 32) => int tom;
+        // Get whether to trigger the hat.
+        bit_value_at(hat_data[i / 32], i % 32) => int hat;
+        // Get whether to trigger the hit.
+        bit_value_at(hit_data[i / 32], i % 32) => int hit;
+        // Get whether to trigger the ride.
+        bit_value_at(ride_data[i / 32], i % 32) => int ride;
+        
+        // Add triggered drums to the master loop,
+        // and keep track of the notes that are added
+        // and do some drum-dependent index logistics
+        // bass
+        add_drum_note_to_master_loop(index, 0, bass);
+        if (bass) {
+            index => drum_notes_added[0][drum_notes_added_index[0]];
+            1 +=> drum_notes_added_index[0];
+            master_loop_length() %=> drum_notes_added_index[0];
+        }
+        // snare
+        add_drum_note_to_master_loop(index, 1, snare);
+        if (snare) {
+            index => drum_notes_added[1][drum_notes_added_index[1]];
+            1 +=> drum_notes_added_index[1];
+            master_loop_length() %=> drum_notes_added_index[1];
+        }
+        // conga
+        add_drum_note_to_master_loop(index, 2, conga);
+        if (conga) {
+            index => drum_notes_added[2][drum_notes_added_index[2]];
+            1 +=> drum_notes_added_index[2];
+            master_loop_length() %=> drum_notes_added_index[2];
+        }
+        // tom
+        add_drum_note_to_master_loop(index, 3, tom);
+        if (tom) {
+            index => drum_notes_added[3][drum_notes_added_index[3]];
+            1 +=> drum_notes_added_index[3];
+            master_loop_length() %=> drum_notes_added_index[3];
+        }
+        //hat
+        add_drum_note_to_master_loop(index, 4, hat);
+        if (hat) {
+            index => drum_notes_added[4][drum_notes_added_index[4]];
+            1 +=> drum_notes_added_index[4];
+            master_loop_length() %=> drum_notes_added_index[4];
+        }
+        // hit
+        add_drum_note_to_master_loop(index, 5, hit);
+        if (hit) {
+            index => drum_notes_added[5][drum_notes_added_index[5]];
+            1 +=> drum_notes_added_index[5];
+            master_loop_length() %=> drum_notes_added_index[5];
+        }
+        // ride
+        add_drum_note_to_master_loop(index, 6, ride);
+        if (ride) {
+            index => drum_notes_added[6][drum_notes_added_index[6]];
+            1 +=> drum_notes_added_index[6];
+            master_loop_length() %=> drum_notes_added_index[6];
+        }
+        
+        // Keep track of the duration processed thus far.
+        2 +=> total_duration_processed;
+        if (DEBUG_PRINTING)
+            <<< "Duration processed in total is "
+                + total_duration_processed >>>;
+        // Perform index incrementing logitics.
+        if (DEBUG_PRINTING)
+            <<< "incrementing index by 2" >>>;
+        2 +=> index;
+        master_loop_length() %=> index;
+        // Break if we should exit
+        if (drums_should_exit) {
+            
+            if (DEBUG_PRINTING) {
+                <<< "Drums exit processing."
+                        + " It's " + drums_should_exit >>>;
+            }
+            
+            0 => drums_should_exit;
+            
+            if (DEBUG_PRINTING) {
+                <<< "Reset drums_should_exit."
+                        + " It's now " + drums_should_exit >>>;
+            }
+            break;
+        }
+        if (should_loop && i == (16 * length)-1) {
+            
+            if (DEBUG_PRINTING) {
+                <<< "About to wait before looping again" >>>;
+            }
+            
+            // Wait total_duration_processed
+            // before looping back again
+            // but in beat fraction increments
+            // fraction, checking to make sure
+            // we shouldn't exit (via stop
+            // messages)
+            for (0 => int i; i < total_duration_processed; 1 +=> i) {
+                        
+                beat_fractions_to_seconds(1)::second => now;
+                        
+                // Check should_exit before looping
+                if (drums_should_exit) {
+                    
+                    if (DEBUG_PRINTING) {
+                        <<< "Drums (during waiting) exit processing." >>>;
+                    }
+                    
+                    0 => drums_should_exit;
+                    
+                    if (DEBUG_PRINTING) {
+                        <<< "Reset drums_should_exit."
+                                + " It's now " + drums_should_exit >>>;
+                    }
+                    
+                    1 => should_stop;
+                    break;
+                }
+            }
+            
+            if (DEBUG_PRINTING) {
+                <<< "Waited " + total_duration_processed
+                        + " before looping drums" >>>;
+            }
+            
+            if (should_stop) {
+                break;
+            }
+            
+            // Finally, reset the index
+            0 => total_duration_processed;
+            -1 => i;
+        }
+    }  
+}
+
+function void stop_drums_message_processor(float beat_alignment) {
+    
+    if (DEBUG_PRINTING) {
+        <<< "Processing stop for drums. "
+                + "First waiting for beat align." >>>;
+        <<< "I'll wait "
+                + current_beat_align_offset(beat_alignment)
+                + " beat fractions." >>>;
+    }
+            
+    // First, wait for beat alignment
+    beat_fractions_to_seconds(
+            current_beat_align_offset(beat_alignment))
+            ::second
+                     => now;
+    
+    if (DEBUG_PRINTING) {
+        <<< "Stop drums message done waiting." >>>;
+    }
+    
+    // Set that the voice should exit
+    // (Voices always check this before adding
+    // new notes)
+    1 => drums_should_exit;
+    
+    if (DEBUG_PRINTING) {
+        <<< "Set voice_should_exit." >>>;
+        
+        <<< "Bass drums added that I'll be trying to get rid of: " >>>;
+        <<< drum_notes_added[0][0] + ", "
+                + drum_notes_added[0][1] + ", "
+                + drum_notes_added[0][2] + ", "
+                + drum_notes_added[0][3] + ", "
+                + drum_notes_added[0][4] + ", "
+                + drum_notes_added[0][5] + ", "
+                + drum_notes_added[0][6] + ", "
+                + drum_notes_added[0][7] + ", "
+                + drum_notes_added[0][8] + ", "
+                + drum_notes_added[0][9] + ", "
+                + drum_notes_added[0][10] + ", "
+                + drum_notes_added[0][11] + ", "
+                + drum_notes_added[0][12] + ", "
+                + drum_notes_added[0][13] + ", "
+                + drum_notes_added[0][14] + ", "
+                + drum_notes_added[0][15] + ", "
+                + drum_notes_added[0][16] + ", "
+                + drum_notes_added[0][17] + ", "
+                + drum_notes_added[0][18] + ", "
+                + drum_notes_added[0][19] + ", "
+                + drum_notes_added[0][20] + ", "
+                + drum_notes_added[0][21] + ", "
+                + drum_notes_added[0][22] + ", "
+                + drum_notes_added[0][23] + ", "
+                + drum_notes_added[0][24] + ", "
+                + drum_notes_added[0][25] + ", "
+                + drum_notes_added[0][26] + ", "
+                + drum_notes_added[0][27] + ", "
+                + drum_notes_added[0][28] + ", "
+                + drum_notes_added[0][29] + ", "
+                + drum_notes_added[0][30] + ", "
+                + drum_notes_added[0][31] + ", "
+                + drum_notes_added[0][32] + ", "
+                + drum_notes_added[0][33] + ", "
+                + drum_notes_added[0][34] + ", "
+                + drum_notes_added[0][35] + ", "
+                + drum_notes_added[0][36] + ", "
+                + drum_notes_added[0][37] >>>;
+                
+        <<< "Start indices for drum_notes_added: " >>>;
+        <<< drum_notes_added_start_index[0] + ", "
+                + drum_notes_added_start_index[1] + ", "
+                + drum_notes_added_start_index[2] + ", "
+                + drum_notes_added_start_index[3] + ", "
+                + drum_notes_added_start_index[4] + ", "
+                + drum_notes_added_start_index[5] + ", "
+                + drum_notes_added_start_index[6] >>>;
+    }
+            
+    // Iterate through the added notes for this
+    // voice until one of the indices refers
+    // to an empty note (indicating that we're
+    // finished)
+    int i;
+    for (0 => int drumtype; drumtype < 7; drumtype++) {
+        for (0 => int c; c < master_loop_length(); c++) {
+            if (DEBUG_PRINTING) {
+                <<< "About to check drum notes added start index." >>>;
+                <<< "It is: "
+                        + drum_notes_added_start_index[drumtype]
+                        + " for drumtype " + drumtype >>>;
+            }
+            // Find out actual index
+            c + drum_notes_added_start_index[drumtype] => i;
+            master_loop_length() %=> i;
+            // If we find an "added note" that is already
+            // consumed (empty), we're done
+            if (DEBUG_PRINTING) {
+                <<< "About to check drumtype " + drumtype
+                        + " in master loop index "
+                        + drum_notes_added[drumtype][i]
+                        + ", it is " + (master_loop[NUM_VOICES
+                            + NUM_COMMANDS
+                            + drumtype]
+                            [drum_notes_added[drumtype][i]][0]) >>>;
+            }
+            if (master_loop[NUM_VOICES
+                        + NUM_COMMANDS
+                        + drumtype]
+                        [drum_notes_added[drumtype][i]][0] == 0) {
+                break;
+            }
+            // Otherwise get rid of the note
+            if (DEBUG_PRINTING) {
+                <<< "Getting rid of drum " + drumtype
+                        + " at master loop index "
+                        + drum_notes_added[drumtype][i] >>>;
+            }
+            0 => master_loop[NUM_VOICES
+                        + NUM_COMMANDS
+                        + drumtype][drum_notes_added[drumtype][i]][0];
+            0 => master_loop[NUM_VOICES
+                        + NUM_COMMANDS
+                        + drumtype][drum_notes_added[drumtype][i]][1];
+        }
+    }
+    
+    // Before we quit, wait one more beat fraction and
+    // then reset the should_exit status just in case
+    // all voices were already stopped
+    // Otherwise the next started voice would immediately
+    // consume the should_exit flag for that voice
+    beat_fractions_to_seconds(1)::second => now;
+    0 => drums_should_exit;
+}
+
+function void set_tempo_message_processor(float bpm) {
+    bpm => tempo;
+}
+
+function void set_voice_volume_message_processor(
+        int voice, int value) {
+    "/lpc/sound/voice" + voice + "/volume" =>
+                                            string address;
+    OSC_sender.startMsg(address + ", i");
+    OSC_sender.addInt(value);
+    if (DEBUG_PRINTING) {
+        <<< "Volume message sent to voice " + voice
+                + " with value " + value >>>;
+    }
+}
+
+function void set_voice_instrument_message_processor(
+        int voice, int value) {
+    "/lpc/sound/voice" + voice + "/instrument" =>
+                                            string address;
+    OSC_sender.startMsg(address + ", i");
+    OSC_sender.addInt(value);
+    if (DEBUG_PRINTING) {
+        <<< "Instrument message sent to voice " + voice
+                + " with value " + value >>>;
+    }
+}
+
 // ====================================================
 // ||                HELPER FUNCTIONS                ||
 // ====================================================
@@ -804,6 +1362,12 @@ function int drumnote_from_pitch(int pitch) {
     return -pitch - 10;
 }
 
+// pitch_from_drumnote(int pitch)
+// Returns -10 through -16 corresponding to 0 - 6
+function int pitch_from_drumnote(int pitch) {
+    return -10 - pitch;
+}
+
 // beat_fraction_to_seconds(int duration)
 // Converts internally-represented duration in beat
 // fractions (BEAT_RESOLUTION_FRACTION) to a float
@@ -818,11 +1382,6 @@ function float beat_fractions_to_seconds(int duration) {
 //         int pitch, float duration_in_beats,
 //         int voice, float beat_delay, float beat_alignment)
 // Adds a note to the master loop (for melodic notes).
-// Returns an int representing how much time this operation
-// has been "processed" for this voice past the current
-// master loop timeslot index. This could just be the
-// duration of the note, but will be larger if there
-// is nonzero beat_delay or beat_alignment.
 function void add_voice_note_to_master_loop(
         int index, int pitch, int duration, int voice) {
             
@@ -833,6 +1392,30 @@ function void add_voice_note_to_master_loop(
         <<< "I was told to add a note to the master loop:" >>>;
         <<< "index: " + index + ", pitch: " + pitch
                 + ", duration: " + duration + ", voice: " + voice >>>;
+    }
+}
+
+// add_drum_note_to_master_loop(int index, int drum)
+// Adds a note to the master loop (for drum notes).
+function void add_drum_note_to_master_loop(int index, int drum, int onoff) {
+    
+    if (onoff) {
+        pitch_from_drumnote(drum)
+             => master_loop[NUM_VOICES + NUM_COMMANDS + drum]
+                [index][0];
+    }
+    else {
+        0 => master_loop[NUM_VOICES + NUM_COMMANDS + drum]
+                [index][0];
+    }
+    
+    if (DEBUG_PRINTING && onoff) {
+        <<< "I was told to add a drum note to the master loop:" >>>;
+        <<< "index: " + index + ", drum: " + drum
+                + ", master loop track: "
+                + (NUM_VOICES + NUM_COMMANDS + drum)
+                + ", I added the value "
+                + pitch_from_drumnote(drum)>>>;
     }
 }
 
@@ -873,6 +1456,24 @@ function int current_beat_align_offset(float beat_alignment) {
                              => offset;
     }
     return offset;
+}
+
+// bit_value_at
+// Returns a 1 or a 0 depending on the bit-state of the
+// binary representation of the integer at the specified
+// bit index (little-endian).
+// In other words, an index of N returns the 2^Nth bit.
+function int bit_value_at(int input_number, int index) {
+    1 => int mask;
+    0 => int bit;
+    for (0 => int j; j < index; j++) {
+            mask << 1 => mask;
+    }
+    input_number & mask => bit;
+    for (0 => int j; j < index; j++) {
+        bit >> 1 => bit;
+    }
+    return bit;
 }
 
 // ====================================================

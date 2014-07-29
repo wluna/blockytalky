@@ -15,8 +15,11 @@ II. Messaging Protocol between BlockyTalky and the ChucK Maestro
 			Stops playing the specified voice.
 			As before, this command allows for beat alignment; pass 0 to ignore alignment and stop immediately.
 			
-		/lpc/maestro/drums/play i*7*32 i(should_loop) f(beat_align_fraction)
-			Replaces the drumline with the new drumline data and plays it, or attempts to overlay the new drumline on top of the old and continues playing it. See voiceX/play for more information on other arguments.
+		/lpc/maestro/drums/play i*8*7 i(should_loop) i(phrase_length) f(beat_align_fraction)
+			Replaces the drumline with the new drumline data and plays it, or attempts to overlay the new drumline on top of the old and continues playing it.
+			Drumline data is sent for all seven types of drum simultaneously. The data for each drum is a sequence of 8 32-bit integers, where the bits in each integer determine whether or not a particular drum is supposed to trigger in a sixteenth-note interval, which is considered the distance separating each bit.
+			Phrase length is given as an integer, and is defined as the number of 'measures' to play in the phrase (until looping, if that is desired), where each measure is 16 sixteenth notes, or 16 bits.
+			The beat alignment fraction, it should be noted, only changes when the sequence will begin, and has no other effect on the drumline.
 			
 		/lpc/maestro/drums/stop f(beat_align_fraction)
 			Stops playing the drumline.

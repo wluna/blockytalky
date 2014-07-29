@@ -69,6 +69,25 @@ def stop_voice_message(voice, beat_align):
 	message.append(int(voice))
 	message.append(float(beat_align))
 	send_message_to_maestro(message, address)
+	
+def play_drums_message(drums_data, should_loop, phrase_length, beat_align):
+	address = "/lpc/maestro/drums/play"
+	message = OSC.OSCMessage()
+	message.setAddress(address)
+	for drum_data in drums_data:
+		for drum_phrase_integer in drum_data:
+			message.append(int(drum_phrase_integer))
+	message.append(int(should_loop))
+	message.append(int(phrase_length))
+	message.append(float(beat_align))
+	send_message_to_maestro(message, address)
+	
+def stop_drums_message(beat_align):
+	address = "/lpc/maestro/drums/stop"
+	message = OSC.OSCMessage()
+	message.setAddress(address)
+	message.append(float(beat_align))
+	send_message_to_maestro(message, address)
 			
 # Sends some notes to be played with a certain instrument
 # on a certain beat (or fraction thereof).
@@ -113,7 +132,7 @@ def set_tempo(bpm):
 # Set the instrument to use with a given voice
 def set_instrument(voice, instrument):
 	# print "at set_instrument"
-	address = "/lpc/maestro/instrument"
+	address = "/lpc/maestro/voice/instrument"
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	message.append(int(voice))
@@ -122,11 +141,11 @@ def set_instrument(voice, instrument):
 
 def set_property(voice, percentage, property):
 	# print "at set_property"
-	address = "/lpc/maestro/" + str(property)
+	address = "/lpc/maestro/voice/" + str(property)
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	message.append(int(voice))
-	message.append(float(percentage))
+	message.append(int(percentage))
 	send_message_to_maestro(message, address)
 	
 def set_drum_volume(drum, percentage):
