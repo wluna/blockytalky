@@ -2,7 +2,7 @@ BlockyTalky OSC Protocol
 ========================
 
 I. Preface
-	The music blocks in BlockyTalky function by constructing OSC messages with different target addresses and message contents. These messages are received by maestro.ck, a ChucK module, which then performs computations based on those messages according to this protocol and sends more messages to be received by a sound-driving module, mastersound.pd. This document describes first the protocol used between BlockyTalky and maestro.ck (from BlockyTalky to ChucK), followed by the protocol used between maestro.ck and mastersound.pd (from ChucK to PureData).
+	The music blocks in BlockyTalky function by constructing OSC messages with different target addresses and message contents. These messages are received by maestro.ck, a ChucK module, which then performs computations based on those messages according to this protocol and sends more messages to be received by a sound-driving module, masterWoog.pd. This document describes first the protocol used between BlockyTalky and maestro.ck (from BlockyTalky to ChucK), followed by the protocol used between maestro.ck and masterWoog.pd (from ChucK to PureData).
 	
 II. Messaging Protocol between BlockyTalky and the ChucK Maestro
 	A. Playing Notes
@@ -47,4 +47,6 @@ III. Messaging Protocol between the ChucK Maestro and PD Sound Driver
 			
 	B. Controlling Sound
 		// TODO: write this section
+		
+		// Consider deleting this section and just having this document be the protocol spec for talking to ChucK.
 	

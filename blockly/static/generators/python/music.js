@@ -446,35 +446,6 @@ Blockly.Python.music_create_phrase = function() {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-// === Instruments ===
-// music_instrument_block
-// Specifies an instrument to use to play 
-// notes. NOT IN USE.
-
-//Blockly.Language.music_instrument = {
-//	category: 'Music',
-//	helpUrl: '',
-//	init: function() {
-//		this.setColour(0);
-//		this.appendDummyInput("")
-//			.appendTitle(new Blockly.FieldDropdown([["a flute", "flute"], ["a cool synth", "coolsynth"], ["a kerfuffler", "kerfuffler"], ["an electric drum kit", "electricdrumkit"]]), "instrument_select");
-//		this.setInputsInline(true);
-//		this.setOutput(true, "instrument");
-//		this.setTooltip('');
-//	}
-//};
-
-// Generator for Music Instrument
-// New instruments should be able to be added
-// by simply updating the dropdown menu above to
-// include that instrument.
-
-//Blockly.Python.music_instrument = function() {
-//	var dropdown_instrument_select = this.getTitleValue('instrument_select');
-//	var code = dropdown_instrument_select;
-//	return [code, Blockly.Python.ORDER_ATOMIC];
-//};
-
 // === Set Instrument ===
 // music_set_instrument
 // Used to specify the instrument to use when playing a given voice.
@@ -488,7 +459,7 @@ Blockly.Language.music_set_instrument = {
 			.appendTitle("set")
 			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select")
 			.appendTitle("instrument to")
-			.appendTitle(new Blockly.FieldDropdown([["bass", "1"], ["bassAlt", "2"], ["classic1", "4"], ["classic2", "5"], ["classic3","6"], ["default", "9"], ["electric", "10"], ["drill", "14"], ["metalworks", "20"], ["organ", "21"], ["perc", "25"], ["piano", "26"], ["rising", "27"], ["cats", "29"], ["synthy", "32"], ["synthy2", "33"], ["synthy3", "35"], ["wahwah", "37"], ["woodwind", "38"]]), "instrument_select");
+			.appendTitle(new Blockly.FieldDropdown([["bass", "1"], ["bassAlt", "2"], ["cats", "29"], ["classic1", "4"], ["classic2", "5"], ["classic3","6"], ["default", "9"], ["electric", "10"], ["drill", "14"], ["metalworks", "20"], ["organ", "21"], ["perc", "25"], ["piano", "26"], ["rising", "27"], ["synthy", "32"], ["synthy2", "33"], ["synthy3", "35"], ["wahwah", "37"], ["woodwind", "38"]]), "instrument_select");
 		this.setInputsInline(true);
 		this.setPreviousStatement(true);
 		this.setNextStatement(true);
@@ -739,45 +710,6 @@ Blockly.Python.music_combine_phrase = function () {
 	var value_arg1 = Blockly.Python.valueToCode(this, 'B', Blockly.Python.ORDER_NONE);
 	var code = "nickOSC.combine_phrase(" + value_arg0 + ", " + value_arg1 + ")\n"
 	return [code, Blockly.Python.ORDER_NONE];
-};
-
-// === Change Voice ===
-// music_change_voice
-// Changes whatever the specified voice
-// is playing to the new phrase argument.
-
-Blockly.Language.music_change_voice = {
-	category: 'Music',
-	helpUrl: '',
-	init: function() {
-		this.setColour(0);
-		this.appendDummyInput("")
-			.appendTitle("On the next")
-			.appendTitle(new Blockly.FieldDropdown([["beat", "1"], ["1/2 beat", "0.5"], ["1/4 beat", "0.25"], ["1/8 beat", "0.125"], ["two beats", "2"], ["three beats", "3"], ["four beats", "4"]]), "beat_select")
-			.appendTitle("change")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select")
-			.appendTitle("to");
-		this.appendValueInput("notes_input")
-			.setCheck("notes");
-		this.setInputsInline(true);
-		this.setPreviousStatement(true);
-		this.setNextStatement(true);
-		this.setTooltip("Changes whatever the specified voice is playing to the new phrase argument.");
-	}
-};
-
-// Generator for Change Voice
-
-Blockly.Python.music_change_voice = function () {
-	var dropdown_beat_select = this.getTitleValue('beat_select');
-	var dropdown_voice_select = this.getTitleValue('voice_select');
-	var value_notes_input = Blockly.Python.valueToCode(this, 'notes_input', Blockly.Python.ORDER_NONE);
-	
-	var code = "";
-	code += "print " + value_notes_input + "\n"; // DEBUG
-	code += "nickOSC.change_voice(" + value_notes_input + ", " + dropdown_beat_select + ", " + dropdown_voice_select + ")\n";
-	
-	return code;
 };
 
 // === Set Voice Property ===

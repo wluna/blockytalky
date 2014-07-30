@@ -62,51 +62,92 @@ def play_voice_message(notes, voice, should_loop, beat_align):
 	message.append(float(beat_align))
 	send_message_to_maestro(message, address)
 	
-def stop_voice_message(voice, beat_align):
-	address = "/lpc/maestro/voice/stop"
+def stop_message(voice, beat_align):
+	address = "/lpc/maestro/stop"
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	message.append(int(voice))
 	message.append(float(beat_align))
 	send_message_to_maestro(message, address)
 	
-def play_drums_message(drums_data, should_loop, phrase_length, beat_align):
+def convert_drum_sequence_to_integers(sequence, num_ints):
+	drum_ints = [0 for x in range(num_ints)]
+	drum_ints_index = 0
+	bitstring = ""
+	for i in range(len(drum_sequence)):
+		trigger = drum_sequence[i][0] != 0
+		bitstring = ("1" if trigger else "0") + bitstring
+		if (i % 32 == 0):
+			drum_ints[drum_ints_index] = eval(
+					"0b" + bitstring
+					)
+			bitstring = ""
+			drum_ints_index += 1
+			if (drum_ints_index == max_num_ints):
+				break
+	if (bitstring != "") and (drum_ints_index != max_num_ints):
+		# Deal with leftover 16 bit-characters.
+		drum_ints[drum_ints_index] = eval(
+				"0b0000000000000000" + bitstring
+				)
+	return drum_ints
+	
+def play_drums_message(drum_sequence, voice, should_loop, beat_align):
+	# Parse drum sequence data.
+	phrase_length = len(drum_sequence) / 16
+	
+	bass_ints = convert_drum_sequence_to_integers(
+			drum_sequence, 8)
+	snare_ints = convert_drum_sequence_to_integers(
+			drum_sequence.snare, 8)
+	conga_ints = convert_drum_sequence_to_integers(
+			drum_sequence.conga, 8)
+	tom_ints = convert_drum_sequence_to_integers(
+			drum_sequence.tom, 8)
+	hat_ints = convert_drum_sequence_to_integers(
+			drum_sequence.hat, 8)
+	hit_ints = convert_drum_sequence_to_integers(
+			drum_sequence.hit, 8)
+	ride_ints = convert_drum_sequence_to_integers(
+			drum_sequence.ride, 8)
+	
+	# Send the message.
 	address = "/lpc/maestro/drums/play"
 	message = OSC.OSCMessage()
 	message.setAddress(address)
-	for drum_data in drums_data:
-		for drum_phrase_integer in drum_data:
-			message.append(int(drum_phrase_integer))
+	message.append(bass_ints)
+	message.append(snare_ints)
+	message.append(conga_ints)
+	message.append(tom_ints)
+	message.append(hat_ints)
+	message.append(hit_ints)
+	message.append(ride_ints)
+	message.append(int(voice))
 	message.append(int(should_loop))
 	message.append(int(phrase_length))
-	message.append(float(beat_align))
-	send_message_to_maestro(message, address)
-	
-def stop_drums_message(beat_align):
-	address = "/lpc/maestro/drums/stop"
-	message = OSC.OSCMessage()
-	message.setAddress(address)
 	message.append(float(beat_align))
 	send_message_to_maestro(message, address)
 			
 # Sends some notes to be played with a certain instrument
 # on a certain beat (or fraction thereof).
 def on_beat_play_with(notes, beat_align, voice):
-	# TODO: Check if notes are drum notes
-	play_voice_message(notes, voice, 0, beat_align)
+	if (notes.is_drums):
+		play_drums_message(notes, voice, 0, beat_align)
+	except AttributeError:
+		play_voice_message(notes, voice, 0, beat_align)
 	
 # Sends some notes to be looped with a certain instrument
 # on a certain beat (or fraction thereof).
 def on_beat_start_playing_with(notes, beat_align, voice):
-	# TODO: Check if notes are drum notes
-	play_voice_message(notes, voice, 1, beat_align)
+	if (notes.is_drums):
+		play_drums_message(notes, voice, 1, beat_align)
+	except AttributeError:
+		play_voice_message(notes, voice, 1, beat_align)
 	
 # Stops playing any notes with the specified loop name
 # on a certain beat (or fraction thereof).
 def on_beat_stop_playing(beat_align, voice):
-	# TODO: Check if voice is being used to play drums
-	# TODO: ^Will need to do tracking
-	stop_voice_message(voice, beat_align)
+	stop_message(voice, beat_align)
 	
 def play_with(notes, voice):
 	on_beat_play_with(notes, 0., voice)
@@ -164,7 +205,7 @@ def create_drum_sequence(sequence_data):
 	# initialize sequence
 	sixteen_rests = []
 	for i in range(16):
-		sixteen_rests.append((-1, 0.25))
+		sixteen_rests.append((0, 0.25))
 	sequence = DrumSequence(sixteen_rests)
 	sequence.is_drums = True
 	sequence.snare = list(sixteen_rests)
@@ -246,56 +287,8 @@ def combine_phrase(notes1, notes2):
 			return newDrumSequence
 		except AttributeError:
 			print "Error combining drum sequence, maybe they're not both drums?"
-			return [(-1, 0.25)]
+			return [(-1, 0.0)]
 	return notes1 + notes2
-	
-# Changes a voice to play a different set of notes
-def change_voice(notes, beat_align, voice):
-	# print "at change_voice"
-	address = "/lpc/maestro/change_voice"
-	try:
-		if (notes.is_drums):  # drum sequence
-			drum_address = "/lpc/maestro/change_voice_drums"
-			# bass drum notes
-			message = construct_basic_phrase_message(notes, drum_address)
-			message.append(float(beat_align))
-			message.append(int(voice))
-			send_message_to_maestro(message, drum_address)
-			# snare drum notes
-			message2 = construct_basic_phrase_message(notes.snare, drum_address)
-			message2.append(float(beat_align))
-			message2.append(int(voice))
-			send_message_to_maestro(message2, drum_address)
-			# conga drum notes
-			message3 = construct_basic_phrase_message(notes.conga, drum_address)
-			message3.append(float(beat_align))
-			message3.append(int(voice))
-			send_message_to_maestro(message3, drum_address)
-			# tom drum notes
-			message4 = construct_basic_phrase_message(notes.tom, drum_address)
-			message4.append(float(beat_align))
-			message4.append(int(voice))
-			send_message_to_maestro(message4, drum_address)
-			# hat drum notes
-			message5 = construct_basic_phrase_message(notes.hat, drum_address)
-			message5.append(float(beat_align))
-			message5.append(int(voice))
-			send_message_to_maestro(message5, drum_address)
-			# hit drum notes
-			message6 = construct_basic_phrase_message(notes.hit, drum_address)
-			message6.append(float(beat_align))
-			message6.append(int(voice))
-			send_message_to_maestro(message6, drum_address)
-			# ride drum notes
-			message7 = construct_basic_phrase_message(notes.ride, drum_address)
-			message7.append(float(beat_align))
-			message7.append(int(voice))
-			send_message_to_maestro(message7, drum_address)
-	except AttributeError:  # normal notes
-		message = construct_basic_phrase_message(notes, address)
-		message.append(float(beat_align))
-		message.append(int(voice))
-		send_message_to_maestro(message, address)
 	
 # Returns a note or list of notes with their duration(s) x 1.5
 # or None if there's an error
