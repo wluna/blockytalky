@@ -74,8 +74,8 @@ def convert_drum_sequence_to_integers(sequence, num_ints):
 	drum_ints = [0 for x in range(num_ints)]
 	drum_ints_index = 0
 	bitstring = ""
-	for i in range(len(drum_sequence)):
-		trigger = drum_sequence[i][0] != 0
+	for i in range(len(sequence)):
+		trigger = sequence[i][0] != 0
 		bitstring = ("1" if trigger else "0") + bitstring
 		if (i % 32 == 0):
 			drum_ints[drum_ints_index] = eval(
