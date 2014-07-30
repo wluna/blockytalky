@@ -83,9 +83,9 @@ def convert_drum_sequence_to_integers(sequence, num_ints):
 					)
 			bitstring = ""
 			drum_ints_index += 1
-			if (drum_ints_index == max_num_ints):
+			if (drum_ints_index == num_ints):
 				break
-	if (bitstring != "") and (drum_ints_index != max_num_ints):
+	if (bitstring != "") and (drum_ints_index != num_ints):
 		# Deal with leftover 16 bit-characters.
 		drum_ints[drum_ints_index] = eval(
 				"0b0000000000000000" + bitstring
