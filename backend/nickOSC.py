@@ -131,16 +131,18 @@ def play_drums_message(drum_sequence, voice, should_loop, beat_align):
 # Sends some notes to be played with a certain instrument
 # on a certain beat (or fraction thereof).
 def on_beat_play_with(notes, beat_align, voice):
-	if (notes.is_drums):
-		play_drums_message(notes, voice, 0, beat_align)
+	try:
+		if (notes.is_drums):
+			play_drums_message(notes, voice, 0, beat_align)
 	except AttributeError:
 		play_voice_message(notes, voice, 0, beat_align)
 	
 # Sends some notes to be looped with a certain instrument
 # on a certain beat (or fraction thereof).
 def on_beat_start_playing_with(notes, beat_align, voice):
-	if (notes.is_drums):
-		play_drums_message(notes, voice, 1, beat_align)
+	try:
+		if (notes.is_drums):
+			play_drums_message(notes, voice, 1, beat_align)
 	except AttributeError:
 		play_voice_message(notes, voice, 1, beat_align)
 	
