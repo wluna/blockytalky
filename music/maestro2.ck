@@ -321,14 +321,15 @@ function void maestro_shred() {
                              [0];
                     1 => should_process_packages;
                              
-                    // Consume the drum note
-                    0 => master_loop[i][master_loop_index][0];
-                    0 => master_loop[i][master_loop_index][1];
-                    // Do note tracking logistics.
-                    // As for voices, but when drum notes
-                    // are added their noteslot for "duration"
-                    // becomes instead the "voice" to which
-                    // they were assigned when they were first
+                    // About to consume the drum note,
+                    // but first need to do note tracking logistics
+                    // because otherwise (due to reference-assignment)
+                    // the noteslot data will be zeroed before we
+                    // can actually use it.
+                    // These logistics are as for voices, but when
+                    // drum notes are added their noteslot for
+                    // "duration" becomes instead the "voice" to
+                    // which they were assigned when they were first
                     // added as a command from the OSC protocol.
                     // This allows us to consume the note
                     // and increment the notes_added_start_index
@@ -338,7 +339,10 @@ function void maestro_shred() {
                     master_loop_length()
                                  %=> drum_notes_added_start_index
                                      [noteslot[1]]
-                                     [i - (NUM_VOICES+NUM_COMMANDS)];       
+                                     [i - (NUM_VOICES+NUM_COMMANDS)];
+                    // Consume the drum note
+                    0 => master_loop[i][master_loop_index][0];
+                    0 => master_loop[i][master_loop_index][1];
                 }
             }
         }
@@ -593,7 +597,7 @@ function void play_drums_message_handler_shred() {
                 drums_play_event.getInt()
                                  => message_ride_data[i];
             }
-            drums_play_event.getInt()
+            drums_play_event.getInt() - 1
                                  => message_voice_index;
             drums_play_event.getInt()
                                  => message_should_loop_flag;
@@ -610,8 +614,8 @@ function void play_drums_message_handler_shred() {
                     message_conga_data, message_tom_data,
                     message_hat_data, message_hit_data,
                     message_ride_data,
-                    message_voice_index,
                     message_should_loop_flag,
+                    message_voice_index,
                     message_phrase_length,
                     message_beat_alignment);
         }
@@ -625,7 +629,7 @@ function void stop_message_handler_shred() {
         
         // DEBUG Print message receipt.
         if (DEBUG_PRINTING) {
-            <<< "Received voice_stop_event." >>>;
+            <<< "Received stop_event." >>>;
         }
         
         // Initialize message data buffers.
@@ -1350,7 +1354,7 @@ function void add_drum_note_to_master_loop(
                 [index][0];
         voice
              => master_loop[NUM_VOICES + NUM_COMMANDS + drum]
-                [index][0];
+                [index][1];
     }
     else {
         0 => master_loop[NUM_VOICES + NUM_COMMANDS + drum]
@@ -1363,7 +1367,8 @@ function void add_drum_note_to_master_loop(
                 + ", master loop track: "
                 + (NUM_VOICES + NUM_COMMANDS + drum)
                 + ", I added the value "
-                + pitch_from_drumnote(drum)>>>;
+                + pitch_from_drumnote(drum)
+                + " and duration " + voice >>>;
     }
 }
 

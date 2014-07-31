@@ -79,7 +79,28 @@ def convert_drum_sequence_to_integers(sequence, num_ints):
 		trigger = sequence[i][0] != 0
 		bitstring = ("1" if trigger else "0") + bitstring
 		if ((i+1) % 32 == 0):
-			drum_ints[drum_ints_index] = eval(
+			# Special case: If the first bit in
+			# the 32-bit sequence is a 1, then
+			# we have a problem because the makers
+			# of Python are a bunch of elitist
+			# One True Way f***tards, because
+			# there's no way I can force the
+			# behavior of staying a signed
+			# 32-bit number and have the integer
+			# simply be negative (preserving the
+			# 32-bit string), instead the number
+			# is autopromoted to a long. That
+			# crashes the OSC message construction
+			# because the protocol specifies 
+			# 32-bit integers, so instead we must
+			# turn it into a negative integer
+			# that will result in the desired
+			# string of bits in the OSC message.
+			overflow_emulation_offset = 0
+			if (bitstring[0] == "1"):
+				overflow_emulation_offset = -2147483648
+				bitstring = bitstring[1:]
+			drum_ints[drum_ints_index] = overflow_emulation_offset + eval(
 					"0b" + bitstring
 					)
 			bitstring = ""
@@ -91,6 +112,7 @@ def convert_drum_sequence_to_integers(sequence, num_ints):
 		drum_ints[drum_ints_index] = eval(
 				"0b0000000000000000" + bitstring
 				)
+		print "0b0000000000000000" + bitstring
 	return drum_ints
 	
 def play_drums_message(drum_sequence, voice, should_loop, beat_align):
