@@ -108,9 +108,9 @@ class UserScript(object):
         if method.exchange == "msgin":
             self.handle_msgin_delivery()
         if method.exchange == "sensors":
-            self.handle_hwval_delivery()
+            self.handle_hwval_delivery(body)
 
-    def handle_hwval_delivery(self):
+    def handle_hwval_delivery(self, body):
         message = Message.decode(body)
         hwDict = message.getContent()
         logger.debug('Updating the robot status: %s' % str(hwDict))
