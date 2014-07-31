@@ -527,6 +527,24 @@ Blockly.Language.events_when_sensor_range= {
 };
 
 
+Blockly.Language.events_when_message_saying= {
+    category: 'Events',
+    helpUrl: '',
+    init: function() {
+	this.setColour(30);
+	this.appendDummyInput("")
+            .appendTitle("when I receive the message ")
+	this.appendDummyInput("")
+	    .appendTitle(new Blockly.FieldTextInput('hello'), 'msg');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+
 //DEFINE GENERATORS:
 
 Blockly.Python= Blockly.Generator.get('Python');
@@ -877,3 +895,13 @@ Blockly.Python.events_when_sensor_range = function() {
     return code;
 };
 
+Blockly.Python.events_when_message_saying = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '  pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "  " + branch2[i] + '\n';
+    }
+    var msg = this.getTitleValue('msg');
+    var code = 'def ' + 'wms' + unique_id + '(self):' + '\n';
+};
