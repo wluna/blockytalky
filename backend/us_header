@@ -57,7 +57,7 @@ class UserScript(object):
         self.connection = pika.BlockingConnection(parameters)
         
         self.setup_hwcmd_channel()
-        self.setup_hwval_channel()      
+        self.setup_in_channel()      
         
         self.initialized = False
         
@@ -77,7 +77,7 @@ class UserScript(object):
 
     def start(self):
         self.handshake()
-        self.hwval_channel.start_consuming()
+        self.in_channel.start_consuming()
 
     def schedule_run_continuously(self):
         self.connection.add_timeout(self.__class__.RUN_INTERVAL, self.run_cont_and_reschedule)   
@@ -92,41 +92,46 @@ class UserScript(object):
         logger.info("Creating sensors exchange...")
         self.hwcmd_channel.exchange_declare(exchange='HwCmd', type='fanout')
 
-    def setup_hwval_channel(self):
-        self.hwval_channel = self.connection.channel()
-        self.hwval_channel.exchange_declare(exchange='sensors', type='fanout')
-        result = self.hwval_channel.queue_declare(exclusive=True)
+    def setup_in_channel(self):
+        self.in_channel = self.connection.channel()
+        # why is the exchange declare logs?
+        self.in_channel.exchange_declare(exchange='logs', type='fanout')
+        result = self.in_channel.queue_declare(exclusive=True)
         queue_name = result.method.queue
-        self.hwval_channel.queue_bind(exchange='sensors', queue=queue_name)
+        self.in_channel.queue_bind(exchange='sensors', queue=queue_name)
+        self.in_channel.queue_bind(exchange='msgin', queue=queue_name)
         logger.info("Declaring HwVal callback...")
-        self.hwval_channel.basic_consume(self.handle_hwval_delivery, queue=queue_name, no_ack=True)
+        self.in_channel.basic_consume(self.handle_in_delivery, queue=queue_name, no_ack=True)
     
   
-    def handle_hwval_delivery(self, ch, method, properties, body):
-        message = Message.decode(body)
-        hwDict = message.getContent()
-        logger.debug('Updating the robot status: %s' % str(hwDict))
+    def handle_in_delivery(self, ch, method, properties, body):
+        if method.exchange == "msgin":
+            print "received a message from another robot"
+        if method.exchange == "sensors":
+            message = Message.decode(body)
+            hwDict = message.getContent()
+            logger.debug('Updating the robot status: %s' % str(hwDict))
         
-        # update value changes
-        for key, valueList in hwDict.iteritems():
-            for index, value in enumerate(valueList):
-                if value is not None:
-                    self.robot[key][index] = value
+            # update value changes
+            for key, valueList in hwDict.iteritems():
+                for index, value in enumerate(valueList):
+                    if value is not None:
+                        self.robot[key][index] = value
                     
-        # there is unread data on all ports
-        for sensor in self.sensorStatus:
-            self.sensorStatus[sensor] = True
+            # there is unread data on all ports
+            for sensor in self.sensorStatus:
+                self.sensorStatus[sensor] = True
 
-        if self.initialized == False:
-            self.initialized = True
-            self.run_on_start()
-            self.schedule_run_continuously()
+            if self.initialized == False:
+                self.initialized = True
+                self.run_on_start()
+                self.schedule_run_continuously()
     
-        else:
-            for callback in self.callbacks:
-                callback()
+            else:
+                for callback in self.callbacks:
+                    callback()
 
-            self.last_robot = copy.deepcopy(self.robot)
+                self.last_robot = copy.deepcopy(self.robot)
     
     #this will be overwritten by user code if they use those blocks
     def run_on_start(self):
