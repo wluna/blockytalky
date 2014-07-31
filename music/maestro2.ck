@@ -269,6 +269,8 @@ function void maestro_shred() {
         for (0 => int i; i < master_loop_num_tracks(); i++) {
             
             master_loop[i][master_loop_index] @=> int noteslot[];
+            master_loop[i][master_loop_index][0] => int pitch_copy;
+            master_loop[i][master_loop_index][1] => int duration_copy;
             
             if (!is_empty(noteslot)) {
                 if (noteslot[0] > 0) {  // melodic note
@@ -321,11 +323,9 @@ function void maestro_shred() {
                              [0];
                     1 => should_process_packages;
                              
-                    // About to consume the drum note,
-                    // but first need to do note tracking logistics
-                    // because otherwise (due to reference-assignment)
-                    // the noteslot data will be zeroed before we
-                    // can actually use it.
+                    // Consume the drum note
+                    0 => master_loop[i][master_loop_index][0];
+                    0 => master_loop[i][master_loop_index][1];
                     // These logistics are as for voices, but when
                     // drum notes are added their noteslot for
                     // "duration" becomes instead the "voice" to
@@ -335,14 +335,11 @@ function void maestro_shred() {
                     // and increment the notes_added_start_index
                     // for the proper drum "voice."
                     1 +=> drum_notes_added_start_index
-                            [noteslot[1]][i - (NUM_VOICES+NUM_COMMANDS)];
+                            [duration_copy][i - (NUM_VOICES+NUM_COMMANDS)];
                     master_loop_length()
                                  %=> drum_notes_added_start_index
-                                     [noteslot[1]]
+                                     [duration_copy]
                                      [i - (NUM_VOICES+NUM_COMMANDS)];
-                    // Consume the drum note
-                    0 => master_loop[i][master_loop_index][0];
-                    0 => master_loop[i][master_loop_index][1];
                 }
             }
         }
@@ -940,50 +937,50 @@ function void play_drums_message_processor(int bass_data[],
         // and keep track of the notes that are added
         // and do some drum-dependent index logistics
         // bass
-        add_drum_note_to_master_loop(index, 0, bass, voice);
         if (bass) {
+            add_drum_note_to_master_loop(index, 0, bass, voice);
             index => drum_notes_added[voice][0][drum_notes_added_index[0]];
             1 +=> drum_notes_added_index[0];
             master_loop_length() %=> drum_notes_added_index[0];
         }
         // snare
-        add_drum_note_to_master_loop(index, 1, snare, voice);
         if (snare) {
+            add_drum_note_to_master_loop(index, 1, snare, voice);
             index => drum_notes_added[voice][1][drum_notes_added_index[1]];
             1 +=> drum_notes_added_index[1];
             master_loop_length() %=> drum_notes_added_index[1];
         }
         // conga
-        add_drum_note_to_master_loop(index, 2, conga, voice);
         if (conga) {
+            add_drum_note_to_master_loop(index, 2, conga, voice);
             index => drum_notes_added[voice][2][drum_notes_added_index[2]];
             1 +=> drum_notes_added_index[2];
             master_loop_length() %=> drum_notes_added_index[2];
         }
         // tom
-        add_drum_note_to_master_loop(index, 3, tom, voice);
         if (tom) {
+            add_drum_note_to_master_loop(index, 3, tom, voice);
             index => drum_notes_added[voice][3][drum_notes_added_index[3]];
             1 +=> drum_notes_added_index[3];
             master_loop_length() %=> drum_notes_added_index[3];
         }
         //hat
-        add_drum_note_to_master_loop(index, 4, hat, voice);
         if (hat) {
+            add_drum_note_to_master_loop(index, 4, hat, voice);
             index => drum_notes_added[voice][4][drum_notes_added_index[4]];
             1 +=> drum_notes_added_index[4];
             master_loop_length() %=> drum_notes_added_index[4];
         }
         // hit
-        add_drum_note_to_master_loop(index, 5, hit, voice);
         if (hit) {
+            add_drum_note_to_master_loop(index, 5, hit, voice);
             index => drum_notes_added[voice][5][drum_notes_added_index[5]];
             1 +=> drum_notes_added_index[5];
             master_loop_length() %=> drum_notes_added_index[5];
         }
         // ride
-        add_drum_note_to_master_loop(index, 6, ride, voice);
         if (ride) {
+            add_drum_note_to_master_loop(index, 6, ride, voice);
             index => drum_notes_added[voice][6][drum_notes_added_index[6]];
             1 +=> drum_notes_added_index[6];
             master_loop_length() %=> drum_notes_added_index[6];
