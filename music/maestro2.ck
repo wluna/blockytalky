@@ -1107,7 +1107,7 @@ function void stop_message_processor(
                 + notes_added[voice][7] >>>;
         
         <<< "Bass drums added that I'll be trying to get rid of: " >>>;
-        <<< drum_notes_added[0][0] + ", "
+        <<< drum_notes_added[voice][0][0] + ", "
                 + drum_notes_added[voice][0][1] + ", "
                 + drum_notes_added[voice][0][2] + ", "
                 + drum_notes_added[voice][0][3] + ", "
