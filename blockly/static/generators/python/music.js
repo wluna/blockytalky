@@ -745,7 +745,9 @@ Blockly.Python.music_set_property = function () {
 	var value_number_input = Blockly.Python.valueToCode(this, 'value_input', Blockly.Python.ORDER_NONE);
 	
 	var code = "";
-	code += "nickOSC.set_property(" + dropdown_voice_select + ", " + value_number_input + ", '" + dropdown_effect_select + "')\n";
+	code = "BLARGHY BLARGH.\n"
+	/*code += "nickOSC.set_property(" + dropdown_voice_select + ", " + value_number_input + ", '" + dropdown_effect_select + "')\n";*/
+	console.log(code)
 	console.log("Set property code: " + code);
 	
 	return code;
