@@ -324,6 +324,7 @@ var on_error =  function() {
     };
 var on_message = function(m) {
         values = JSON.parse(m.body);
+        console.log(values);
         var s1 = document.getElementById("sensor1").value
         var s2 = document.getElementById("sensor2").value
         var s3 = document.getElementById("sensor3").value
@@ -348,6 +349,11 @@ var on_message = function(m) {
           $("#sensorval4").val("-");}
         if(s4 != "none"){
           $("#sensorval4").val(values.content.sensors[3]);}
+	$("#encval1").val(values.content.encoders[0]);
+	$("#encval2").val(values.content.encoders[1]);
+	$("#encval3").val(values.content.encoders[2]);
+	$("#encval4").val(values.content.encoders[3]);
+	
         previousTime = d.getTime(); }
 
 }
