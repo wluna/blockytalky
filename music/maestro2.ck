@@ -43,7 +43,14 @@
 // Printing probably slows down the virtual machine,
 // so it's recommend to keep this off unless
 // you're actively debugging this module.
+// Alternatively, if you just want to make sure ChucK
+// is alive while operating with it, you can set it
+// to 1, which will print messages every time a note
+// is sent, instead of full debugging messages.
 1 => int DEBUG_PRINTING;
+// 0 - No printing
+// 1 - Message-send receipts only
+// 2 - Full debug printing
 
 // ====================================================
 // ||        INTERNAL PROTOCOL SPECIFICATIONS        ||
@@ -352,7 +359,7 @@ function void maestro_shred() {
                                            drum_package);
         }
         
-        if (DEBUG_PRINTING) {
+        if (DEBUG_PRINTING == 2) {
             // DEBUG print master loop index
             if (true) {
                 <<< master_loop_index >>>;
@@ -497,7 +504,7 @@ function void play_voice_message_handler_shred() {
         voice_play_event => now;
         
         // DEBUG Print message receipt.
-        if (DEBUG_PRINTING) {
+        if (DEBUG_PRINTING == 2) {
             <<< "Received voice_play_event." >>>;
         }
         
@@ -543,7 +550,7 @@ function void play_drums_message_handler_shred() {
         drums_play_event => now;
         
         // DEBUG Print message receipt.
-        if (DEBUG_PRINTING) {
+        if (DEBUG_PRINTING == 2) {
             <<< "Received drums_play_event." >>>;
         }
         
@@ -625,7 +632,7 @@ function void stop_message_handler_shred() {
         stop_event => now;
         
         // DEBUG Print message receipt.
-        if (DEBUG_PRINTING) {
+        if (DEBUG_PRINTING == 2) {
             <<< "Received stop_event." >>>;
         }
         
@@ -655,7 +662,7 @@ function void set_tempo_message_handler_shred() {
         tempo_event => now;
         
         // DEBUG Print message recept.
-        if (DEBUG_PRINTING) {
+        if (DEBUG_PRINTING == 2) {
             <<< "Received tempo_event." >>>;
         }
         
@@ -681,7 +688,7 @@ function void set_voice_volume_message_handler_shred() {
         voice_volume_event => now;
         
         // DEBUG Print message recept.
-        if (DEBUG_PRINTING) {
+        if (DEBUG_PRINTING == 2) {
             <<< "Received voice_volume_event." >>>;
         }
         
@@ -709,7 +716,7 @@ function void set_voice_instrument_message_handler_shred() {
         voice_instrument_event => now;
         
         // DEBUG Print message recept.
-        if (DEBUG_PRINTING) {
+        if (DEBUG_PRINTING == 2) {
             <<< "Received voice_instrument_event." >>>;
         }
         
@@ -752,7 +759,7 @@ function void play_voice_message_processor(
     beat_align(master_loop_index + 1, beat_alignment)
                          => int index;
             
-    if (DEBUG_PRINTING) {
+    if (DEBUG_PRINTING == 2) {
         <<< "Processing play. First waiting for beat align." >>>;
         <<< "I'll wait until "
                 + index >>>;
@@ -764,7 +771,7 @@ function void play_voice_message_processor(
             ::second
                      => now;
     
-    if (DEBUG_PRINTING) {
+    if (DEBUG_PRINTING == 2) {
         <<< "Done waiting for alignment to play." >>>;
     }
     
@@ -803,14 +810,14 @@ function void play_voice_message_processor(
         // Break if we should exit
         if (voice_should_exit[voice]) {
             
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "1Voice " + voice + " exit processing."
                         + " It's " + voice_should_exit[voice] >>>;
             }
             
             0 => voice_should_exit[voice];
             
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "Set voice should exit, now "
                         + (voice_should_exit[voice]
                         == true) >>>;
@@ -819,7 +826,7 @@ function void play_voice_message_processor(
         }
         if (should_loop_flag && i == 127) {
             
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "About to wait before looping again" >>>;
             }
             
@@ -837,13 +844,13 @@ function void play_voice_message_processor(
                 // Check should_exit before looping
                 if (voice_should_exit[voice]) {
                     
-                    if (DEBUG_PRINTING) {
+                    if (DEBUG_PRINTING == 2) {
                         <<< "2Voice " + voice + " exit processing." >>>;
                     }
                     
                     0 => voice_should_exit[voice];
                     
-                    if (DEBUG_PRINTING) {
+                    if (DEBUG_PRINTING == 2) {
                         <<< "Set voice should exit, now "
                                 + (voice_should_exit[voice]
                                 == true) >>>;
@@ -854,7 +861,7 @@ function void play_voice_message_processor(
                 }
             }
             
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "Waited " + total_duration_processed
                         + " before looping" >>>;
             }
@@ -881,7 +888,7 @@ function void play_drums_message_processor(int bass_data[],
     beat_align(master_loop_index + 1, beat_alignment)
                          => int index;
             
-    if (DEBUG_PRINTING) {
+    if (DEBUG_PRINTING == 2) {
         <<< "Processing drums play. First waiting for beat align." >>>;
         <<< "I'll wait until "
                 + index >>>;
@@ -893,7 +900,7 @@ function void play_drums_message_processor(int bass_data[],
             ::second
                      => now;
     
-    if (DEBUG_PRINTING) {
+    if (DEBUG_PRINTING == 2) {
         <<< "Done waiting for alignment to play drums." >>>;
         <<< "Drum sequence length is " + length >>>;
         <<< "Bass drum data to play: " >>>;
@@ -917,7 +924,7 @@ function void play_drums_message_processor(int bass_data[],
         }
         // Get whether to trigger the bass.
         bit_value_at(bass_data[i / 32], i % 32) => int bass;
-        if (DEBUG_PRINTING) {
+        if (DEBUG_PRINTING == 2) {
             <<< "Bass value for i = " + i + " is " + bass >>>;
         }
         // Get whether to trigger the snare.
@@ -988,25 +995,25 @@ function void play_drums_message_processor(int bass_data[],
         
         // Keep track of the duration processed thus far.
         2 +=> total_duration_processed;
-        if (DEBUG_PRINTING)
+        if (DEBUG_PRINTING == 2)
             <<< "Duration processed in total is "
                 + total_duration_processed >>>;
         // Perform index incrementing logitics.
-        if (DEBUG_PRINTING)
+        if (DEBUG_PRINTING == 2)
             <<< "incrementing index by 2" >>>;
         2 +=> index;
         master_loop_length() %=> index;
         // Break if we should exit
         if (drums_should_exit[voice]) {
             
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "Drums exit processing."
                         + " It's " + drums_should_exit[voice] >>>;
             }
             
             0 => drums_should_exit[voice];
             
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "Reset drums_should_exit."
                         + " It's now " + drums_should_exit[voice] >>>;
             }
@@ -1014,7 +1021,7 @@ function void play_drums_message_processor(int bass_data[],
         }
         if (should_loop && i == (16 * length)-1) {
             
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "About to wait before looping again" >>>;
             }
             
@@ -1031,13 +1038,13 @@ function void play_drums_message_processor(int bass_data[],
                 // Check should_exit before looping
                 if (drums_should_exit[voice]) {
                     
-                    if (DEBUG_PRINTING) {
+                    if (DEBUG_PRINTING == 2) {
                         <<< "Drums (during waiting) exit processing." >>>;
                     }
                     
                     0 => drums_should_exit[voice];
                     
-                    if (DEBUG_PRINTING) {
+                    if (DEBUG_PRINTING == 2) {
                         <<< "Reset drums_should_exit."
                                 + " It's now "
                                 + drums_should_exit[voice] >>>;
@@ -1048,7 +1055,7 @@ function void play_drums_message_processor(int bass_data[],
                 }
             }
             
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "Waited " + total_duration_processed
                         + " before looping drums" >>>;
             }
@@ -1067,7 +1074,7 @@ function void play_drums_message_processor(int bass_data[],
 function void stop_message_processor(
         int voice, float beat_alignment) {
     
-    if (DEBUG_PRINTING) {
+    if (DEBUG_PRINTING == 2) {
         <<< "Processing stop for voice " + voice
         + ". First waiting for beat align." >>>;
         <<< "I'll wait "
@@ -1081,7 +1088,7 @@ function void stop_message_processor(
             ::second
                      => now;
     
-    if (DEBUG_PRINTING) {
+    if (DEBUG_PRINTING == 2) {
         <<< "Stop message done waiting." >>>;
     }
     
@@ -1094,7 +1101,7 @@ function void stop_message_processor(
     1 => drums_should_exit[voice];
     
     
-    if (DEBUG_PRINTING) {
+    if (DEBUG_PRINTING == 2) {
         <<< "Set voice_should_exit." >>>;
         
         <<< "Notes added that I'll be trying to get rid of: " >>>;
@@ -1184,7 +1191,7 @@ function void stop_message_processor(
     0 => i;
     for (0 => int drumtype; drumtype < 7; drumtype++) {
         for (0 => int c; c < master_loop_length(); c++) {
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "About to check drum notes added start index." >>>;
                 <<< "It is: "
                         + drum_notes_added_start_index[voice][drumtype]
@@ -1196,7 +1203,7 @@ function void stop_message_processor(
             master_loop_length() %=> i;
             // If we find an "added note" that is already
             // consumed (empty), we're done
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "About to check drumtype " + drumtype
                         + " in master loop index "
                         + drum_notes_added[voice][drumtype][i]
@@ -1212,7 +1219,7 @@ function void stop_message_processor(
                 break;
             }
             // Otherwise get rid of the note
-            if (DEBUG_PRINTING) {
+            if (DEBUG_PRINTING == 2) {
                 <<< "Getting rid of drum " + drumtype
                         + " at master loop index "
                         + drum_notes_added[voice][drumtype][i] >>>;
@@ -1333,7 +1340,7 @@ function void add_voice_note_to_master_loop(
     pitch => master_loop[voice][index][0];
     duration => master_loop[voice][index][1];
     
-    if (DEBUG_PRINTING) {
+    if (DEBUG_PRINTING == 2) {
         <<< "I was told to add a note to the master loop:" >>>;
         <<< "index: " + index + ", pitch: " + pitch
                 + ", duration: " + duration + ", voice: " + voice >>>;
@@ -1358,7 +1365,7 @@ function void add_drum_note_to_master_loop(
                 [index][0];
     }
     
-    if (DEBUG_PRINTING && onoff) {
+    if (DEBUG_PRINTING == 2 && onoff) {
         <<< "I was told to add a drum note to the master loop:" >>>;
         <<< "index: " + index + ", drum: " + drum
                 + ", master loop track: "

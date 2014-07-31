@@ -725,8 +725,8 @@ Blockly.Language.music_set_property = {
 		this.appendDummyInput("")
 			.appendTitle("set")
 			.appendTitle(new Blockly.FieldDropdown([["volume", "volume"], ["band pass filter", "bandpassfilter"]]), "effect_select")
-			.appendTitle("of")
-			.appendTitle(new Blockly.FieldDropdown([["voice 1", "1"], ["voice 2", "2"], ["voice 3", "3"], ["voice 4", "4"], ["voice 5", "5"], ["voice 6", "6"], ["voice 7", "7"], ["voice 8", "8"]]), "voice_select")
+			.appendTitle("of voice")
+			.appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"], ["6", "6"], ["7", "7"], ["8", "8"]]), "voice_select")
 			.appendTitle("to");
 		this.appendValueInput("value_input")
 			.setCheck("Number");

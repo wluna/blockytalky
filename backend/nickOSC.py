@@ -211,6 +211,10 @@ def set_property(voice, percentage, property):
 	message = OSC.OSCMessage()
 	message.setAddress(address)
 	message.append(int(voice))
+	if (percentage < 0):
+		percentage = 0
+	if (percentage > 100):
+		percentage = 100
 	message.append(int(percentage))
 	send_message_to_maestro(message, address)
 	
