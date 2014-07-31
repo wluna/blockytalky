@@ -746,6 +746,7 @@ Blockly.Python.music_set_property = function () {
 	
 	var code = "";
 	code += "nickOSC.set_property(" + dropdown_voice_select + ", " + value_number_input + ", '" + dropdown_effect_select + "')\n";
+	console.log("Set property code: " + code);
 	
 	return code;
 };
