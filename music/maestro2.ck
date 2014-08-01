@@ -739,7 +739,31 @@ function void set_voice_instrument_message_handler_shred() {
 }
 
 function void set_voice_bandpassfilter_message_handler_shred() {
-    // TODO: Implement
+    while (true) {
+        // Receive message(s).
+        voice_bandpassfilter_event => now;
+        
+        // DEBUG Print message recept.
+        if (DEBUG_PRINTING == 2) {
+            <<< "Received voice_bandpassfilter_event." >>>;
+        }
+        
+        // Initialize message data buffers.
+        int message_voice;
+        int message_value;
+        
+        // Process each message in the queue.
+        while (voice_bandpassfilter_event.nextMsg() != 0) {
+            
+            // Read message data into buffers.
+            voice_bandpassfilter_event.getInt() => message_voice;
+            voice_bandpassfilter_event.getInt() => message_value;
+            
+            // Actually process the event.
+            spork ~ set_voice_bandpassfilter_message_processor(
+                    message_voice, message_value);
+        }
+    }
 }
 
 function void set_drums_volume_message_handler_shred() {
@@ -1266,6 +1290,18 @@ function void set_voice_instrument_message_processor(
     OSC_sender.addInt(value);
     if (DEBUG_PRINTING) {
         <<< "Instrument message sent to voice " + voice
+                + " with value " + value >>>;
+    }
+}
+
+function void set_voice_bandpassfilter_message_processor(
+        int voice, int value) {
+    "/lpc/sound/voice" + voice + "/bandpassfilter" =>
+                                            string address;
+    OSC_sender.startMsg(address + ", i");
+    OSC_sender.addInt(value);
+    if (DEBUG_PRINTING) {
+        <<< "Bandpassfilter message sent to voice " + voice
                 + " with value " + value >>>;
     }
 }
