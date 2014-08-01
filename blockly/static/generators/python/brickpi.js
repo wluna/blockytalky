@@ -922,7 +922,7 @@ Blockly.Python.events_when_message_saying = function() {
 	branch += "  " + branch2[i] + '\n';
     }
     var msg = this.getTitleValue('msg');
-    var code = 'def ' + 'wms' + unique_id + '(self):' + '\n';
+    var code = 'def ' + 'wms' + unique_id + '(self, msg):' + '\n';
     code += '  if msg == "' + msg + '": \n' + branch;
     return code;
 };

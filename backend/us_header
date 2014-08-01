@@ -109,8 +109,11 @@ class UserScript(object):
     
   
     def handle_in_delivery(self, ch, method, properties, body):
+        print "user script received message"
         if method.exchange == "msgin":
-            self.handle_msgin_delivery()
+            decoded = Message.decode(body)
+            msg = decoded.getContent()
+            self.handle_msgin_delivery(msg)
         elif method.exchange == "sensors":
             self.handle_hwval_delivery(body)
         else:
@@ -142,10 +145,10 @@ class UserScript(object):
                 
             self.last_robot = copy.deepcopy(self.robot)
     
-    def handle_msgin_delivery(self):
+    def handle_msgin_delivery(self, msg):
         print "received a msgin message"
         for m in self.msg_functions:
-            m()
+            m(msg)
 
     #this will be overwritten by user code if they use those blocks
     def run_on_start(self):

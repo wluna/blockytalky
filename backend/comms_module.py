@@ -70,15 +70,19 @@ class Communicator(object):
 
     @staticmethod    
     def onRemoteMessage(ws, encodedMessage):
+        print "received remote message"
         """ This method handles messages coming from DAX. """
-        logger.debug(">>> Method called: onRemoteMessage")
-        logger.info("Remote message received. Forwarded locally")
+       # logger.debug(">>> Method called: onRemoteMessage")
+       # logger.info("Remote message received. Forwarded locally")
         decoded = Message.decode(encodedMessage)
+        print decoded
         if decoded.getChannel() == "Server":
             logger.info("Received server command")
             Communicator.respondToServerMessage(decoded)
         else:
-            self.msgin_channel.basic_publish(exchange="msgs", routing_key = "", body=encodedMessage)
+            print "sending to msgin"
+            cm.msgin_channel.basic_publish(exchange="msgin", routing_key = "", body=encodedMessage)
+            print "msg sent to msgin"
 
             #old pika code
             #channelOut.basic_publish(exchange="", routing_key="HwVal", body=encodedMessage)
@@ -217,6 +221,7 @@ class Communicator(object):
 
 
 if __name__ == "__main__":
+    logging.basicConfig()
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/comms_module.log',
                                                    maxBytes=8192, backupCount=3)
     globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',

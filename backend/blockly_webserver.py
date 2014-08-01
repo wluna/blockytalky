@@ -226,7 +226,7 @@ def convert_usercode(python_code):
                 if func[:2] == "wl":
                     while_functions += "        self.whiles.append(self." + func + ") \n"
                 if func[:2] == "wm":
-                    msg_functions += "        self.msgs.append(self." + func + ") \n"
+                    msg_functions += "        self.msg_functions.append(self." + func + ") \n"
                 else:    
                     callback_functions += "        self.callbacks.append(self." + func + ") \n"
             comment = False
