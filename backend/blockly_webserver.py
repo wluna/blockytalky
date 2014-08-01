@@ -202,6 +202,7 @@ def convert_usercode(python_code):
     python_code = python_code.splitlines()
     callback_functions = "    def init_callbacks(self): \n"
     while_functions = "    def init_whiles(self): \n"
+    msg_functions = "    def init_msgs(self): \n"
     variables = "\n      global "
 
     # comment out code that comes from blocks not in event blocks.
@@ -224,6 +225,8 @@ def convert_usercode(python_code):
                     python_code[i] += "\n      for f in self.whiles: \n        f() \n"    
                 if func[:2] == "wl":
                     while_functions += "        self.whiles.append(self." + func + ") \n"
+                if func[:2] == "wm":
+                    msg_functions += "        self.msgs.append(self." + func + ") \n"
                 else:    
                     callback_functions += "        self.callbacks.append(self." + func + ") \n"
             comment = False
@@ -243,7 +246,9 @@ def convert_usercode(python_code):
 
     while_functions += "        True \n"
     
-    python_code += "\n" + callback_functions + "\n" + while_functions + "\n"
+    msg_functions += "        True \n"
+
+    python_code += "\n" + callback_functions + "\n" + while_functions + "\n" + msg_functions + "\n"
 
     print python_code
     
