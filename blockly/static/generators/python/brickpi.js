@@ -544,6 +544,25 @@ Blockly.Language.events_when_message_saying= {
     }
 };
 
+Blockly.Language.message_send= {
+    category: 'Messages',
+    helpUrl: '',
+    init: function() {
+	this.setColour(30);
+	this.appendDummyInput("")
+            .appendTitle("send message ")
+	this.appendDummyInput("")
+	    .appendTitle(new Blockly.FieldTextInput('hello'), 'msg');
+	this.appendDummyInput("")
+	    .appendTitle("to ");
+	this.appendDummyInput("")
+	    .appendTitle(new Blockly.FieldTextInput('walle'), 'unit');
+	this.setInputsInline(true);
+	this.setPreviousStatement(true);
+        this.setNextStatement(true);
+    }
+};
+
 
 //DEFINE GENERATORS:
 
@@ -904,4 +923,15 @@ Blockly.Python.events_when_message_saying = function() {
     }
     var msg = this.getTitleValue('msg');
     var code = 'def ' + 'wms' + unique_id + '(self):' + '\n';
+    code += '  if msg == "' + msg + '": \n' + branch;
+    return code;
+};
+
+Blockly.Python.message_send = function() {
+    var msg = this.getTitleValue('msg');
+    var unit = this.getTitleValue('unit');
+    var code = 'toSend = Message(self.hostname, "'+unit+'", "Message", "'+msg+'") \n'
+    code += 'toSend = Message.encode(toSend) \n'
+    code += 'self.msgout_channel.basic_publish(exchange="msgout", routing_key="", body = toSend) \n'
+    return code;
 };

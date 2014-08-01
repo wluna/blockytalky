@@ -47,17 +47,16 @@ class UserScript(object):
         self.sensorStatus= Message.createSensorStatus()
         logger.debug(self.sensorStatus.values())
 
-        self.hwval_channel = None
+        self.in_channel = None
         self.hwcmd_channel = None
-        
-        self.MsgIn_channel = None
-        self.MsgOut_channel = None
+        self.msgout_channel = None
 
         parameters = pika.ConnectionParameters()
         self.connection = pika.BlockingConnection(parameters)
         
         self.setup_hwcmd_channel()
         self.setup_in_channel()      
+        self.setup_msgout_channel()
         
         self.initialized = False
         
@@ -67,7 +66,8 @@ class UserScript(object):
         self.init_callbacks()
         self.whiles = []
         self.init_whiles()
-   
+        self.msg_functions = []
+        self.init_msgs()
 
     def handshake(self):
         toSend = Message(self.hostname, None, "handshake", None)
@@ -92,6 +92,10 @@ class UserScript(object):
         logger.info("Creating sensors exchange...")
         self.hwcmd_channel.exchange_declare(exchange='HwCmd', type='fanout')
 
+    def setup_msgout_channel(self):
+        self.msgout_channel = self.connection.channel()
+        self.msgout_channel.exchange_declare(exchange='msgout', type='fanout')
+
     def setup_in_channel(self):
         self.in_channel = self.connection.channel()
         # why is the exchange declare logs?
@@ -107,8 +111,10 @@ class UserScript(object):
     def handle_in_delivery(self, ch, method, properties, body):
         if method.exchange == "msgin":
             self.handle_msgin_delivery()
-        if method.exchange == "sensors":
+        elif method.exchange == "sensors":
             self.handle_hwval_delivery(body)
+        else:
+            print body
 
     def handle_hwval_delivery(self, body):
         message = Message.decode(body)
@@ -138,6 +144,8 @@ class UserScript(object):
     
     def handle_msgin_delivery(self):
         print "received a msgin message"
+        for m in self.msg_functions:
+            m()
 
     #this will be overwritten by user code if they use those blocks
     def run_on_start(self):

@@ -40,7 +40,7 @@ class Communicator(object):
         self.msgin_channel = None
         self.msgout_channel = None
 
-        parameters = pika.ConnectionParameters()
+        parameters = pika.ConnectionParameters(host='localhost')
         self.connection = pika.BlockingConnection(parameters)
 
         self.setup_msgin_channel()
@@ -78,7 +78,7 @@ class Communicator(object):
             logger.info("Received server command")
             Communicator.respondToServerMessage(decoded)
         else:
-            self.msgin_channel.basic_publish(exchange="msgin", routing_key = "", body=encodedMessage)
+            self.msgin_channel.basic_publish(exchange="msgs", routing_key = "", body=encodedMessage)
 
             #old pika code
             #channelOut.basic_publish(exchange="", routing_key="HwVal", body=encodedMessage)
@@ -169,7 +169,10 @@ class Communicator(object):
 
     def start(self):
         print "start consuming msgout channel"
-        self.msgout_channel.start_consuming()
+        try:
+            self.msgout_channel.start_consuming()
+        except pika.exceptions.ConnectionClosed:
+            print "connection died"
 
     def setup_msgin_channel(self):
         self.msgin_channel = self.connection.channel()
@@ -187,8 +190,9 @@ class Communicator(object):
     
 
     def handle_msgout_delivery(self, channel, method, header, body):
-        print "sending to dax"
+        print "got msgout, sending it to dax"
         self.recipients["DAX"].send(body)
+        print "sent to dax"
         
 
     """
@@ -226,19 +230,22 @@ if __name__ == "__main__":
     logger.setLevel(logging.INFO)
 
     logger.info("Communicator Module (WebSocket client) starting ...")
-
+    
+    cm = Communicator()
+   
+    
     # DAX WebSocket (remote component)
-    Communicator.createWebSocket("DAX",
-                                 #"ws://192.168.1.43:8005/dax",
-                                 "ws://btrouter.getdown.org:8005/dax",
-                                 Communicator.onRemoteMessage)
-    Communicator.initialize()
+    cm.createWebSocket("DAX",
+                       #"ws://192.168.1.43:8005/dax",
+                       # "ws://btrouter.getdown.org:8005/dax",
+                       "ws://192.168.1.50:8005/dax",
+                       Communicator.onRemoteMessage)
+    cm.initialize()
     logger.info("Communicator Module (WebSocket client) started.")
 
-    agentThread = threading.Thread(target=Communicator.startAgent)
+    agentThread = threading.Thread(target=cm.startAgent)
     agentThread.start()
    
-    cm = Communicator()
     cm.start()
 
     """
