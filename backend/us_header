@@ -156,7 +156,7 @@ class UserScript(object):
             self.last_robot = copy.deepcopy(self.robot)
     
     def handle_msgin_delivery(self, msg):
-        print "user script received remote message: " + msg
+        logger.debug("user script received remote message: " + msg)
         for m in self.msg_functions:
             m(msg)
 
