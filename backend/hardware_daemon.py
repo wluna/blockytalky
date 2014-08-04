@@ -60,7 +60,7 @@ class HardwareDaemon(object):
         self.hwcmd_channel.start_consuming()
     
     def schedule_check_status(self):
-        logger.info("Scheduling a check_status in %s seconds" % self.__class__.PUBLISH_INTERVAL)
+        logger.debug("Scheduling a check_status in %s seconds" % self.__class__.PUBLISH_INTERVAL)
         self.connection.add_timeout(self.__class__.PUBLISH_INTERVAL, self.check_status_and_reschedule)   
 
     def check_status_and_reschedule(self):
@@ -88,7 +88,7 @@ class HardwareDaemon(object):
             logger.exception('Error occurred while reading motor values:')
        
         BrickPi.Gpio = self.robot["pins"]
-        logger.info("Calling BrickPiUpdateValues")
+        logger.debug("Calling BrickPiUpdateValues")
         BrickPiUpdateValues()
 
         #Copy sensors and encoders for comparison.
