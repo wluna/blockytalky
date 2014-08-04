@@ -186,6 +186,8 @@ OSC_receiver.event("/lpc/maestro/voice/bandpassfilter, ii")
                    @=> OscEvent voice_bandpassfilter_event;
 OSC_receiver.event("/lpc/maestro/drums/volume, iiiiiii")
                    @=> OscEvent drums_volume_event;
+OSC_receiver.event("/lpc/maestro/init, i")
+                   @=> OscEvent init_event;
                    
 // Spork event-listening shreds
 spork ~ play_voice_message_handler_shred();
@@ -196,6 +198,8 @@ spork ~ set_tempo_message_handler_shred();
 spork ~ set_voice_volume_message_handler_shred();
 spork ~ set_voice_instrument_message_handler_shred();
 spork ~ set_voice_bandpassfilter_message_handler_shred();
+// Other
+spork ~ init_message_handler_shred();
 
 // ====================================================
 // ||                MAESTRO LOGIC                   ||
@@ -770,6 +774,23 @@ function void set_drums_volume_message_handler_shred() {
     // TODO: Implement
 }
 
+function void init_message_handler_shred() {
+    while (true) {
+        init_event => now;
+        
+        // DEBUG Print message recept.
+        if (DEBUG_PRINTING == 2) {
+            <<< "Received init_event." >>>;
+        }
+        
+        // Process each message in the queue.
+        while (voice_bandpassfilter_event.nextMsg() != 0) {
+            
+            spork ~ init_message_processor();
+        }
+    }
+}
+
 // ====================================================
 // ||         BT MESSAGE PROCESSOR FUNCTIONS         ||
 // ====================================================
@@ -1303,6 +1324,32 @@ function void set_voice_bandpassfilter_message_processor(
     if (DEBUG_PRINTING) {
         <<< "Bandpassfilter message sent to voice " + voice
                 + " with value " + value >>>;
+    }
+}
+
+function void init_message_processor() {
+    
+    if (DEBUG_PRINTING >= 1) {
+        <<< "Initializing: Telling all loops to stop." >>>;
+    }
+    
+    // Stop all currently playing shreds.
+    for (0 => int i; i < NUM_VOICES; i++) {
+        1 => voice_should_exit[i];
+    }
+    for (0 => int i; i < NUM_DRUMS; i++) {
+        1 => drums_should_exit[i];
+    }
+    
+    // Wait a second, then set them back to false
+    // because otherwise they'll stop new loops.
+    1::second => now;
+    
+    for (0 => int i; i < NUM_VOICES; i++) {
+        0 => voice_should_exit[i];
+    }
+    for (0 => int i; i < NUM_DRUMS; i++) {
+        0 => drums_should_exit[i];
     }
 }
 

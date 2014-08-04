@@ -17,6 +17,12 @@ osc_client = OSC.OSCClient()
 def set_maestro_IP(maestro_IP_string):
 	global note_destination_hostname
 	note_destination_hostname = maestro_IP_string
+	
+	# Send an init message to maestro to tell it to stop all voices
+	message = OSC.OSCMessage()
+	address = "/lpc/maestro/init"
+	message.append(int(0))
+	send_message_to_maestro(message, address)
 	# print "Destination hostname set to " + str(maestro_IP_string)
 
 # Constructs a pyOSC OSCMessage object with an argument
