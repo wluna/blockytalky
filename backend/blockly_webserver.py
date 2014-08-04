@@ -258,6 +258,7 @@ def convert_usercode(python_code):
     footer_text = ('if __name__ == "__main__": \n'
                    '    handle_logging(logger) \n'
                    '    uscript = UserScript() \n'
+                   '    uscript.handshake() \n'
                    '    uscript.start() \n')
 
 

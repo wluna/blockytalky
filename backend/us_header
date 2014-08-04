@@ -76,9 +76,19 @@ class UserScript(object):
                                          routing_key="", body=toSend)
 
     def start(self):
-        self.handshake()
-        self.in_channel.start_consuming()
+        try:
+            self.in_channel.start_consuming()
+        except pika.exceptions.ConnectionClosed:
+            logger.info("user script pika restarting...")
+            parameters = pika.ConnectionParameters()
+            self.connection = pika.BlockingConnection(parameters)
+            self.setup_hwcmd_channel()
+            self.setup_in_channel()      
+            self.setup_msgout_channel()
+            self.start()
+       
 
+     
     def schedule_run_continuously(self):
         self.connection.add_timeout(self.__class__.RUN_INTERVAL, self.run_cont_and_reschedule)   
 
