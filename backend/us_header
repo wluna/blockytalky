@@ -109,7 +109,7 @@ class UserScript(object):
     
   
     def handle_in_delivery(self, ch, method, properties, body):
-        print "user script received message"
+        #print "user script received message on " + method.exchange 
         if method.exchange == "msgin":
             decoded = Message.decode(body)
             msg = decoded.getContent()
@@ -146,7 +146,7 @@ class UserScript(object):
             self.last_robot = copy.deepcopy(self.robot)
     
     def handle_msgin_delivery(self, msg):
-        print "received a msgin message"
+        print "user script received remote message: " + msg
         for m in self.msg_functions:
             m(msg)
 

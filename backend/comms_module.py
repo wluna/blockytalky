@@ -23,17 +23,6 @@ class Communicator(object):
     hostname = BlockyTalkyID()
     recipients = {}                     # Filled by "createWebSocket"
     restartQueue = deque()
-
-    """
-    old pika code
-
-    global channelOut
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-    channelOut = connection.channel()
-    channelOut.queue_declare(queue="HwVal")
-
-    """
-
     mostRecentCode = None
 
     def __init__(self):
@@ -70,23 +59,16 @@ class Communicator(object):
 
     @staticmethod    
     def onRemoteMessage(ws, encodedMessage):
-        print "received remote message"
         """ This method handles messages coming from DAX. """
-       # logger.debug(">>> Method called: onRemoteMessage")
-       # logger.info("Remote message received. Forwarded locally")
+        logger.info(encodedMessage)
         decoded = Message.decode(encodedMessage)
-        print decoded
         if decoded.getChannel() == "Server":
             logger.info("Received server command")
             Communicator.respondToServerMessage(decoded)
         else:
-            print "sending to msgin"
             cm.msgin_channel.basic_publish(exchange="msgin", routing_key = "", body=encodedMessage)
-            print "msg sent to msgin"
-
-            #old pika code
-            #channelOut.basic_publish(exchange="", routing_key="HwVal", body=encodedMessage)
-
+            #logger.info("outside message sent to user script")
+    
     #Respond to a command originating from the main server (rails, not dax)
     @staticmethod
     def respondToServerMessage(message):
@@ -172,11 +154,10 @@ class Communicator(object):
                 Communicator.startWebSocket(webSocket)
 
     def start(self):
-        print "start consuming msgout channel"
         try:
             self.msgout_channel.start_consuming()
         except pika.exceptions.ConnectionClosed:
-            print "connection died"
+            logger.info("pika connection closed")
 
     def setup_msgin_channel(self):
         self.msgin_channel = self.connection.channel()
@@ -194,31 +175,9 @@ class Communicator(object):
     
 
     def handle_msgout_delivery(self, channel, method, header, body):
-        print "got msgout, sending it to dax"
         self.recipients["DAX"].send(body)
-        print "sent to dax"
+        logger.info("sent message from unit to dax")
         
-
-    """
-    old pika code
-    def on_connected(self, connection):
-        #print "connected"
-        connection.channel(cm.on_channel_open)
-
-    def on_channel_open(self, new_channel):
-        global channel
-        channel = new_channel
-        channel.queue_declare(queue='Message', callback=cm.on_queue_declared)
-
-    def on_queue_declared(self, frame):
-        channel.basic_consume(cm.handle_delivery, queue='Message', no_ack=True)
-
-    def handle_delivery(self, channel, method, header, body):
-        # command = Message.decode(body)
-        # print str(command.getContent())
-        Communicator.recipients["DAX"].send(body)
-    """
-
 
 if __name__ == "__main__":
     logging.basicConfig()
@@ -252,12 +211,4 @@ if __name__ == "__main__":
     agentThread.start()
    
     cm.start()
-
-    """
-    old code
-    cm = Communicator()
-    parameters = pika.ConnectionParameters()
-    cm.connection = pika.SelectConnection(parameters, cm.on_connected)
-    cm.connection.ioloop.start()
-    """
 
