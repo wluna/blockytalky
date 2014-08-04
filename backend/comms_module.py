@@ -158,6 +158,13 @@ class Communicator(object):
             self.msgout_channel.start_consuming()
         except pika.exceptions.ConnectionClosed:
             logger.info("pika connection closed")
+            parameters = pika.ConnectionParameters(host='localhost')
+            self.connection = pika.BlockingConnection(parameters)
+
+            self.setup_msgin_channel()
+            self.setup_msgout_channel()
+            logger.info("restarting consuming")
+            self.start()
 
     def setup_msgin_channel(self):
         self.msgin_channel = self.connection.channel()
