@@ -41,10 +41,6 @@ class HardwareDaemon(object):
         BrickPi.SensorType = processedlist
         os.chdir("/home/pi/blockytalky/")
 
-        parameters = pika.ConnectionParameters()
-        self.connection = pika.BlockingConnection(parameters)
-        self.setup_hwval_channel()
-        self.setup_hwcmd_channel()
         
         initPins()
         BrickPiSetup()
@@ -54,6 +50,12 @@ class HardwareDaemon(object):
         BrickPi.MotorEnable[PORT_D] = 1    
 
         BrickPiSetupSensors()
+        
+        parameters = pika.ConnectionParameters()
+        self.connection = pika.BlockingConnection(parameters)
+        self.setup_hwval_channel()
+        self.setup_hwcmd_channel()
+      
         
     def start(self):
         self.schedule_check_status()
