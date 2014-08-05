@@ -14,6 +14,7 @@ import random
 from blockytalky_id import *
 from message import *
 import urllib2
+import traceback
 
 logger = logging.getLogger(__name__)
 os.nice(-2)
@@ -51,12 +52,7 @@ class UserScript(object):
         self.hwcmd_channel = None
         self.msgout_channel = None
 
-        parameters = pika.ConnectionParameters()
-        self.connection = pika.BlockingConnection(parameters)
-        
-        self.setup_hwcmd_channel()
-        self.setup_in_channel()      
-        self.setup_msgout_channel()
+
         
         self.initialized = False
         
@@ -67,7 +63,15 @@ class UserScript(object):
         self.whiles = []
         self.init_whiles()
         self.msg_functions = []
+
+        parameters = pika.ConnectionParameters()
+        self.connection = pika.BlockingConnection(parameters)
+
         self.init_msgs()
+        
+        self.setup_hwcmd_channel()
+        self.setup_in_channel()      
+        self.setup_msgout_channel()
 
     def handshake(self):
         toSend = Message(self.hostname, None, "handshake", None)
@@ -119,15 +123,21 @@ class UserScript(object):
     
   
     def handle_in_delivery(self, ch, method, properties, body):
-        #print "user script received message on " + method.exchange 
-        if method.exchange == "msgin":
-            decoded = Message.decode(body)
-            msg = decoded.getContent()
-            self.handle_msgin_delivery(msg)
-        elif method.exchange == "sensors":
-            self.handle_hwval_delivery(body)
-        else:
-            print body
+        try:
+            #print "user script received message on " + method.exchange 
+            if method.exchange == "msgin":
+                decoded = Message.decode(body)
+                msg = decoded.getContent()
+                self.handle_msgin_delivery(msg)
+            elif method.exchange == "sensors":
+                self.handle_hwval_delivery(body)
+            else:
+                print body
+        except Exception as real_exception:
+            print "*** an exception occured in the callback delivery function ***"
+            print traceback.format_exc()
+            print "*** now re-raising the exception. pika exception to follow ***"
+            raise real_exception
 
     def handle_hwval_delivery(self, body):
         message = Message.decode(body)
