@@ -310,7 +310,7 @@ function init(blockly) {
   if(namecheck == ".local"){
     btname = btname.substring(0, btname.length - 6);
   }
-  $("#unitname").text(btname);
+  document.title = "BlockyTalky - " + btname;
 
 var d = new Date();
 var previousTime = d.getTime();
