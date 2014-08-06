@@ -15,9 +15,13 @@ from blockytalky_id import *
 from message import *
 import urllib2
 import traceback
+import pwd
 
 logger = logging.getLogger(__name__)
 os.nice(-2)
+
+new_uid = pwd.getpwnam("pi").pw_uid
+os.setuid(new_uid)
 
 def handle_logging(logger):
     # Set the logging level.
