@@ -2,6 +2,8 @@
 
 echo Starting BlockyTalky...
 
+sudo chown -R pi /home/pi/blockytalky/*
+
 #if [ ! -f /etc/BlockyTalkyID ]; then
 #    python /home/pi/blockytalky/generate_guid.py | sudo tee /etc/BlockyTalkyID > /dev/null
 #fi
