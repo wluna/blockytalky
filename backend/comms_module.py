@@ -198,9 +198,15 @@ class Communicator(object):
     
 
     def handle_msgout_delivery(self, channel, method, header, body):
-        self.recipients["DAX"].send(body)
-        logger.info("sent message from unit to dax")
-        
+        try:
+            self.recipients["DAX"].send(body)
+            logger.info("sent message from unit to dax")
+        except Exception as real_exception:
+            print "*** an exception occured in the callback delivery function ***"
+            print traceback.format_exc()
+            print "*** now re-raising the exception. pika exception to follow ***"
+            raise real_exception
+
 
 if __name__ == "__main__":
     #logging.basicConfig()
