@@ -16,6 +16,7 @@ import json
 from collections import deque
 from blockytalky_id import *
 from message import *
+import traceback
 
 logger = logging.getLogger(__name__)
 
