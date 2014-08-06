@@ -21,6 +21,7 @@ def set_maestro_IP(maestro_IP_string):
 	# Send an init message to maestro to tell it to stop all voices
 	message = OSC.OSCMessage()
 	address = "/lpc/maestro/init"
+	message.setAddress(address)
 	message.append(int(0))
 	send_message_to_maestro(message, address)
 	# print "Destination hostname set to " + str(maestro_IP_string)
@@ -224,12 +225,15 @@ def set_property(voice, percentage, property):
 	message.append(int(percentage))
 	send_message_to_maestro(message, address)
 	
-def set_drum_volume(drum, percentage):
-	address = "/lpc/maestro/drum_volume"
+def set_drum_volume(percentage):
+	address = "/lpc/maestro/drums/volume"
 	message = OSC.OSCMessage()
 	message.setAddress(address)
-	message.append(int(drum))
-	message.append(float(percentage))
+	if (percentage < 0):
+		percentage = 0
+	if (percentage > 150):
+		percentage = 150
+	message.append(int(percentage))
 	send_message_to_maestro(message, address)
 
 class DrumSequence(list):

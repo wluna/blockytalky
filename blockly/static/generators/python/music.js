@@ -951,28 +951,34 @@ Blockly.Python.music_drum_sequence = function() {
 	return [code, Blockly.Python.ORDER_NONE];
 };
 
-// NOT IMPLEMENTED (also missing generator).
+
 // === Set Drum Volume ===
 // music_drum_volume
-// Sets the volume of all drum sounds or individual ones.
-//
-//Blockly.Language.music_drum_volume = {
-//	category: 'Music',
-//	helpUrl: '',
-//	init: function() {
-//		this.setColour(0);
-//		this.appendDummyInput("")
-//			.appendTitle("set the volume of")
-//			.appendTitle(new Blockly.FieldDropdown([["all drums", "0"], ["bass", "1"], ["snare", "2"], ["conga", "3"], ["tom", "4"], ["hat", "5"], ["hit", "6"], ["ride", "7"]]), "drum_select")
-//			.appendTitle("to");
-//		this.appendValueInput("value_input")
-//			.setCheck("Number");
-//		this.setInputsInline(true);
-//		this.setPreviousStatement(true);
-//		this.setNextStatement(true);
-//		this.setTooltip("Sets the volume of all drum sounds or individual ones to the specified value between 0 and 100.");
-//	}
-//};
+// Sets the volume of all drum sounds.
+
+Blockly.Language.music_drum_volume = {
+	category: 'Music',
+	helpUrl: '',
+	init: function() {
+		this.setColour(0);
+		this.appendDummyInput("")
+			.appendTitle("set drums volume to ")
+		this.appendValueInput("value_input")
+			.setCheck("Number");
+		this.setInputsInline(true);
+		this.setPreviousStatement(true);
+		this.setNextStatement(true);
+		this.setTooltip("Sets the volume of all drum sounds to the specified value between 0 and 100.");
+	}
+};
+
+// Generator for Set Drum Volume
+
+Blockly.Python.music_drum_volume = function () {
+	var value_input = Blockly.Python.valueToCode(this, 'value_input', Blockly.Python.ORDER_NONE);
+	var code = "nickOSC.set_drum_volume(" + value_input + ")\n";
+	return code;
+};
 
 // === Dotify Note ===
 // music_dotify_note

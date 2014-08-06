@@ -184,21 +184,22 @@ OSC_receiver.event("/lpc/maestro/voice/instrument, ii")
                    @=> OscEvent voice_instrument_event;
 OSC_receiver.event("/lpc/maestro/voice/bandpassfilter, ii")
                    @=> OscEvent voice_bandpassfilter_event;
-OSC_receiver.event("/lpc/maestro/drums/volume, iiiiiii")
+OSC_receiver.event("/lpc/maestro/drums/volume, i")
                    @=> OscEvent drums_volume_event;
 OSC_receiver.event("/lpc/maestro/init, i")
                    @=> OscEvent init_event;
                    
-// Spork event-listening shreds
+// Spork event-listening shreds.
 spork ~ play_voice_message_handler_shred();
 spork ~ play_drums_message_handler_shred();
 spork ~ stop_message_handler_shred();
-// setting properties
+// Spork property-setting shreds.
 spork ~ set_tempo_message_handler_shred();
 spork ~ set_voice_volume_message_handler_shred();
 spork ~ set_voice_instrument_message_handler_shred();
 spork ~ set_voice_bandpassfilter_message_handler_shred();
-// Other
+spork ~ set_drums_volume_message_handler_shred();
+// Spork other utility shreds.
 spork ~ init_message_handler_shred();
 
 // ====================================================
@@ -771,7 +772,24 @@ function void set_voice_bandpassfilter_message_handler_shred() {
 }
 
 function void set_drums_volume_message_handler_shred() {
-    // TODO: Implement
+    while (true) {
+        drums_volume_event => now;
+        
+        // DEBUG Print message recept.
+        if (DEBUG_PRINTING == 2) {
+            <<< "Received drums_volume_event." >>>;
+        }
+        
+        int message_value;
+        
+        // Process each message in the queue.
+        while (drums_volume_event.nextMsg() != 0) {
+            
+            drums_volume_event.getInt() => message_value;
+            
+            spork ~ set_drums_volume_processor(message_value);
+        }
+    }
 }
 
 function void init_message_handler_shred() {
@@ -784,7 +802,7 @@ function void init_message_handler_shred() {
         }
         
         // Process each message in the queue.
-        while (voice_bandpassfilter_event.nextMsg() != 0) {
+        while (init_event.nextMsg() != 0) {
             
             spork ~ init_message_processor();
         }
@@ -1324,6 +1342,16 @@ function void set_voice_bandpassfilter_message_processor(
     if (DEBUG_PRINTING) {
         <<< "Bandpassfilter message sent to voice " + voice
                 + " with value " + value >>>;
+    }
+}
+
+function void set_drums_volume_processor(int value) {
+    "/lpc/sound/drums/volume" => string address;
+    
+    OSC_sender.startMsg(address + ", i");
+    OSC_sender.addInt(value);
+    if (DEBUG_PRINTING) {
+        <<< "Drum volume message sent with value " + value >>>;
     }
 }
 
