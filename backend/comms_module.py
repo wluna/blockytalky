@@ -25,6 +25,8 @@ class Communicator(object):
     restartQueue = deque()
     mostRecentCode = None
 
+    RECONNECT_INTERVAL = 2
+
     def __init__(self):
         self.msgin_channel = None
         self.msgout_channel = None
@@ -152,8 +154,22 @@ class Communicator(object):
                 logger.info("Restarting a closed WebSocket ...")
                 webSocket = Communicator.restartQueue.popleft()
                 Communicator.startWebSocket(webSocket)
+  
+    def schedule_reconnect(self):
+        logger.debug("Scheduling reconnect in %s seconds" % self.__class__.RECONNECT_INTERVAL)
+        self.connection.add_timeout(self.__class__.RECONNECT_INTERVAL, self.reconnect_reschedule)
+
+    def reconnect_reschedule(self):
+        logger.debug(">>> Checking the restartQueue ...")
+        if Communicator.restartQueue:
+            logger.info("Restarting a closed WebSocket ...")
+            webSocket = Communicator.restartQueue.popleft()
+            Communicator.startWebSocket(webSocket)
+        
+        self.schedule_reconnect()
 
     def start(self):
+        self.schedule_reconnect()
         try:
             self.msgout_channel.start_consuming()
         except pika.exceptions.ConnectionClosed:
@@ -187,7 +203,7 @@ class Communicator(object):
         
 
 if __name__ == "__main__":
-    logging.basicConfig()
+    #logging.basicConfig()
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/comms_module.log',
                                                    maxBytes=8192, backupCount=3)
     globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
@@ -208,14 +224,14 @@ if __name__ == "__main__":
     # DAX WebSocket (remote component)
     cm.createWebSocket("DAX",
                        #"ws://192.168.1.43:8005/dax",
-                       # "ws://btrouter.getdown.org:8005/dax",
+                      #  "ws://btrouter.getdown.org:8005/dax",
                        "ws://192.168.1.50:8005/dax",
                        Communicator.onRemoteMessage)
     cm.initialize()
     logger.info("Communicator Module (WebSocket client) started.")
 
-    agentThread = threading.Thread(target=cm.startAgent)
-    agentThread.start()
+    #agentThread = threading.Thread(target=cm.startAgent)
+    #agentThread.start()
    
     cm.start()
 
