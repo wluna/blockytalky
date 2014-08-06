@@ -11,6 +11,7 @@ import logging
 import socket
 import pika
 import os
+import traceback
 from blockytalky_id import *
 from message import *
 from BrickPi import *
@@ -212,8 +213,18 @@ class HardwareDaemon(object):
         result = self.hwcmd_channel.queue_declare(exclusive=True)
         queue_name = result.method.queue
         self.hwcmd_channel.queue_bind(exchange='HwCmd', queue=queue_name)
-        self.hwcmd_channel.basic_consume(self.handle_hwcmd_delivery, 
+        self.hwcmd_channel.basic_consume(self.handle_in_delivery, 
                                     queue=queue_name, no_ack = True)
+
+    def handle_in_delivery(self, channel, method, header, body):
+        try:
+            self.handle_hwcmd_delivery(channel, method, header, body)
+        except Exception as real_exception:
+            print "*** an exception occured in the callback delivery function ***"
+            print traceback.format_exc()
+            print "*** now re-raising the exception. pika exception to follow ***"
+            raise real_exception
+        
         
     def handle_hwcmd_delivery(self, channel, method, header, body):
         logger.info("hwcmd command received: " + body)
