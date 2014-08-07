@@ -7,7 +7,6 @@ also directly controls the hardware.
 """
 import time
 import threading
-import logging
 import socket
 import pika
 import os
@@ -15,10 +14,18 @@ import traceback
 from blockytalky_id import *
 from message import *
 from BrickPi import *
+import pwd
 
 channel = None
-logger = logging.getLogger(__name__)
 os.nice(-5)
+
+#new_uid = pwd.getpwnam("pi").pw_uid
+#os.setuid(new_uid)
+#os.seteuid(new_uid)
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 class HardwareDaemon(object):
     PUBLISH_INTERVAL = 0.01
@@ -304,14 +311,14 @@ class HardwareDaemon(object):
 if __name__ == "__main__":
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/hardware_daemon.log',
                                                    maxBytes=8192, backupCount=3)
-    globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
-                                                         maxBytes=16384, backupCount=3)
+    #globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
+    #                                                     maxBytes=16384, backupCount=3)
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
-    globalHandler.setFormatter(formatter)
+    #globalHandler.setFormatter(formatter)
     logger.addHandler(handler)
-    logger.addHandler(globalHandler)
+    #logger.addHandler(globalHandler)
     logger.setLevel(logging.INFO)
     
     hd = HardwareDaemon()

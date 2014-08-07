@@ -213,14 +213,14 @@ if __name__ == "__main__":
     #logging.basicConfig()
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/comms_module.log',
                                                    maxBytes=8192, backupCount=3)
-    globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
-                                                         maxBytes=16384, backupCount=3)
+#    globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
+#                                                         maxBytes=16384, backupCount=3)
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
-    globalHandler.setFormatter(formatter)
+#    globalHandler.setFormatter(formatter)
     logger.addHandler(handler)
-    logger.addHandler(globalHandler)
+#    logger.addHandler(globalHandler)
     logger.setLevel(logging.INFO)
 
     logger.info("Communicator Module (WebSocket client) starting ...")
