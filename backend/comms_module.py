@@ -232,7 +232,7 @@ if __name__ == "__main__":
     cm.createWebSocket("DAX",
                        #"ws://192.168.1.43:8005/dax",
                       #  "ws://btrouter.getdown.org:8005/dax",
-                       "ws://192.168.1.50:8005/dax",
+                       "ws://adriatic.local:8005/dax",
                        Communicator.onRemoteMessage)
     cm.initialize()
     logger.info("Communicator Module (WebSocket client) started.")
