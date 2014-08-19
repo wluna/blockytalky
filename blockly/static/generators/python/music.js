@@ -761,7 +761,7 @@ Blockly.Language.music_drum_sequence = {
   init: function() {
     this.setColour(0);
 	this.appendDummyInput("")
-		.appendTitle("Create a drum sequence as a phrase");
+		.appendTitle("Create a drum sequence as a phrase: [] is 16th note");
 	this.appendDummyInput("")
         .appendTitle("Bass   ")
         .appendTitle(new Blockly.FieldCheckbox("FALSE"), "bass1")
