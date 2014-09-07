@@ -136,10 +136,6 @@ Blockly.Language.light_set= {
         .appendTitle("set light on motor port")
             .appendTitle(new Blockly.FieldDropdown([["1", "1"], ["2", "2"], 
                 ["3","3"],["4","4"],["All","All"]]), 'motor_num');
-      /*this.appendDummyInput()
-        .appendTitle(' MotorPower')
-            .appendTitle(new Blockly.FieldTextInput('100',
-            Blockly.Language.math_number.validator), 'motor_power');*/
     this.appendDummyInput("")
             .appendTitle(" to power");
     this.appendValueInput('motor_power')
@@ -527,6 +523,43 @@ Blockly.Language.events_when_sensor_range= {
 };
 
 
+Blockly.Language.events_when_message_saying= {
+    category: 'Events',
+    helpUrl: '',
+    init: function() {
+	this.setColour(30);
+	this.appendDummyInput("")
+            .appendTitle("when I receive the message ")
+	this.appendDummyInput("")
+	    .appendTitle(new Blockly.FieldTextInput('hello'), 'msg');
+	this.appendStatementInput('DO')
+	    .appendTitle(Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO);
+	this.setInputsInline(true);
+	this.setPreviousStatement(false);
+        this.setNextStatement(false);
+    }
+};
+
+Blockly.Language.message_send= {
+    category: 'Messages',
+    helpUrl: '',
+    init: function() {
+	this.setColour(180);
+	this.appendDummyInput("")
+            .appendTitle("send message ")
+	this.appendDummyInput("")
+	    .appendTitle(new Blockly.FieldTextInput('hello'), 'msg');
+	this.appendDummyInput("")
+	    .appendTitle("to ");
+	this.appendDummyInput("")
+	    .appendTitle(new Blockly.FieldTextInput('walle'), 'unit');
+	this.setInputsInline(true);
+	this.setPreviousStatement(true);
+        this.setNextStatement(true);
+    }
+};
+
+
 //DEFINE GENERATORS:
 
 Blockly.Python= Blockly.Generator.get('Python');
@@ -564,7 +597,7 @@ Blockly.Python.light_set = function() {
     var value_motor_number= this.getTitleValue('motor_num');
     //var value_motor_power = parseInt(this.getTitleValue('motor_power'));
     if(value_motor_number=="All") {
-    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor1=' +value_motor_power+ ', motor2=' + value_motor_power + ', motor3=' + value_motor_power + '))'+'\n'
+    code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor1=' +value_motor_power+ ', motor2=' + value_motor_power + ', motor3=' + value_motor_power + ',motor4='+value_motor_power+'))'+'\n'
     }
     else if(value_motor_number=="1") {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor1=' +value_motor_power+ '))'+'\n'
@@ -579,7 +612,7 @@ Blockly.Python.light_set = function() {
     code= 'toSend = Message(self.hostname, None, "HwCmd", Message.createImage(motor4=' +value_motor_power+ '))'+'\n'
     }
     code = code + 'toSend = Message.encode(toSend)' + '\n'
-    code= code + 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n'+'time.sleep(.01)'+'\n'
+    code= code + 'self.hwcmd_channel.basic_publish(exchange="HwCmd", routing_key="", body=toSend)'+'\n'
     return code;
 };
 
@@ -877,3 +910,26 @@ Blockly.Python.events_when_sensor_range = function() {
     return code;
 };
 
+Blockly.Python.events_when_message_saying = function() {
+    var branch2 = Blockly.Python.statementToCode(this, 'DO') || '  pass\n'; 
+    branch2 = branch2.split("\n");
+    var branch = "";
+    for(var i = 0; i < branch2.length; i ++) {
+	branch += "  " + branch2[i] + '\n';
+    }
+    var msg = this.getTitleValue('msg');
+    var code = 'def ' + 'wms' + unique_id + '(self, msg):' + '\n';
+    code += '  if msg == "' + msg + '": \n' + branch;
+    unique_id += 1;
+    return code;
+};
+
+Blockly.Python.message_send = function() {
+    var msg = this.getTitleValue('msg');
+    var unit = this.getTitleValue('unit');
+    var code = 'toSend = Message(self.hostname, "'+unit+'", "Message", "'+msg+'") \n'
+    code += 'toSend = Message.encode(toSend) \n'
+    code += 'self.msgout_channel.basic_publish(exchange="msgout", routing_key="", body = toSend) \n'
+    unique_id += 1;
+    return code;
+};

@@ -2,47 +2,51 @@ BlockyTalky OSC Protocol
 ========================
 
 I. Preface
-	The music blocks in BlockyTalky function by constructing OSC messages with different target addresses and message contents. These messages are received by maestro.ck, a ChucK module, which then performs computations based on those messages according to this protocol and sends more messages to be received by a sound-driving module, mastersound.pd. This document describes first the protocol used between BlockyTalky and maestro.ck (from BlockyTalky to ChucK), followed by the protocol used between maestro.ck and mastersound.pd (from ChucK to PureData).
+	The music blocks in BlockyTalky function by constructing OSC messages with different target addresses and message contents. These messages are received by maestro.ck, a ChucK module, which then performs computations based on those messages according to this protocol and sends more messages to be received by a sound-driving module, masterWoog.pd. This document describes first the protocol used between BlockyTalky and maestro.ck (from BlockyTalky to ChucK), followed by the protocol used between maestro.ck and masterWoog.pd (from ChucK to PureData).
 	
 II. Messaging Protocol between BlockyTalky and the ChucK Maestro
 	A. Playing Notes
-		1. /lpc/maestro/play_on_beat_with (if*128)fi
-			Message containing 128 notes, where each note is identified by an integer (i) and a float (f). Such a construct is considered a "phrase," and will be henceforth named thusly in this document. A phrase may contain empty notes; such notes take no time to play and produce no sound, and can be specified with a pitch of -1 and a duration of 0. This message is intended to be used to tell the maestro machine to play a sequence of notes immediately.
-			This message also contains a float specifying a "beat alignment fraction" and an int (1-8) specifying the voice to be used to play the notes in the phrase. 0 can be passed as he beat alignment fraction, in which case no beat alignment will occur and the phase will play without any delay.
+		/lpc/maestro/voice/play if*8*16 i(voice) i(should_loop) f(beat_align_fraction)
+			This command replaces the specified voice with the new voice data and plays it, or attempts to overlay the new voice data on top of the old, and continues playing.
+			Message containing 128 notes, where each note is identified by an integer (i) and a float (f). Such a construct is considered a "phrase," and will be henceforth named thusly in this document. A phrase may contain empty notes; such notes take no time to play and produce no sound, and can be specified with a pitch of -1 and a duration of 0.
+			This message also contains a float specifying a "beat alignment fraction" and an int (1-8) specifying the voice to be used to play the notes in the phrase. 0 can be passed as the beat alignment fraction, in which case no beat alignment will occur and the phase will play without any delay.
 			
-		2. /lpc/maestro/loop_on_beat_with (if*128)fi
-			As above, but the specified phrase will loop back on itself and continue playing until it is stopped by a stop_playing message sent to the appropriate voice.
+		/lpc/maestro/voice/stop i(voice) f(beat_align_fraction)
+			Stops playing the specified voice.
+			As before, this command allows for beat alignment; pass 0 to ignore alignment and stop immediately.
 			
-		3. /lpc/maestro/stop_playing_on_beat fi
-			Stops the specified voice (i) from playing anything, optionally aligned to a particular beat or fraction thereof (f). As before, beat alignment can be disabled by passing 0 as the beat fraction.
+		/lpc/maestro/drums/play i*8*7 i(should_loop) i(phrase_length) f(beat_align_fraction)
+			Replaces the drumline with the new drumline data and plays it, or attempts to overlay the new drumline on top of the old and continues playing it.
+			Drumline data is sent for all seven types of drum simultaneously. The data for each drum is a sequence of 8 32-bit integers, where the bits in each integer determine whether or not a particular drum is supposed to trigger in a sixteenth-note interval, which is considered the distance separating each bit.
+			Phrase length is given as an integer, and is defined as the number of 'measures' to play in the phrase (until looping, if that is desired), where each measure is 16 sixteenth notes, or 16 bits.
+			The beat alignment fraction, it should be noted, only changes when the sequence will begin, and has no other effect on the drumline.
 			
-		4. /lpc/maestro/change_voice (if*128)fi
-			Stops playing anything with the specified voice and immediately starts playing the new phrase with the specified voice.
+		/lpc/maestro/drums/stop f(beat_align_fraction)
+			Stops playing the drumline.
+			As before, this command allows for beat alignment; pass 0 to ignore alignment and stop immediately.
 	
 	B. Controlling Sound
-		1. /lpc/maestro/tempo f
-			The real number argument specifies the user's desired song tempo in beats per minute. Due to the nature of the ChucK module, changing this setting while a loop is playing will break any on-beat synchronization with new phrases played after the tempo change.
+		/lpc/maestro/tempo f(bpm)
+			The real number argument specifies the user's desired song tempo in beats per minute.
 			
-		2. TODO: The rest of this section.
+		/lpc/maestro/voice/volume i(voice) i(value) f(beat_align_fraction)
+			Sets the volume of the specified voice.
+			
+		/lpc/maestro/voice/instrument i(voice) i(value)
+			Sets the instrument to use for the specified voice.
+			
+		/lpc/maestro/drums/volume i(value)*7
+			Sets the volume of the drums, individually (there are 7 different drum sounds).
+			
+		/lpc/maestro/voice/bandpassfilter i(voice) i(value) f(beat_align_fraction)
+			Sets the bandpassfilter property of the specified voice.
 
 III. Messaging Protocol between the ChucK Maestro and PD Sound Driver
 	A. Playing Notes
-		1. /lpc/sound/voice1 sif NOT IMPLEMENTED
-			Message specifying an instrument to use (s) to play one note by MIDI pitch (i) and real number duration in seconds (f).
-			
-		2. /lpc/sound/voice2 sif NOT IMPLEMENTED
-			There are 8 voices, labeled voice1 - voice8.
-
-		3-8. /lpc/sound/voiceN sif NOT IMPLEMENTED
-			See 2.
+		// TODO: write this section
 			
 	B. Controlling Sound
-		1. /lpc/sound/volume f NOT IMPLEMENTED
-			Message specifying the master volume multiplier as a real number between 0 and 1.
-			
-		2. /lpc/sound/voice1/volume NOT IMPLEMENTED
-			Message specifying the desired volume of a particular voice as a real number between 0 and 1.
-			
-		3-9. /lpc/sound/voiceN/volume NOT IMPLEMENTED
-			See 2.
+		// TODO: write this section
+		
+		// Consider deleting this section and just having this document be the protocol spec for talking to ChucK.
 	

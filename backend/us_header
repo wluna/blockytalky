@@ -14,9 +14,14 @@ import random
 from blockytalky_id import *
 from message import *
 import urllib2
+import traceback
+import pwd
 
 logger = logging.getLogger(__name__)
 os.nice(-2)
+
+new_uid = pwd.getpwnam("pi").pw_uid
+os.setuid(new_uid)
 
 def handle_logging(logger):
     # Set the logging level.
@@ -47,17 +52,11 @@ class UserScript(object):
         self.sensorStatus= Message.createSensorStatus()
         logger.debug(self.sensorStatus.values())
 
-        self.hwval_channel = None
+        self.in_channel = None
         self.hwcmd_channel = None
-        
-        self.MsgIn_channel = None
-        self.MsgOut_channel = None
+        self.msgout_channel = None
 
-        parameters = pika.ConnectionParameters()
-        self.connection = pika.BlockingConnection(parameters)
-        
-        self.setup_hwcmd_channel()
-        self.setup_hwval_channel()      
+
         
         self.initialized = False
         
@@ -67,7 +66,16 @@ class UserScript(object):
         self.init_callbacks()
         self.whiles = []
         self.init_whiles()
-   
+        self.msg_functions = []
+
+        parameters = pika.ConnectionParameters()
+        self.connection = pika.BlockingConnection(parameters)
+
+        self.init_msgs()
+        
+        self.setup_hwcmd_channel()
+        self.setup_in_channel()      
+        self.setup_msgout_channel()
 
     def handshake(self):
         toSend = Message(self.hostname, None, "handshake", None)
@@ -76,9 +84,19 @@ class UserScript(object):
                                          routing_key="", body=toSend)
 
     def start(self):
-        self.handshake()
-        self.hwval_channel.start_consuming()
+        try:
+            self.in_channel.start_consuming()
+        except pika.exceptions.ConnectionClosed:
+            logger.info("user script pika restarting...")
+            parameters = pika.ConnectionParameters()
+            self.connection = pika.BlockingConnection(parameters)
+            self.setup_hwcmd_channel()
+            self.setup_in_channel()      
+            self.setup_msgout_channel()
+            self.start()
+       
 
+     
     def schedule_run_continuously(self):
         self.connection.add_timeout(self.__class__.RUN_INTERVAL, self.run_cont_and_reschedule)   
 
@@ -92,17 +110,40 @@ class UserScript(object):
         logger.info("Creating sensors exchange...")
         self.hwcmd_channel.exchange_declare(exchange='HwCmd', type='fanout')
 
-    def setup_hwval_channel(self):
-        self.hwval_channel = self.connection.channel()
-        self.hwval_channel.exchange_declare(exchange='sensors', type='fanout')
-        result = self.hwval_channel.queue_declare(exclusive=True)
+    def setup_msgout_channel(self):
+        self.msgout_channel = self.connection.channel()
+        self.msgout_channel.exchange_declare(exchange='msgout', type='fanout')
+
+    def setup_in_channel(self):
+        self.in_channel = self.connection.channel()
+        # why is the exchange declare logs?
+        self.in_channel.exchange_declare(exchange='logs', type='fanout')
+        result = self.in_channel.queue_declare(exclusive=True)
         queue_name = result.method.queue
-        self.hwval_channel.queue_bind(exchange='sensors', queue=queue_name)
+        self.in_channel.queue_bind(exchange='sensors', queue=queue_name)
+        self.in_channel.queue_bind(exchange='msgin', queue=queue_name)
         logger.info("Declaring HwVal callback...")
-        self.hwval_channel.basic_consume(self.handle_hwval_delivery, queue=queue_name, no_ack=True)
+        self.in_channel.basic_consume(self.handle_in_delivery, queue=queue_name, no_ack=True)
     
   
-    def handle_hwval_delivery(self, ch, method, properties, body):
+    def handle_in_delivery(self, ch, method, properties, body):
+        try:
+            #print "user script received message on " + method.exchange 
+            if method.exchange == "msgin":
+                decoded = Message.decode(body)
+                msg = decoded.getContent()
+                self.handle_msgin_delivery(msg)
+            elif method.exchange == "sensors":
+                self.handle_hwval_delivery(body)
+            else:
+                print body
+        except Exception as real_exception:
+            print "*** an exception occured in the callback delivery function ***"
+            print traceback.format_exc()
+            print "*** now re-raising the exception. pika exception to follow ***"
+            raise real_exception
+
+    def handle_hwval_delivery(self, body):
         message = Message.decode(body)
         hwDict = message.getContent()
         logger.debug('Updating the robot status: %s' % str(hwDict))
@@ -125,9 +166,14 @@ class UserScript(object):
         else:
             for callback in self.callbacks:
                 callback()
-
+                
             self.last_robot = copy.deepcopy(self.robot)
     
+    def handle_msgin_delivery(self, msg):
+        logger.debug("user script received remote message: " + msg)
+        for m in self.msg_functions:
+            m(msg)
+
     #this will be overwritten by user code if they use those blocks
     def run_on_start(self):
         pass

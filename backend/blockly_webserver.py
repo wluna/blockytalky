@@ -144,7 +144,7 @@ def blockly():
     startMsg = Message('name', None, 'HwCmd', Message.createImage(pin13=0))
     startMsg = Message.encode(startMsg)
     try:    
-	    channel.basic_publish(exchange='HwCmd', routing_key='', body=startMsg)
+        channel.basic_publish(exchange='HwCmd', routing_key='', body=startMsg)
     except:
         logger.exception('Failed to start Blockly:')
     return render_template('code.html')
@@ -177,7 +177,7 @@ def upload_code(xml_data, python_data):
     code_to_file(xml_data, 'code/rawxml.txt', 'XML')
     #code_to_file(convert_usercode(python_data), 'backend/usercode.py', 'Python')
     code_to_file(convert_usercode(python_data), 'backend/user_script.py', 'Python')
-    remote_code_upload(xml_data)
+    save_locally(xml_data)
     startTime = time.time()
     logger.info('Issuing kill command before uploading code')
     stop_user_script()
@@ -186,15 +186,7 @@ def upload_code(xml_data, python_data):
 
     logger.info('Upload took '+ str(time.time() - uploadStart) + ' s')
 
-def remote_code_upload(code):
-    logger.debug('Sending code to remote server')
-    unitname = socket.gethostname()
-    headers = {'unit-name': unitname}
-
-    try:
-        request = requests.post("http://104.131.249.150:5000", data=code, headers=headers)
-    except:
-        pass
+def save_locally(code):
     os.chdir('/home/pi/blockytalky/usercode')
     filename = socket.gethostname() + "-" + str(int(round(time.time() * 1000)))
     fo = open(filename, 'wb')
@@ -210,6 +202,7 @@ def convert_usercode(python_code):
     python_code = python_code.splitlines()
     callback_functions = "    def init_callbacks(self): \n"
     while_functions = "    def init_whiles(self): \n"
+    msg_functions = "    def init_msgs(self): \n"
     variables = "\n      global "
 
     # comment out code that comes from blocks not in event blocks.
@@ -232,6 +225,8 @@ def convert_usercode(python_code):
                     python_code[i] += "\n      for f in self.whiles: \n        f() \n"    
                 if func[:2] == "wl":
                     while_functions += "        self.whiles.append(self." + func + ") \n"
+                if func[:2] == "wm":
+                    msg_functions += "        self.msg_functions.append(self." + func + ") \n"
                 else:    
                     callback_functions += "        self.callbacks.append(self." + func + ") \n"
             comment = False
@@ -251,7 +246,9 @@ def convert_usercode(python_code):
 
     while_functions += "        True \n"
     
-    python_code += "\n" + callback_functions + "\n" + while_functions + "\n"
+    msg_functions += "        True \n"
+
+    python_code += "\n" + callback_functions + "\n" + while_functions + "\n" + msg_functions + "\n"
 
     print python_code
     
@@ -261,6 +258,7 @@ def convert_usercode(python_code):
     footer_text = ('if __name__ == "__main__": \n'
                    '    handle_logging(logger) \n'
                    '    uscript = UserScript() \n'
+                   '    uscript.handshake() \n'
                    '    uscript.start() \n')
 
 

@@ -7,17 +7,25 @@ also directly controls the hardware.
 """
 import time
 import threading
-import logging
 import socket
 import pika
 import os
+import traceback
 from blockytalky_id import *
 from message import *
 from BrickPi import *
+import pwd
 
 channel = None
-logger = logging.getLogger(__name__)
 os.nice(-5)
+
+#new_uid = pwd.getpwnam("pi").pw_uid
+#os.setuid(new_uid)
+#os.seteuid(new_uid)
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 class HardwareDaemon(object):
     PUBLISH_INTERVAL = 0.01
@@ -26,17 +34,21 @@ class HardwareDaemon(object):
         logger.info('Initializing hardware daemon')
         self.hostname = BlockyTalkyID()
         self.robot = Message.initStatus()
-        self.sensorList = [0,0,0,0]
         self.sensorsRequested = False
         self.hwval_channel = None
         self.hwcmd_channel = None
-        
         self.encoder_offsets = [0,0,0,0]
 
-        parameters = pika.ConnectionParameters()
-        self.connection = pika.BlockingConnection(parameters)
-        self.setup_hwval_channel()
-        self.setup_hwcmd_channel()
+        os.chdir("/home/pi/blockytalky/backend/")
+        f = open("sensors", "r")
+        slist = f.read()
+        f.close()
+        slist = slist.split(",")
+        processedlist = map(int, slist)
+        self.sensorList = processedlist
+        BrickPi.SensorType = processedlist
+        os.chdir("/home/pi/blockytalky/")
+
         
         initPins()
         BrickPiSetup()
@@ -47,12 +59,18 @@ class HardwareDaemon(object):
 
         BrickPiSetupSensors()
         
+        parameters = pika.ConnectionParameters()
+        self.connection = pika.BlockingConnection(parameters)
+        self.setup_hwval_channel()
+        self.setup_hwcmd_channel()
+      
+        
     def start(self):
         self.schedule_check_status()
         self.hwcmd_channel.start_consuming()
     
     def schedule_check_status(self):
-        logger.info("Scheduling a check_status in %s seconds" % self.__class__.PUBLISH_INTERVAL)
+        logger.debug("Scheduling a check_status in %s seconds" % self.__class__.PUBLISH_INTERVAL)
         self.connection.add_timeout(self.__class__.PUBLISH_INTERVAL, self.check_status_and_reschedule)   
 
     def check_status_and_reschedule(self):
@@ -80,7 +98,7 @@ class HardwareDaemon(object):
             logger.exception('Error occurred while reading motor values:')
        
         BrickPi.Gpio = self.robot["pins"]
-        logger.info("Calling BrickPiUpdateValues")
+        logger.debug("Calling BrickPiUpdateValues")
         BrickPiUpdateValues()
 
         #Copy sensors and encoders for comparison.
@@ -202,8 +220,18 @@ class HardwareDaemon(object):
         result = self.hwcmd_channel.queue_declare(exclusive=True)
         queue_name = result.method.queue
         self.hwcmd_channel.queue_bind(exchange='HwCmd', queue=queue_name)
-        self.hwcmd_channel.basic_consume(self.handle_hwcmd_delivery, 
+        self.hwcmd_channel.basic_consume(self.handle_in_delivery, 
                                     queue=queue_name, no_ack = True)
+
+    def handle_in_delivery(self, channel, method, header, body):
+        try:
+            self.handle_hwcmd_delivery(channel, method, header, body)
+        except Exception as real_exception:
+            print "*** an exception occured in the callback delivery function ***"
+            print traceback.format_exc()
+            print "*** now re-raising the exception. pika exception to follow ***"
+            raise real_exception
+        
         
     def handle_hwcmd_delivery(self, channel, method, header, body):
         logger.info("hwcmd command received: " + body)
@@ -249,7 +277,20 @@ class HardwareDaemon(object):
                             newType = TYPE_SENSOR_LIGHT_OFF
 
                         BrickPi.SensorType[index] = newType 
-                        self.sensorList[index] = newType   
+                        self.sensorList[index] = newType
+                        os.chdir("/home/pi/blockytalky/backend/")
+                        sensorString = ""
+                        for item in self.sensorList:
+                            sensorString = sensorString + "," + str(item)
+                        
+                        sensorString = sensorString[1:]
+                        print "sensorString: " + str(sensorString)
+                        fo = open("sensors", "wb")
+                        fo.write(sensorString)
+                        fo.close()
+
+                        os.chdir("/home/pi/blockytalky/")
+
             time.sleep(.01)
             BrickPiSetupSensors()
             self.sensorsRequested = True
@@ -270,14 +311,14 @@ class HardwareDaemon(object):
 if __name__ == "__main__":
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/hardware_daemon.log',
                                                    maxBytes=8192, backupCount=3)
-    globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
-                                                         maxBytes=16384, backupCount=3)
+    #globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
+    #                                                     maxBytes=16384, backupCount=3)
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
-    globalHandler.setFormatter(formatter)
+    #globalHandler.setFormatter(formatter)
     logger.addHandler(handler)
-    logger.addHandler(globalHandler)
+    #logger.addHandler(globalHandler)
     logger.setLevel(logging.INFO)
     
     hd = HardwareDaemon()

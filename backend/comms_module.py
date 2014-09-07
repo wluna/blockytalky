@@ -16,6 +16,7 @@ import json
 from collections import deque
 from blockytalky_id import *
 from message import *
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +24,20 @@ class Communicator(object):
     hostname = BlockyTalkyID()
     recipients = {}                     # Filled by "createWebSocket"
     restartQueue = deque()
-    global channelOut
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-    channelOut = connection.channel()
-    channelOut.queue_declare(queue="HwVal")
-
     mostRecentCode = None
+
+    RECONNECT_INTERVAL = 2
+
+    def __init__(self):
+        self.msgin_channel = None
+        self.msgout_channel = None
+
+        parameters = pika.ConnectionParameters(host='localhost')
+        self.connection = pika.BlockingConnection(parameters)
+
+        self.setup_msgin_channel()
+        self.setup_msgout_channel()
+
 
     @staticmethod
     def onOpen(ws):
@@ -54,15 +63,15 @@ class Communicator(object):
     @staticmethod    
     def onRemoteMessage(ws, encodedMessage):
         """ This method handles messages coming from DAX. """
-        logger.debug(">>> Method called: onRemoteMessage")
-        logger.info("Remote message received. Forwarded locally")
+        logger.info(encodedMessage)
         decoded = Message.decode(encodedMessage)
         if decoded.getChannel() == "Server":
             logger.info("Received server command")
             Communicator.respondToServerMessage(decoded)
         else:
-            channelOut.basic_publish(exchange="", routing_key="HwVal", body=encodedMessage)
-
+            cm.msgin_channel.basic_publish(exchange="msgin", routing_key = "", body=encodedMessage)
+            #logger.info("outside message sent to user script")
+    
     #Respond to a command originating from the main server (rails, not dax)
     @staticmethod
     def respondToServerMessage(message):
@@ -146,54 +155,90 @@ class Communicator(object):
                 logger.info("Restarting a closed WebSocket ...")
                 webSocket = Communicator.restartQueue.popleft()
                 Communicator.startWebSocket(webSocket)
+  
+    def schedule_reconnect(self):
+        logger.debug("Scheduling reconnect in %s seconds" % self.__class__.RECONNECT_INTERVAL)
+        self.connection.add_timeout(self.__class__.RECONNECT_INTERVAL, self.reconnect_reschedule)
 
+    def reconnect_reschedule(self):
+        logger.debug(">>> Checking the restartQueue ...")
+        if Communicator.restartQueue:
+            logger.info("Restarting a closed WebSocket ...")
+            webSocket = Communicator.restartQueue.popleft()
+            Communicator.startWebSocket(webSocket)
+        
+        self.schedule_reconnect()
 
-    def on_connected(self, connection):
-        #print "connected"
-        connection.channel(cm.on_channel_open)
+    def start(self):
+        self.schedule_reconnect()
+        try:
+            self.msgout_channel.start_consuming()
+        except pika.exceptions.ConnectionClosed:
+            logger.info("pika connection closed")
+            parameters = pika.ConnectionParameters(host='localhost')
+            self.connection = pika.BlockingConnection(parameters)
 
-    def on_channel_open(self, new_channel):
-        global channel
-        channel = new_channel
-        channel.queue_declare(queue='Message', callback=cm.on_queue_declared)
+            self.setup_msgin_channel()
+            self.setup_msgout_channel()
+            logger.info("restarting consuming")
+            self.start()
 
-    def on_queue_declared(self, frame):
-        channel.basic_consume(cm.handle_delivery, queue='Message', no_ack=True)
+    def setup_msgin_channel(self):
+        self.msgin_channel = self.connection.channel()
+        self.msgin_channel.exchange_declare(exchange='msgin', type='fanout')
+    
 
-    def handle_delivery(self, channel, method, header, body):
-        # command = Message.decode(body)
-        # print str(command.getContent())
-        Communicator.recipients["DAX"].send(body)
+    def setup_msgout_channel(self):
+        self.msgout_channel = self.connection.channel()
+        self.msgout_channel.exchange_declare(exchange='msgout', type='fanout')
+        result = self.msgout_channel.queue_declare(exclusive=True)
+        queue_name = result.method.queue
+        self.msgout_channel.queue_bind(exchange='msgout', queue=queue_name)
+        logger.info("Declaring HwVal callback...")
+        self.msgout_channel.basic_consume(self.handle_msgout_delivery, queue=queue_name, no_ack=True)
+    
+
+    def handle_msgout_delivery(self, channel, method, header, body):
+        try:
+            self.recipients["DAX"].send(body)
+            logger.info("sent message from unit to dax")
+        except Exception as real_exception:
+            print "*** an exception occured in the callback delivery function ***"
+            print traceback.format_exc()
+            print "*** now re-raising the exception. pika exception to follow ***"
+            raise real_exception
+
 
 if __name__ == "__main__":
+    #logging.basicConfig()
     handler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/comms_module.log',
                                                    maxBytes=8192, backupCount=3)
-    globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
-                                                         maxBytes=16384, backupCount=3)
+#    globalHandler = logging.handlers.RotatingFileHandler(filename='/home/pi/blockytalky/logs/master.log',
+#                                                         maxBytes=16384, backupCount=3)
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s',
                                   datefmt='%H:%M:%S %d/%m')
     handler.setFormatter(formatter)
-    globalHandler.setFormatter(formatter)
+#    globalHandler.setFormatter(formatter)
     logger.addHandler(handler)
-    logger.addHandler(globalHandler)
+#    logger.addHandler(globalHandler)
     logger.setLevel(logging.INFO)
 
     logger.info("Communicator Module (WebSocket client) starting ...")
-
-    # DAX WebSocket (remote component)
-    Communicator.createWebSocket("DAX",
-                                 #"ws://192.168.1.43:8005/dax",
-                                 "ws://btrouter.getdown.org:8005/dax",
-                                 Communicator.onRemoteMessage)
-    Communicator.initialize()
-    logger.info("Communicator Module (WebSocket client) started.")
-
-    agentThread = threading.Thread(target=Communicator.startAgent)
-    agentThread.start()
     
     cm = Communicator()
-    parameters = pika.ConnectionParameters()
-    cm.connection = pika.SelectConnection(parameters, cm.on_connected)
-    cm.connection.ioloop.start()
+   
     
+    # DAX WebSocket (remote component)
+    cm.createWebSocket("DAX",
+                       #"ws://192.168.1.43:8005/dax",
+                      #  "ws://btrouter.getdown.org:8005/dax",
+                       "ws://192.168.1.50:8005/dax",
+                       Communicator.onRemoteMessage)
+    cm.initialize()
+    logger.info("Communicator Module (WebSocket client) started.")
+
+    #agentThread = threading.Thread(target=cm.startAgent)
+    #agentThread.start()
+   
+    cm.start()
 

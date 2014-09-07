@@ -2,6 +2,8 @@
 
 echo Starting BlockyTalky...
 
+sudo chown -R pi /home/pi/blockytalky/*
+
 #if [ ! -f /etc/BlockyTalkyID ]; then
 #    python /home/pi/blockytalky/generate_guid.py | sudo tee /etc/BlockyTalkyID > /dev/null
 #fi
@@ -24,11 +26,26 @@ fi
 sudo chown pi /home/pi/blockytalky/code/rawxml.txt
 sudo chmod 775 /home/pi/blockytalky/code/rawxml.txt
 
+sudo chown pi /home/pi/blockytalky/logs/blockly_ws.log
+sudo chmod 775 /home/pi/blockytalky/logs/blockly_ws.log
+
+sudo chown pi /home/pi/blockytalky/logs/comms_module.log
+sudo chmod 775 /home/pi/blockytalky/logs/comms_module.log
+
+sudo chown pi /home/pi/blockytalky/logs/master.log
+sudo chmod 775 /home/pi/blockytalky/logs/master.log
+
+sudo chown pi /home/pi/blockytalky/logs/hardware_daemon.log
+sudo chmod 775 /home/pi/blockytalky/logs/hardware_daemon.log
+
 sudo chown pi /home/pi/cm.log
 sudo chmod 664 /home/pi/cm.log
 
-sudo python /home/pi/blockytalky/backend/blockly_webserver.py &>/dev/null
-#sudo python /home/pi/blockytalky/backend/comms_module.py &>/dev/null
-#sudo python /home/pi/blockytalky/backend/hardware_daemon.py &>/dev/null
+sudo chown pi /home/pi/blockytalky/backend/user_script.py
+sudo chmod 775 /home/pi/blockytalky/backend/user_script.py
+
+python /home/pi/blockytalky/backend/blockly_webserver.py &>/dev/null
+python /home/pi/blockytalky/backend/code_uploader.py &>/dev/null
+python /home/pi/blockytalky/backend/comms_module.py &>/dev/null
 
 echo BlockyTalky running.
