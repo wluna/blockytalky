@@ -1,0 +1,151 @@
+now current chuck time
+
+8 voices
+9 commands tracked 
+7 drum sounds
+temp is 8th notes at smallest
+2048 beats in master loop
+listens for OSC signals on port 1111 sends on 1112
+
+all playing values are held within a 3d array
+[8/voc 8/cmd 7/drm tracks][2048 beats]
+voice: pitch duration/voice
+cmd: cmd/value
+drum triger/sample 
+
+Sporks:
+-play voice
+-play drums
+-stop message
+-set tempo
+-set voice volume
+-set voice instrument
+-set voice bandpassfilter
+-set drum volume
+-init 
+-MAESTRO_SHRED
+
+**These shreds run functions specified in code
+
+Listeners:
+	voice play (123 ints and floats)
+	drums (59 ints 1 float)
+	stop int float
+	tempo float
+	voice/volume 2 int
+	voice/instrument 2 int
+	voice/bandpassfilter 2 int
+	drum/volume int
+	init int
+
+each beat of storage in the master loop requires ~1.5 KB of RAM.
+-Could this be much smaller
+
+
+int master_loop
+        [NUM_VOICES + NUM_COMMANDS + NUM_DRUMS]
+        [MASTER_LOOP_LENGTH_IN_BEATS * BEAT_RESOLUTION_DIVIDER]
+        [2];
+
+arrays of currently playing notes are kept in arrays to be quickly removed when stopped
+
+arrays for:
+currently playing
+voice and drum should loop/exit 
+
+
+// ====================================================
+// ||                MAESTRO LOGIC                   ||
+// ====================================================
+loop through each track in loop
+grab the current note and its pitch and duration
+if the note exists add it to the note package and set it to be processed
+then resets those ntoes values in master loop to 0
+run process_package shred/spork
+**Delete lines 307-330 
+
+**Can we delete bandpass filter parameter throughout maestro2ck
+
+
+// ====================================================
+// ||                PACKAGE PROCESSING              ||
+// ====================================================
+This sends all OSC signasl to play sounds
+process package  2d arrays by sending values from each array via OSC
+*Time based commands can be sent from here
+drums are packages as a single message(just if there hit or not)
+
+// ====================================================
+// ||          BT MESSAGE HANDLER FUNCTIONS          ||
+// ====================================================
+**All of these message handlers take values from event put into buffers and run spork passing in the buffer 
+
+play_voice_message_handler_shread()
+void play_drums_message_handler_shred()
+
+set_tempo_message_handler_shred()
+set_voice_volume_message_handler_shred()
+set_voice_instrument_message_handler_shred()
+set_voice_bandpassfilter_message_handler_shred()
+set_drums_volume_message_handler_shred()
+
+init_message_handler_shred()
+iterates through init_event and calls init_message_processor()
+
+stop_message_handler_shred()
+iterates through stop_event and sends data to stop_message_processor()
+
+
+// ====================================================
+// ||         BT MESSAGE PROCESSOR FUNCTIONS         ||
+// ====================================================
+**These are all functions called by the handler functions
+
+play_voice_message_processor()
+takes in phrase, voice, should loop flag and beat alignment
+waits in order to align it with the next beat using beat alignment
+iterates across phrase array 1-128
+grabs pitch and duration from phrase for note
+if duration not 0
+	add to master loop update d
+	update index using duration
+	update notes added index
+if should exit
+	exit
+if should loop
+	wait for total_duration_processed
+		and awtch for should exit signals
+reset index and totalduration procsesed
+
+
+
+play_drums_message_processor()
+takes in arrays for each voice
+loops through 0-16*length
+gets bit value from <drum>_data array for each drum and puts it into int
+if bit set for each drum
+	add to master loop
+	add index to drum notes added
+	increase drum_notes_added_index[0]
+	mod by master_loop_length(cheap way to loop)
+if should exit then break
+else should loop
+	wait for necessary duration and watch for should exit msg
+reset index and start from the beginning
+
+
+
+stop_message_processor()
+takes in voice number and its beat alignment
+waits for time using beat alighment
+sets drums and voice of given voic number to should_exit
+go through added notes for this voice until you find a break setting all notes to 0
+same for drums
+**empty note indicated were finished)?
+
+set voice_volume/instrument/bandpass/drum_vol
+all just send basic OSC value
+
+init_message_processor
+sets all current shreds by adding 1 to should exit array, then waits and sets all values to 0
+
