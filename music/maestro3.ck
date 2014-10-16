@@ -112,7 +112,7 @@ function void watch_drum_events_shread(){
 spork ~ watch_drum_events_shread();
 
 
-function void process_drum_event(Event e){
+function void process_drum_event(OscEvent e){
 	if (DEBUG_PRINTING == 2) {
 		<<< "Received drums_play_event." >>>;
 	}
@@ -195,7 +195,7 @@ int snare_data[], int conga_data[], int tom_data[],
 int hat_data[], int hit_data[], int ride_data[],
 int should_loop, int voice, int length,
 float beat_alignment){   
-	drum_package[NUM_DRUMS];
+	int drum_package[NUM_DRUMS];
 	while(true){
 		for (0 => int i; i < 16 * length; i++) {
 			// Get whether to trigger the bass.
