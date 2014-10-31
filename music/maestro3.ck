@@ -189,7 +189,7 @@ function void watch_drum_events_shread() {
 			message_should_loop_flag,
 			message_voice_index,
 			message_phrase_length,
-			message_beat_alignment) => Shred @ drum_shreds[1];
+			message_beat_alignment) @=>  drum_shreds[1];
 		}
 	}
 }
@@ -207,8 +207,9 @@ float beat_alignment){
         ::second
                      => now;
 	drum_shreds[0].exit();
-	me => drum_shreads[0];
-	Shred @ => drum_shreads[1];
+	me @=> drum_shreds[0];
+	Shred @ foo;
+	foo @=> drum_shreds[1];
 					 
 	while(true){
 		for (0 => int i; i < 16 * length; i++) {
