@@ -51,6 +51,11 @@
 // 2 - Full debug printing
 
 
+
+// Assign current tempo in BPM
+DEFAULT_TEMPO => float tempo;
+
+
 // ====================================================
 // ||               OSC INITIALIZATION               ||
 // ====================================================
@@ -101,90 +106,91 @@ OSC_receiver.event("/lpc/maestro/drums/volume, i")
 OSC_receiver.event("/lpc/maestro/init, i")
                    @=> OscEvent init_event;
 
-function void watch_drum_events_shread(){
+
+spork ~ watch_drum_events_shread();
+Shred drum_shreds[2];//1 = active / 2 = upcoming
+<<< "Watched!" >>>;
+
+function void watch_drum_events_shread() {
+	
 	while (true) {
 		// Receive messages.
 		drums_play_event => now;
-		spork ~ process_drum_event(drums_play_event);
-	}
-}
-
-spork ~ watch_drum_events_shread();
-
-
-function void process_drum_event(OscEvent e){
-	if (DEBUG_PRINTING == 2) {
-		<<< "Received drums_play_event." >>>;
-	}
-	
-	// Initialize message data buffers.
-	8 => int ints_per_drum; //  the number of 32-bit integers used
-	//  to store phrase data for each drum
-	int message_bass_data[ints_per_drum];
-	int message_snare_data[ints_per_drum];
-	int message_conga_data[ints_per_drum];
-	int message_tom_data[ints_per_drum];
-	int message_hat_data[ints_per_drum];
-	int message_hit_data[ints_per_drum];
-	int message_ride_data[ints_per_drum];
-	int message_voice_index;
-	int message_should_loop_flag;
-	int message_phrase_length;
-	float message_beat_alignment;
-	
-	// Process each message.
-	while (e.nextMsg() != 0) {
 		
-		// Read message data into buffers.
-		for (0 => int i; i < ints_per_drum; i++) {
-			e.getInt()
-			=> message_bass_data[i];
+		// DEBUG Print message receipt.
+		if (DEBUG_PRINTING == 2) {
+			<<< "Received drums_play_event." >>>;
 		}
-		for (0 => int i; i < ints_per_drum; i++) {
-			e.getInt()
-			=> message_snare_data[i];
-		}
-		for (0 => int i; i < ints_per_drum; i++) {
-			e.getInt()
-			=> message_conga_data[i];
-		}
-		for (0 => int i; i < ints_per_drum; i++) {
-			e.getInt()
-			=> message_tom_data[i];
-		}
-		for (0 => int i; i < ints_per_drum; i++) {
-			e.getInt()
-			=> message_hat_data[i];
-		}
-		for (0 => int i; i < ints_per_drum; i++) {
-			e.getInt()
-			=> message_hit_data[i];
-		}
-		for (0 => int i; i < ints_per_drum; i++) {
-			e.getInt()
-			=> message_ride_data[i];
-		}
-		e.getInt() - 1
-		=> message_voice_index;
-		e.getInt()
-		=> message_should_loop_flag;
-		e.getInt()
-		=> message_phrase_length;
-		e.getFloat()
-		=> message_beat_alignment;
 		
-		// Spawn thread dedicated to updating
-		// the master loop using this message
-		// data.
-		spork ~ play_drums_message_processor(
-		message_bass_data, message_snare_data,
-		message_conga_data, message_tom_data,
-		message_hat_data, message_hit_data,
-		message_ride_data,
-		message_should_loop_flag,
-		message_voice_index,
-		message_phrase_length,
-		message_beat_alignment);
+		// Initialize message data buffers.
+		8 => int ints_per_drum; //  the number of 32-bit integers used
+		//  to store phrase data for each drum
+		int message_bass_data[ints_per_drum];
+		int message_snare_data[ints_per_drum];
+		int message_conga_data[ints_per_drum];
+		int message_tom_data[ints_per_drum];
+		int message_hat_data[ints_per_drum];
+		int message_hit_data[ints_per_drum];
+		int message_ride_data[ints_per_drum];
+		int message_voice_index;
+		int message_should_loop_flag;
+		int message_phrase_length;
+		float message_beat_alignment;
+		
+		// Process each message.
+		while (drums_play_event.nextMsg() != 0) {
+			
+			// Read message data into buffers.
+			for (0 => int i; i < ints_per_drum; i++) {
+				drums_play_event.getInt()
+				=> message_bass_data[i];
+			}
+			for (0 => int i; i < ints_per_drum; i++) {
+				drums_play_event.getInt()
+				=> message_snare_data[i];
+			}
+			for (0 => int i; i < ints_per_drum; i++) {
+				drums_play_event.getInt()
+				=> message_conga_data[i];
+			}
+			for (0 => int i; i < ints_per_drum; i++) {
+				drums_play_event.getInt()
+				=> message_tom_data[i];
+			}
+			for (0 => int i; i < ints_per_drum; i++) {
+				drums_play_event.getInt()
+				=> message_hat_data[i];
+			}
+			for (0 => int i; i < ints_per_drum; i++) {
+				drums_play_event.getInt()
+				=> message_hit_data[i];
+			}
+			for (0 => int i; i < ints_per_drum; i++) {
+				drums_play_event.getInt()
+				=> message_ride_data[i];
+			}
+			drums_play_event.getInt() - 1
+			=> message_voice_index;
+			drums_play_event.getInt()
+			=> message_should_loop_flag;
+			drums_play_event.getInt()
+			=> message_phrase_length;
+			drums_play_event.getFloat()
+			=> message_beat_alignment;
+			
+			// Spawn thread dedicated to updating
+			// the master loop using this message
+			// data.
+			spork ~ play_drums_message_processor(
+			message_bass_data, message_snare_data,
+			message_conga_data, message_tom_data,
+			message_hat_data, message_hit_data,
+			message_ride_data,
+			message_should_loop_flag,
+			message_voice_index,
+			message_phrase_length,
+			message_beat_alignment) => Shred @ drum_shreds[1];
+		}
 	}
 }
 
@@ -196,6 +202,14 @@ int hat_data[], int hit_data[], int ride_data[],
 int should_loop, int voice, int length,
 float beat_alignment){   
 	int drum_package[NUM_DRUMS];
+	
+	beat_fractions_to_seconds(beat_alignment)
+        ::second
+                     => now;
+	drum_shreds[0].exit();
+	me => drum_shreads[0];
+	Shred @ => drum_shreads[1];
+					 
 	while(true){
 		for (0 => int i; i < 16 * length; i++) {
 			// Get whether to trigger the bass.
@@ -212,13 +226,20 @@ float beat_alignment){
 			bit_value_at(hit_data[i / 32], i % 32) => drum_package[5];
 			// Get whether to trigger the ride.
 			bit_value_at(ride_data[i / 32], i % 32) => drum_package[6];  
+			
+			//We know there is a drum loop so we dont need to check
+			
+
+			// First, wait for beat alignment
+			
 			"/lpc/sound/drums/play, i, i, i, i, i, i, i"
 			=> string address;
+			
 			OSC_sender.startMsg(address);
+			
 			for (0 => int i; i < NUM_DRUMS; i++) {
 				OSC_sender.addInt(drum_package[i]);
 			} 
-			
 			
 			if (DEBUG_PRINTING) {
 				// DEBUG print message sent
@@ -233,6 +254,9 @@ float beat_alignment){
 			}
 			
 			//THIS IS WHEN WE NEED TO WAIT 
+			//TODO This could be optimized by placing earlier in the code
+			seconds_per_beat() * BEAT_RESOLUTION_FRACTION
+            => now;
 			
 		}
 	}
@@ -256,3 +280,47 @@ function int bit_value_at(int input_number, int index) {
 	}
 	return bit;
 }
+
+
+
+// ====================================================
+// ||                HELPER FUNCTIONS                ||
+// ====================================================
+
+// seconds_per_beat()
+// Returns the number of seconds per beat based on the
+// current tempo.
+function dur seconds_per_beat() {
+	return (1.0 / (tempo / 60.0))::second;
+}
+
+// seconds_per_beat_as_float()
+// As above, but returns a float rather than a
+// time duration type.
+function float seconds_per_beat_as_float() {
+	return (1.0 / (tempo / 60.0));
+}
+
+// beat_fraction_to_seconds(int duration)
+// Converts internally-represented duration in beat
+// fractions (BEAT_RESOLUTION_FRACTION) to a float
+// representing duration in seconds.
+// Relies on seconds_per_beat_as_float().
+function float beat_fractions_to_seconds(float duration) {
+	return duration
+	* seconds_per_beat_as_float();
+}
+
+// ====================================================
+// ||                END OF PROGRAM                  ||
+// ====================================================
+
+// Loop forever to keep child threads alive.
+while (true) {
+	// Allow time to pass.
+	2::second => now;
+}
+
+<<< "Maestro 2.0 exiting." >>>;
+
+
