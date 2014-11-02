@@ -39,16 +39,6 @@ sudo rabbitmq-plugins enable rabbitmq_web_stomp
 sudo rabbitmqctl set_policy TTL ".*" '{"message-ttl":3000}' --apply-to queues
 
 
-cd ~
-wget https://github.com/aeberhardo/phantomjs-linux-armv6l/archive/master.zip
-unzip master.zip
-mv phantomjs-linux-armv6l-master/ phantomjs/
-cd phantomjs/
-bunzip2 *.bz2 && tar xf *.tar
-cd phantomjs-1.9.0-linux-armv6l/
-cp -r * ..
-cd ..
-rm -r -f phantomjs-1.9.0-linux-armv6l/
 
 cd ~
 git clone git://git.drogon.net/wiringPi
@@ -86,6 +76,9 @@ if [ "$host" == "y" ] || [ "$host" == "Y" ]; then
     sudo echo $hostname > /etc/hostname
     sudo sed -i -e "s/raspberrypi/$hostname/g" /etc/hosts
 fi
+
+sudo echo "sh /home/pi/blockytalky/update.sh" > /etc/rc.local
+sudo echo "sh /home/pi/blockytalky/start.sh &" > /etc/rc.local  
 
 
 
