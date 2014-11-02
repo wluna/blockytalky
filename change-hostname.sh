@@ -18,4 +18,4 @@ echo "1..."
 sleep 1
 echo "Shutting down now"
 
-sudo reboot
+sudo shutdown -r now
