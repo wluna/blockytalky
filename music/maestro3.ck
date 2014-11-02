@@ -108,8 +108,12 @@ OSC_receiver.event("/lpc/maestro/init, i")
 
 
 spork ~ watch_drum_events_shread();
+spork ~ watch_voice_even_shred();
+Shred voice_shreds[2];
 Shred drum_shreds[2];//1 = active / 2 = upcoming
 <<< "Watched!" >>>;
+
+
 
 function void watch_drum_events_shread() {
 	
@@ -194,6 +198,90 @@ function void watch_drum_events_shread() {
 	}
 }
 
+function void watch_voice_even_shred() {
+	while (true) {
+		// Receive messages.
+		voice_play_event => now;
+		
+		// DEBUG Print message receipt.
+		if (DEBUG_PRINTING == 2) {
+			<<< "Received voice_play_event." >>>;
+		}
+		
+		// Initialize message data buffers.
+		int phrase_data[128][2];
+		int voice;
+		int should_loop_flag;
+		int message_should_overlay_flag;
+		float beat_delay;
+		float beat_alignment;
+		
+		// Process each message.
+		while (voice_play_event.nextMsg() != 0) {
+			
+			// Read message data into buffers.
+			for (0 => int i; i < 128; i++) {
+				voice_play_event.getInt()
+				=> phrase_data[i][0];
+				parse_duration(voice_play_event.getFloat())
+				=> phrase_data[i][1];
+			}
+			voice_play_event.getInt() - 1
+			=> voice;
+			voice_play_event.getInt()
+			=> should_loop_flag;
+			voice_play_event.getFloat()
+			=> beat_alignment;
+			
+			// Spawn thread dedicated to updating
+			// the master loop using this message
+			// data.
+			spork ~ play_voice_message_processor(
+			phrase_data, voice, should_loop_flag,
+			beat_alignment);
+		}
+	}
+}
+
+function void play_voice_message_processor(
+int note_package[][], int voice,
+int should_loop_flag, float beat_alignment) {
+	
+	float duration;
+	string address;
+	int pitch;
+	// Get starting index of note placement based
+	// on beat alignment.
+	beat_fractions_to_seconds(beat_alignment)
+        ::second
+        => now;
+	
+	while(true){
+		for (0 => int i; i < 128; i++) {
+			if (note_package[i][1] != 0) {
+				"/lpc/sound/voice" + (i+1) + "/play" => 
+				address;
+				note_package[i][0] => pitch;
+				beat_fractions_to_seconds(note_package[i][1]) =>
+				duration;
+				OSC_sender.startMsg(address + ", i, f");
+				OSC_sender.addInt(pitch);
+				OSC_sender.addFloat(duration);
+				if (DEBUG_PRINTING) {
+					// DEBUG print message sent
+					<<< "Note sent with pitch " + pitch
+					+ " and duration "
+					+ duration >>>;
+				}
+				duration :: second => now;
+			}
+		}
+		if(should_loop_flag == 0){
+			break;
+		}
+	}
+}
+
 
 // Turn into 1D array in future if [x][1] is never used
 function void play_drums_message_processor(int bass_data[],
@@ -260,8 +348,13 @@ float beat_alignment){
             => now;
 			
 		}
+		if(should_loop == 0){
+			break;
+		}
 	}
 }
+
+
 
 
 // bit_value_at
@@ -310,6 +403,15 @@ function float seconds_per_beat_as_float() {
 function float beat_fractions_to_seconds(float duration) {
 	return duration
 	* seconds_per_beat_as_float();
+}
+
+// parse_duration(float duration_in_beats)
+// Converts an input float representing duration
+// in beats to the closest corresponding number
+// of atomic fractional beats for use in master
+// loop assignment.
+function int parse_duration(float duration_in_beats) {
+	return ((duration_in_beats * BEAT_RESOLUTION_DIVIDER) $ int);
 }
 
 // ====================================================
