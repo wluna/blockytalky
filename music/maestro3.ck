@@ -1,3 +1,20 @@
+//TODO
+// 1. Fix timing issue via broadcasters(circular array of broadcast events)
+// 2. stop, volume, instrument, bandpassfilter, volume, i
+// remove bandpass filter and replace with number signifying the effect number
+// make global effect as well if voice value is 9
+
+//THOUGHTS
+// is it worth starting up  a shread to send an osc signal or should it be sent directly from function
+// Drum voices should not exist
+
+
+
+
+
+
+
+
 // ====================================================
 // ||           CONSTANTS & CONFIGURATION            ||
 // ====================================================
@@ -109,7 +126,12 @@ OSC_receiver.event("/lpc/maestro/init, i")
 
 spork ~ watch_drum_events_shread();
 spork ~ watch_voice_even_shred();
-spork ~ tempo_event_shred();
+spork ~ watch_tempo_event_shred();
+spork ~ watch_stop_event_shred();
+spork ~ watch_voice_volume_message_handler();
+spork ~ watch_voice_instrument_shred();
+spork ~ watch_voice_bandpassfilter_shred();//Should become even shread
+spork ~ watch_drums_volume_shred();
 
 Shred voice_shreds[2];
 Shred drum_shreds[2];//1 = active / 2 = upcoming
@@ -118,16 +140,6 @@ Shred drum_shreds[2];//1 = active / 2 = upcoming
 
 
 function void watch_drum_events_shread() {
-	
-	while (true) {
-		// Receive messages.
-		drums_play_event => now;
-		
-		// DEBUG Print message receipt.
-		if (DEBUG_PRINTING == 2) {
-			<<< "Received drums_play_event." >>>;
-		}
-		
 		// Initialize message data buffers.
 		8 => int ints_per_drum; //  the number of 32-bit integers used
 		//  to store phrase data for each drum
@@ -142,6 +154,17 @@ function void watch_drum_events_shread() {
 		int message_should_loop_flag;
 		int message_phrase_length;
 		float message_beat_alignment;
+	
+	while (true) {
+		// Receive messages.
+		drums_play_event => now;
+		
+		// DEBUG Print message receipt.
+		if (DEBUG_PRINTING == 2) {
+			<<< "Received drums_play_event." >>>;
+		}
+		
+		
 		
 		// Process each message.
 		while (drums_play_event.nextMsg() != 0) {
@@ -200,7 +223,7 @@ function void watch_drum_events_shread() {
 	}
 }
 
-function void watch_voice_even_shred() {
+function void watch_voice_event_shred() {
 	while (true) {
 		// Receive messages.
 		voice_play_event => now;
@@ -245,7 +268,162 @@ function void watch_voice_even_shred() {
 	}
 }
 
-function void tempo_event_shred(){
+function void watch_stop_event_shred() {
+    while (true) {
+        // Receive message(s).
+        stop_event => now;
+        
+        // DEBUG Print message receipt.
+        if (DEBUG_PRINTING == 2) {
+            <<< "Received stop_event." >>>;
+        }
+        
+        // Initialize message data buffers.
+        int message_voice_index;
+        float message_beat_alignment;
+        
+        // Process each message in the queue.
+        while (stop_event.nextMsg() != 0) {
+            
+            // Read message data into buffers.
+            stop_event.getInt() - 1
+                                 => message_voice_index;
+            stop_event.getFloat()
+                                 => message_beat_alignment;
+            
+            // Actually process the event.
+            spork ~ stop_message_processor(
+                    message_voice_index, message_beat_alignment);
+        }
+    }
+}
+
+function void watch_set_voice_volume_shred() {
+    while (true) {
+        // Receive message(s).
+        voice_volume_event => now;
+        
+        // DEBUG Print message recept.
+        if (DEBUG_PRINTING == 2) {
+            <<< "Received voice_volume_event." >>>;
+        }
+        // Initialize message data buffers.
+        int message_voice;
+        int message_value;
+        
+        // Process each message in the queue.
+        while (voice_volume_event.nextMsg() != 0) {
+            
+            // Read message data into buffers.
+            voice_volume_event.getInt() => message_voice;
+            voice_volume_event.getInt() => message_value;
+
+            "/lpc/sound/voice" + message_voice + "/volume" =>
+                                            string address;
+    		OSC_sender.startMsg(address + ", i");
+    		OSC_sender.addInt(message_value);
+    		if (DEBUG_PRINTING) {
+        		<<< "Volume message sent to voice " + voice
+                + " with value " + value >>>;
+            }
+        }
+    }
+}
+
+
+function void set_voice_instrument_message_handler_shred() {
+    while (true) {
+        // Receive message(s).
+        voice_instrument_event => now;
+        
+        // DEBUG Print message recept.
+        if (DEBUG_PRINTING == 2) {
+            <<< "Received voice_instrument_event." >>>;
+        }   
+        // Initialize message data buffers.
+        int message_voice;
+        int message_value;
+        string address;
+        
+        // Process each message in the queue.
+        while (voice_instrument_event.nextMsg() != 0) {
+            
+            // Read message data into buffers.
+            voice_instrument_event.getInt() => message_voice;
+            voice_instrument_event.getInt() => message_value;
+
+    		"/lpc/sound/voice" + message_voice + "/instrument" =>
+                                             address;
+    		OSC_sender.startMsg(address + ", i");
+    		OSC_sender.addInt(message_value);
+    		if (DEBUG_PRINTING) {
+        		<<< "Instrument message sent to voice " + voice
+          		      + " with value " + value >>>;
+   			}
+}
+
+function void set_drums_volume_message_handler_shred() {
+    while (true) {
+        drums_volume_event => now;
+        
+        // DEBUG Print message recept.
+        if (DEBUG_PRINTING == 2) {
+            <<< "Received drums_volume_event." >>>;
+        }
+        
+        int message_value;
+        string address;
+        // Process each message in the queue.
+        while (drums_volume_event.nextMsg() != 0) {
+            
+            drums_volume_event.getInt() => message_value;
+            
+            "/lpc/sound/drums/volume" => address;
+    		OSC_sender.startMsg(address + ", i");
+    		OSC_sender.addInt(message_value);
+    		if (DEBUG_PRINTING) {
+       			<<< "Drum volume message sent with value " + message_value >>>;
+    }
+        }
+    }
+}
+
+function void set_voice_bandpassfilter_message_handler_shred() {
+    while (true) {
+        // Receive message(s).
+        voice_bandpassfilter_event => now;
+        
+        // DEBUG Print message recept.
+        if (DEBUG_PRINTING == 2) {
+            <<< "Received voice_bandpassfilter_event." >>>;
+        }
+        
+        // Initialize message data buffers.
+        int message_voice;
+        int message_value;
+
+        
+        // Process each message in the queue.
+        while (voice_bandpassfilter_event.nextMsg() != 0) {
+            
+            // Read message data into buffers.
+            voice_bandpassfilter_event.getInt() => message_voice;
+            voice_bandpassfilter_event.getInt() => message_value;
+            
+            // Actually process the event.
+            "/lpc/sound/voice" + message_voice + "/bandpassfilter" =>
+                                            string address;
+    		OSC_sender.startMsg(address + ", i");
+    		OSC_sender.addInt(message_value);
+    		if (DEBUG_PRINTING) {
+        		<<< "Bandpassfilter message sent to voice " + message_voice
+                	+ " with value " + message_value >>>;
+    }
+        }
+    }
+}
+
+function void watch_tempo_event_shred(){
     while(true){
         tempo_event => now;
         if(DEBUG_PRINTING)
@@ -255,6 +433,7 @@ function void tempo_event_shred(){
         tempo_event.getFloat() => tempo; //making the decision to combine this into one shred.
     }
 }
+
 function void play_voice_message_processor(
 int note_package[][], int voice,
 int should_loop_flag, float beat_alignment) {
@@ -366,8 +545,26 @@ float beat_alignment){
 	}
 }
 
+Event events[32];//these events signify up to 32 beats in the future
+0 => int start;
 
+function void broadcast(){
+	while(true){
+		(start + 1) % event_count = stat;
+		events[start].broadcast;
+		// TODO: Optimization: store seconds_per_beat once,
+        // only change it when tempo is changed
+		seconds_per_beat() * BEAT_RESOLUTION_FRACTION
+            => now;
+    }
 
+}
+
+function Event get_timed_event (int beat_offset){
+	return events[start + beat_offset];
+}
+
+function 
 
 // bit_value_at
 // Returns a 1 or a 0 depending on the bit-state of the
@@ -435,7 +632,4 @@ while (true) {
 	// Allow time to pass.
 	2::second => now;
 }
-
 <<< "Maestro 2.0 exiting." >>>;
-
-

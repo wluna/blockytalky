@@ -15,7 +15,7 @@ OSC_sender.setHost("localhost",1111);
 OSC_sender.startMsg(address);
 
 for (0 => int i; i < 56; i++) {
-	OSC_sender.addInt(4294967295);
+	OSC_sender.addInt(255);
 }
 
 OSC_sender.addInt(1);
