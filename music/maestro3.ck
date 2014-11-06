@@ -109,6 +109,8 @@ OSC_receiver.event("/lpc/maestro/init, i")
 
 spork ~ watch_drum_events_shread();
 spork ~ watch_voice_even_shred();
+spork ~ tempo_event_shred();
+
 Shred voice_shreds[2];
 Shred drum_shreds[2];//1 = active / 2 = upcoming
 <<< "Watched!" >>>;
@@ -243,6 +245,16 @@ function void watch_voice_even_shred() {
 	}
 }
 
+function void tempo_event_shred(){
+    while(true){
+        tempo_event => now;
+        if(DEBUG_PRINTING)
+        {
+            <<< "received tempo event.">>>;
+        }
+        tempo_event.getFloat() => tempo; //making the decision to combine this into one shred.
+    }
+}
 function void play_voice_message_processor(
 int note_package[][], int voice,
 int should_loop_flag, float beat_alignment) {
