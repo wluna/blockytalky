@@ -4,11 +4,15 @@
 // 3. do drums need to be pitch corrected?
 // 4. Stop message handler shread
 
+// ** TODO FOR MATT
+// NEW BEAT MECHANISM
+
 //FUTURE THOUGHTS
 // is it worth starting up  a shread to send an osc signal or should it be sent directly from function
 // Drum voices should not exist
 // remove bandpass filter and replace with number signifying the effect number
 // make global effect as well if voice value is 9
+// init removed so new blocky talky does not stop whole rest
 
 
 
@@ -137,7 +141,7 @@ spork ~ watch_voice_instrument_shred();
 spork ~ watch_voice_bandpassfilter_shred();//Should become even shread
 spork ~ watch_drums_volume_shred();
 
-Shred voice_shreds[2];
+Shred voice_shreds[8][2];
 Shred drum_shreds[2];//1 = active / 2 = upcoming
 <<< "Watched!" >>>;
 
@@ -446,11 +450,30 @@ int should_loop_flag, float beat_alignment) {
 	float duration;
 	string address;
 	int pitch;
-	// Get starting index of note placement based
-	// on beat alignment.
-	beat_fractions_to_seconds(beat_alignment)
-        ::second
-        => now;
+
+	if(beat_alignment > 0){
+		get_timed_event(Math.ceil(beat_alignment-1)) => Event almost_ready;
+		get_timed_event(Math.ceil(beat_alignment)) => Event ready;
+
+		//wait till half way through beat just before start;
+		almost_ready  => now;
+		(seconds_per_beat_as_float() / 2) :: second => now;
+		voice_shreds[voice][0].exit();
+		me @=> voice_shreds[voice][0];
+		Shred @ foo;
+		foo @=> voice_shreds[voice][1];
+
+		//wait till exact time to play
+		ready =>now;
+	} else {
+		beat_fractions_to_seconds(beat_alignment)
+    	::second
+                 => now;
+		voice_shreds[voice][0].exit();
+		me @=> voice_shreds[voice][0];
+		Shred @ foo;
+		foo @=> voice_shreds[voice][1];
+	}
 	
 	while(true){
 		for (0 => int i; i < 128; i++) {
@@ -478,7 +501,6 @@ int should_loop_flag, float beat_alignment) {
 	}
 }
 
-
 // Turn into 1D array in future if [x][1] is never used
 function void play_drums_message_processor(int bass_data[],
 int snare_data[], int conga_data[], int tom_data[],
@@ -486,14 +508,31 @@ int hat_data[], int hit_data[], int ride_data[],
 int should_loop, int voice, int length,
 float beat_alignment){   
 	int drum_package[NUM_DRUMS];
-	
-	beat_fractions_to_seconds(beat_alignment)
-        ::second
-                     => now;
-	drum_shreds[0].exit();
-	me @=> drum_shreds[0];
-	Shred @ foo;
-	foo @=> drum_shreds[1];
+
+
+	if(beat_alignment > 0){
+		get_timed_event(Math.ceil(beat_alignment-1)) => Event almost_ready;
+		get_timed_event(Math.ceil(beat_alignment)) => Event ready;
+
+		//wait till half way through beat just before start;
+		almost_ready  => now;
+		(seconds_per_beat_as_float() / 2) :: second => now;
+		drum_shreds[0].exit();
+		me @=> drum_shreds[0];
+		Shred @ foo;
+		foo @=> drum_shreds[1];
+
+		//wait till exact time to play
+		ready =>now;
+	} else {
+		beat_fractions_to_seconds(beat_alignment)
+    	::second
+                 => now;
+		drum_shreds[0].exit();
+		me @=> drum_shreds[0];
+		Shred @ foo;
+		foo @=> drum_shreds[1];
+	}
 					 
 	while(true){
 		for (0 => int i; i < 16 * length; i++) {
@@ -511,12 +550,7 @@ float beat_alignment){
 			bit_value_at(hit_data[i / 32], i % 32) => drum_package[5];
 			// Get whether to trigger the ride.
 			bit_value_at(ride_data[i / 32], i % 32) => drum_package[6];  
-			
-			//We know there is a drum loop so we dont need to check
-			
-
-			// First, wait for beat alignment
-			
+						
 			"/lpc/sound/drums/play, i, i, i, i, i, i, i"
 			=> string address;
 			
@@ -569,7 +603,7 @@ function Event get_timed_event (int beat_offset){
 	return events[start + beat_offset];
 }
 
-function 
+
 
 // bit_value_at
 // Returns a 1 or a 0 depending on the bit-state of the
