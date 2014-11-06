@@ -1,12 +1,16 @@
 //TODO
 // 1. Fix timing issue via broadcasters(circular array of broadcast events)
-// 2. stop, volume, instrument, bandpassfilter, volume, i
+// 2. Fix up voices to work
+// 3. do drums need to be pitch corrected?
+// 4. Stop message handler shread
+
+//FUTURE THOUGHTS
+// is it worth starting up  a shread to send an osc signal or should it be sent directly from function
+// Drum voices should not exist
 // remove bandpass filter and replace with number signifying the effect number
 // make global effect as well if voice value is 9
 
-//THOUGHTS
-// is it worth starting up  a shread to send an osc signal or should it be sent directly from function
-// Drum voices should not exist
+
 
 
 
@@ -418,9 +422,10 @@ function void set_voice_bandpassfilter_message_handler_shred() {
     		if (DEBUG_PRINTING) {
         		<<< "Bandpassfilter message sent to voice " + message_voice
                 	+ " with value " + message_value >>>;
-    }
+            }
         }
     }
+
 }
 
 function void watch_tempo_event_shred(){
