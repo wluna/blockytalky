@@ -65,8 +65,8 @@
 // Assign current tempo in BPM
 DEFAULT_TEMPO => float tempo;
 
-float seconds_per_beat_as_float = (1.0 / (tempo / 60.0));
-dur seconds_per_beat = (1.0 / (tempo / 60.0))::second;
+(1.0 / (tempo / 60.0)) =>float seconds_per_beat_as_float;
+(1.0 / (tempo / 60.0))::second  => dur seconds_per_beat;
 
 // ====================================================
 // ||               OSC INITIALIZATION               ||
@@ -118,20 +118,22 @@ OSC_receiver.event("/lpc/maestro/drums/volume, i")
 OSC_receiver.event("/lpc/maestro/init, i")
                    @=> OscEvent init_event;
 
-spork ~ watch_drum_events_shred();
-spork ~ watch_voice_even_shred();
-spork ~ watch_tempo_event_shred();
+spork ~ watch_drum_event_shred();
+spork ~ watch_voice_event_shred();
+spork ~ watch_set_tempo_event_shred();
+spork ~ watch_set_voice_volume_shred();
+spork ~ watch_set_voice_instrument_shred();
+spork ~ watch_set_voice_bandpassfilter_shred();//Should become even shred
+spork ~ watch_set_drums_volume_shred();
 spork ~ watch_stop_event_shred();
-spork ~ watch_voice_volume_message_handler();
-spork ~ watch_voice_instrument_shred();
-spork ~ watch_voice_bandpassfilter_shred();//Should become even shred
-spork ~ watch_drums_volume_shred();
+
+
 
 Shred voice_shreds[8][2];
 Shred drum_shreds[8][2];//1 = active / 2 = upcoming
 
 
-function void watch_drum_events_shred() {
+function void watch_drum_event_shred() {
 		// Initialize message data buffers.
 		8 => int ints_per_drum; //  the number of 32-bit integers used
 		//  to store phrase data for each drum
@@ -208,7 +210,7 @@ function void watch_drum_events_shred() {
 			message_should_loop_flag,
 			message_voice_index,
 			message_phrase_length,
-			message_beat_alignment) @=>  drum_shreds[1];
+			message_beat_alignment) @=>  drum_shreds[message_voice_index][1];
 		}
 	}
 }
@@ -282,7 +284,7 @@ function void watch_stop_event_shred() {
                                  => message_beat_alignment;
             
             // Actually process the event.
-            spork ~ stop_message_processor(
+            spork ~ stop_voice(
                     message_voice_index, message_beat_alignment);
         }
     }
@@ -313,8 +315,8 @@ function void watch_set_voice_volume_shred() {
     		OSC_sender.startMsg(address + ", i");
     		OSC_sender.addInt(message_value);
     		if (DEBUG_PRINTING) {
-        		<<< "Volume message sent to voice " + voice
-                + " with value " + value >>>;
+        		<<< "Volume message sent to voice " + message_voice
+                + " with value " + message_value >>>;
             }
         }
     }
@@ -346,38 +348,40 @@ function void watch_set_voice_instrument_shred() {
     		OSC_sender.startMsg(address + ", i");
     		OSC_sender.addInt(message_value);
     		if (DEBUG_PRINTING) {
-        		<<< "Instrument message sent to voice " + voice
-          		      + " with value " + value >>>;
+        		<<< "Instrument message sent to voice " + message_voice
+          		      + " with value " + message_value >>>;
    			}
+		}
+	}
 }
 
 function void watch_set_drums_volume_shred() {
-    while (true) {
-        drums_volume_event => now;
-        
-        // DEBUG Print message recept.
-        if (DEBUG_PRINTING == 2) {
+	while (true) {
+		drums_volume_event => now;
+		
+		// DEBUG Print message recept.
+		if (DEBUG_PRINTING == 2) {
             <<< "Received drums_volume_event." >>>;
-        }
-        
-        int message_value;
+		}
+		
+		int message_value;
         string address;
-        // Process each message in the queue.
-        while (drums_volume_event.nextMsg() != 0) {
-            
-            drums_volume_event.getInt() => message_value;
-            
-            "/lpc/sound/drums/volume" => address;
-    		OSC_sender.startMsg(address + ", i");
-    		OSC_sender.addInt(message_value);
-    		if (DEBUG_PRINTING) {
-       			<<< "Drum volume message sent with value " + message_value >>>;
-    		}
-        }
-    }
+		// Process each message in the queue.
+		while (drums_volume_event.nextMsg() != 0) {
+			
+			drums_volume_event.getInt() => message_value;
+			
+			"/lpc/sound/drums/volume" => address;
+			OSC_sender.startMsg(address + ", i");
+			OSC_sender.addInt(message_value);
+			if (DEBUG_PRINTING) {
+				<<< "Drum volume message sent with value " + message_value >>>;
+			}
+		}
+	}
 }
 
-function void set_voice_bandpassfilter_message_handler_shred() {
+function void watch_set_voice_bandpassfilter_shred() {
 	 // Initialize message data buffers.
 	int message_voice;
     int message_value;
@@ -411,7 +415,7 @@ function void set_voice_bandpassfilter_message_handler_shred() {
     }
 }
 
-function void watch_tempo_event_shred(){
+function void watch_set_tempo_event_shred(){
     while(true){
         tempo_event => now;
         if(DEBUG_PRINTING){
@@ -419,25 +423,9 @@ function void watch_tempo_event_shred(){
         }
         tempo_event.getFloat() => tempo; //making the decision to combine this into one shred.
         
-        seconds_per_beat =  (1.0 / (tempo / 60.0))::second;
-		seconds_per_beat_as_float = (1.0 / (tempo / 60.0));
+        (1.0 / (tempo / 60.0))::second => seconds_per_beat;
+		(1.0 / (tempo / 60.0)) =>seconds_per_beat_as_float ;
     }
-}
-
-function void wait_and_kill(float beat_alignment, Shred this_shred){
-	Math.floor(beat_alignment) => int event_offest;
-	Math.floor((beat_alignment - event_offset) * BEAT_RESOLUTION_DIVIDER) => int event_fraction_offset;
-	for(0 => int count; count < event_offset; count++){
-		beat_event=>now;
-	}
-	for(0 => int count; count < event_fraction_offset - 1; count++){
-		 seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
-	}
-    this_shred[0].exit();
-	me @=> this_shred[0];
-	Shred @ foo;
-	foo @=> this_shred[1];
-	seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
 }
 
 function void play_voice_message_processor(
@@ -538,7 +526,7 @@ float beat_alignment){
 	}
 }
 
-function void stop_message_processor(
+function void stop_voice(
         int voice, float beat_alignment) {
     
     if (DEBUG_PRINTING == 2) {
@@ -567,6 +555,22 @@ function void stop_message_processor(
 	NULL @=> voice_shreds[voice][1];
 	NULL @=> drum_shreds[voice][0];
 	NULL @=> drum_shreds[voice][1];
+}
+
+function void wait_and_kill(float beat_alignment, Shred this_shred[]){
+	Math.floor(beat_alignment) => int event_offest;
+	Math.floor((beat_alignment - event_offset) * BEAT_RESOLUTION_DIVIDER) => int event_fraction_offset;
+	for(0 => int count; count < event_offset; count++){
+		beat_event=>now;
+	}
+	for(0 => int count; count < event_fraction_offset - 1; count++){
+		 seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
+	}
+    this_shred[0].exit();
+	me @=> this_shred[0];
+	Shred @ foo;
+	foo @=> this_shred[1];
+	seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
 }
 
 Event beat_event;
