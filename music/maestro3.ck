@@ -57,7 +57,7 @@
 // is alive while operating with it, you can set it
 // to 1, which will print messages every time a note
 // is sent, instead of full debugging messages.
-1 => int DEBUG_PRINTING;
+2 => int DEBUG_PRINTING;
 // 0 - No printing
 // 1 - Message-send receipts only
 // 2 - Full debug printing
@@ -131,6 +131,8 @@ spork ~ watch_stop_event_shred();
 
 Shred voice_shreds[8][2];
 Shred drum_shreds[8][2];//1 = active / 2 = upcoming
+
+Event beat_event;
 
 
 function void watch_drum_event_shred() {
@@ -516,7 +518,7 @@ float beat_alignment){
 			
 			//THIS IS WHEN WE NEED TO WAIT 
 			//TODO This could be optimized by placing earlier in the code
-			seconds_per_beat() * BEAT_RESOLUTION_FRACTION
+			seconds_per_beat * BEAT_RESOLUTION_FRACTION
             => now;
 			
 		}
@@ -528,23 +530,18 @@ float beat_alignment){
 
 function void stop_voice(
         int voice, float beat_alignment) {
+        
+		Math.floor(beat_alignment) $ int => int event_offset;
+		Math.floor((beat_alignment - event_offset) * BEAT_RESOLUTION_DIVIDER) $ int => int event_fraction_offset;
+		for(0 => int count; count < event_offset; count++){
+			beat_event=>now;
+		}
+		for(0 => int count; count < event_fraction_offset - 1; count++){
+			seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION :: second =>now;
+		}
     
     if (DEBUG_PRINTING == 2) {
-        <<< "Processing stop for voice " + voice
-        + ". First waiting for beat align." >>>;
-        <<< "I'll wait "
-                + current_beat_align_offset(beat_alignment)
-                + " beat fractions." >>>;
-    }
-            
-    // First, wait for beat alignment
-    beat_fractions_to_seconds(
-            current_beat_align_offset(beat_alignment))
-            ::second
-                     => now;
-    
-    if (DEBUG_PRINTING == 2) {
-        <<< "Stop message done waiting." >>>;
+        <<< "Stop message done waiting. ">>>;
     }
     voice_shreds[voice][0].exit();
     voice_shreds[voice][1].exit();
@@ -558,28 +555,28 @@ function void stop_voice(
 }
 
 function void wait_and_kill(float beat_alignment, Shred this_shred[]){
-	Math.floor(beat_alignment) => int event_offest;
-	Math.floor((beat_alignment - event_offset) * BEAT_RESOLUTION_DIVIDER) => int event_fraction_offset;
+	Math.floor(beat_alignment) $ int => int event_offset;
+	Math.floor((beat_alignment - event_offset) * BEAT_RESOLUTION_DIVIDER) $ int => int event_fraction_offset;
 	for(0 => int count; count < event_offset; count++){
 		beat_event=>now;
 	}
 	for(0 => int count; count < event_fraction_offset - 1; count++){
-		 seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
+		 seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION :: second =>now;
 	}
     this_shred[0].exit();
 	me @=> this_shred[0];
 	Shred @ foo;
 	foo @=> this_shred[1];
-	seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
+	seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION :: second =>now;
 }
 
-Event beat_event;
+
 
 function void broadcast(){
 	while(true){
 		beat_event.broadcast();
 		
-		seconds_per_beat() :: seconds => now;
+		seconds_per_beat => now;
     }
 }
 
@@ -608,10 +605,10 @@ function int bit_value_at(int input_number, int index) {
 // Converts internally-represented duration in beat
 // fractions (BEAT_RESOLUTION_FRACTION) to a float
 // representing duration in seconds.
-// Relies on seconds_per_beat_as_float().
+// Relies on seconds_per_beat_as_float.
 function float beat_fractions_to_seconds(float duration) {
 	return duration
-	* seconds_per_beat_as_float();
+	* seconds_per_beat_as_float;
 }
 
 // parse_duration(float duration_in_beats)
