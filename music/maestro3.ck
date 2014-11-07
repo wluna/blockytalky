@@ -1,11 +1,8 @@
 //TODO
-// 1. Fix timing issue via broadcasters(circular array of broadcast events)
 // 2. Fix up voices to work
 // 3. do drums need to be pitch corrected?
-// 4. Stop message handler shread
 
-// ** TODO FOR MATT
-// NEW BEAT MECHANISM
+
 
 //FUTURE THOUGHTS
 // is it worth starting up  a shread to send an osc signal or should it be sent directly from function
@@ -129,7 +126,7 @@ spork ~ watch_voice_bandpassfilter_shred();//Should become even shread
 spork ~ watch_drums_volume_shred();
 
 Shred voice_shreds[8][2];
-Shred drum_shreds[2];//1 = active / 2 = upcoming
+Shred drum_shreds[8][2];//1 = active / 2 = upcoming
 
 function void watch_drum_events_shread() {
 		// Initialize message data buffers.
@@ -378,6 +375,9 @@ function void set_drums_volume_message_handler_shred() {
 }
 
 function void set_voice_bandpassfilter_message_handler_shred() {
+	int message_voice;
+    int message_value;
+    string address;
     while (true) {
         // Receive message(s).
         voice_bandpassfilter_event => now;
@@ -387,8 +387,7 @@ function void set_voice_bandpassfilter_message_handler_shred() {
             <<< "Received voice_bandpassfilter_event." >>>;
         }  
         // Initialize message data buffers.
-        int message_voice;
-        int message_value;
+
         
         // Process each message in the queue.
         while (voice_bandpassfilter_event.nextMsg() != 0) {
@@ -398,8 +397,8 @@ function void set_voice_bandpassfilter_message_handler_shred() {
             voice_bandpassfilter_event.getInt() => message_value;
             
             // Actually process the event.
-            "/lpc/sound/voice" + message_voice + "/bandpassfilter" =>
-                                            string address;
+            "/lpc/sound/voice" + message_voice + "/bandpassfilter" => address;
+                                            
     		OSC_sender.startMsg(address + ", i");
     		OSC_sender.addInt(message_value);
     		if (DEBUG_PRINTING) {
@@ -434,9 +433,6 @@ function void wait_and_kill(float beat_alignment, Shred this_shread[2]){
 	Shred @ foo;
 	foo @=> this_shread[1];
 	seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
-
-
-
 }
 
 function void play_voice_message_processor(
@@ -480,34 +476,13 @@ function void play_drums_message_processor(int bass_data[],
 int snare_data[], int conga_data[], int tom_data[],
 int hat_data[], int hit_data[], int ride_data[],
 int should_loop, int voice, int length,
-float beat_alignment){   
+float beat_alignment){  
+
 	int drum_package[NUM_DRUMS];
+	string address;
 
-
-	if(beat_alignment > 0){
-		get_timed_event(Math.ceil(beat_alignment-1)) => Event almost_ready;
-		get_timed_event(Math.ceil(beat_alignment)) => Event ready;
-
-		//wait till half way through beat just before start;
-		almost_ready  => now;
-		(seconds_per_beat_as_float() / 2) :: second => now;
-		drum_shreds[0].exit();
-		me @=> drum_shreds[0];
-		Shred @ foo;
-		foo @=> drum_shreds[1];
-
-		//wait till exact time to play
-		ready =>now;
-	} else {
-		beat_fractions_to_seconds(beat_alignment)
-    	::second
-                 => now;
-		drum_shreds[0].exit();
-		me @=> drum_shreds[0];
-		Shred @ foo;
-		foo @=> drum_shreds[1];
-	}
-					 
+	wait_and_kill(beat_alignment, drum_shreds[voice]);
+			 
 	while(true){
 		for (0 => int i; i < 16 * length; i++) {
 			// Get whether to trigger the bass.
@@ -526,7 +501,7 @@ float beat_alignment){
 			bit_value_at(ride_data[i / 32], i % 32) => drum_package[6];  
 						
 			"/lpc/sound/drums/play, i, i, i, i, i, i, i"
-			=> string address;
+			=>  address;
 			
 			OSC_sender.startMsg(address);
 			
@@ -558,23 +533,45 @@ float beat_alignment){
 	}
 }
 
-Event events[32];//these events signify up to 32 beats in the future
-0 => int start;
+function void stop_message_processor(
+        int voice, float beat_alignment) {
+    
+    if (DEBUG_PRINTING == 2) {
+        <<< "Processing stop for voice " + voice
+        + ". First waiting for beat align." >>>;
+        <<< "I'll wait "
+                + current_beat_align_offset(beat_alignment)
+                + " beat fractions." >>>;
+    }
+            
+    // First, wait for beat alignment
+    beat_fractions_to_seconds(
+            current_beat_align_offset(beat_alignment))
+            ::second
+                     => now;
+    
+    if (DEBUG_PRINTING == 2) {
+        <<< "Stop message done waiting." >>>;
+    }
+    voice_shreds[voice][0].exit();
+    voice_shreds[voice][1].exit();
+	drum_shreds[voice][0].exit();
+    drum_shreds[voice][1].exit();
+
+	NULL @=> voice_shreds[voice][0];
+	NULL @=> voice_shreds[voice][1];
+	NULL @=> drum_shreds[voice][0];
+	NULL @=> drum_shreds[voice][1];
+}
+
+Event beat_event;
 
 function void broadcast(){
 	while(true){
-		(start + 1) % event_count = stat;
-		events[start].broadcast;
-		// TODO: Optimization: store seconds_per_beat once,
-        // only change it when tempo is changed
-		seconds_per_beat() * BEAT_RESOLUTION_FRACTION
-            => now;
+		beat_event.broadcast();
+		
+		seconds_per_beat() :: seconds => now;
     }
-
-}
-
-function Event get_timed_event (int beat_offset){
-	return events[start + beat_offset];
 }
 
 // bit_value_at
