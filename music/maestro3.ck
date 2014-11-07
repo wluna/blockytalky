@@ -541,14 +541,7 @@ float beat_alignment){
 function void stop_voice(
         int voice, float beat_alignment) {
         
-		Math.floor(beat_alignment) $ int => int event_offset;
-		Math.floor((beat_alignment - event_offset) * BEAT_RESOLUTION_DIVIDER) $ int => int event_fraction_offset;
-		for(0 => int count; count < event_offset; count++){
-			beat_event=>now;
-		}
-		for(0 => int count; count < event_fraction_offset - 1; count++){
-			seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION :: second =>now;
-		}
+		wait_n_broadcast(beat_alignment);
     
     if (DEBUG_PRINTING == 2) {
         <<< "Stop message done waiting. ">>>;
@@ -565,24 +558,13 @@ function void stop_voice(
 }
 
 function void wait_and_kill(float beat_alignment, Shred this_shred[]){
-    Math.max(0.0,beat_alignment - BEAT_RESOLUTION_FRACTION) => float beat_alignment_adj;
-    Math.floor(beat_alignment_adj) $ int => int event_offset;
-	Math.floor((beat_alignment_adj - event_offset) * BEAT_RESOLUTION_DIVIDER) $ int => int event_fraction_offset;
-    if (DEBUG_PRINTING == 2) {
-        <<< "w&k beat alignment:" + beat_alignment_adj + ", event offset: " + event_offset + ", event_fraction_offset: " + event_fraction_offset   >>>;
-    }
     
-    for(0 => int count; count < event_offset; count++){
-		beat_event=>now;
-	}
-	for(0 => int count; count < event_fraction_offset; count++){
-		 seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION :: second =>now;
-	}
+    wait_n_broadcast(beat_alignment);
     this_shred[0].exit();
 	me @=> this_shred[0];
 	Shred @ foo;
 	foo @=> this_shred[1];
-    if(beat_alignment_adj != 0){
+    if(beat_alignment != 0){
         seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION :: second =>now;
     }
     if (DEBUG_PRINTING == 2) {
@@ -590,7 +572,14 @@ function void wait_and_kill(float beat_alignment, Shred this_shred[]){
     }
 }
 
-
+function void wait_n_broadcast(float beat_alignment){
+    while(beat_alignment >= 1)
+    {
+        beat_event => now;
+        beat_alignment -1 => beat_alignment;
+    }
+    seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION * beat_alignment :: second => now;
+}
 
 function void broadcast(){
 	while(true){
