@@ -1,15 +1,14 @@
 //TODO
-// 2. Fix up voices to work
-// 3. do drums need to be pitch corrected?
-
-
+// 1. Fix up voices to work
 
 //FUTURE THOUGHTS
-// is it worth starting up  a shread to send an osc signal or should it be sent directly from function
-// Drum voices should not exist
-// remove bandpass filter and replace with number signifying the effect number
-// make global effect as well if voice value is 9
-// init removed so new blocky talky does not stop whole rest
+//1.  Do drums needs pitches?
+//2.  is it worth starting up  a shred to send an osc 
+//	      signal or should it be sent directly from function
+//3.  Should one be alloud to have drum and synth on same voice
+//4.  Remove bandpass filter and replace with number signifying the effect number
+//5.  Make global effect as well if voice value is 9
+//6.  Init removed so new blocky talky does not stop whole rest
 
 // ====================================================
 // ||           CONSTANTS & CONFIGURATION            ||
@@ -66,6 +65,9 @@
 // Assign current tempo in BPM
 DEFAULT_TEMPO => float tempo;
 
+float seconds_per_beat_as_float = (1.0 / (tempo / 60.0));
+dur seconds_per_beat = (1.0 / (tempo / 60.0))::second;
+
 // ====================================================
 // ||               OSC INITIALIZATION               ||
 // ====================================================
@@ -116,19 +118,20 @@ OSC_receiver.event("/lpc/maestro/drums/volume, i")
 OSC_receiver.event("/lpc/maestro/init, i")
                    @=> OscEvent init_event;
 
-spork ~ watch_drum_events_shread();
+spork ~ watch_drum_events_shred();
 spork ~ watch_voice_even_shred();
 spork ~ watch_tempo_event_shred();
 spork ~ watch_stop_event_shred();
 spork ~ watch_voice_volume_message_handler();
 spork ~ watch_voice_instrument_shred();
-spork ~ watch_voice_bandpassfilter_shred();//Should become even shread
+spork ~ watch_voice_bandpassfilter_shred();//Should become even shred
 spork ~ watch_drums_volume_shred();
 
 Shred voice_shreds[8][2];
 Shred drum_shreds[8][2];//1 = active / 2 = upcoming
 
-function void watch_drum_events_shread() {
+
+function void watch_drum_events_shred() {
 		// Initialize message data buffers.
 		8 => int ints_per_drum; //  the number of 32-bit integers used
 		//  to store phrase data for each drum
@@ -317,7 +320,7 @@ function void watch_set_voice_volume_shred() {
     }
 }
 
-function void set_voice_instrument_message_handler_shred() {
+function void watch_set_voice_instrument_shred() {
     while (true) {
         // Receive message(s).
         voice_instrument_event => now;
@@ -348,7 +351,7 @@ function void set_voice_instrument_message_handler_shred() {
    			}
 }
 
-function void set_drums_volume_message_handler_shred() {
+function void watch_set_drums_volume_shred() {
     while (true) {
         drums_volume_event => now;
         
@@ -375,9 +378,11 @@ function void set_drums_volume_message_handler_shred() {
 }
 
 function void set_voice_bandpassfilter_message_handler_shred() {
+	 // Initialize message data buffers.
 	int message_voice;
     int message_value;
     string address;
+
     while (true) {
         // Receive message(s).
         voice_bandpassfilter_event => now;
@@ -385,10 +390,7 @@ function void set_voice_bandpassfilter_message_handler_shred() {
         // DEBUG Print message recept.
         if (DEBUG_PRINTING == 2) {
             <<< "Received voice_bandpassfilter_event." >>>;
-        }  
-        // Initialize message data buffers.
-
-        
+        }
         // Process each message in the queue.
         while (voice_bandpassfilter_event.nextMsg() != 0) {
             
@@ -416,10 +418,13 @@ function void watch_tempo_event_shred(){
             <<< "received tempo event.">>>;
         }
         tempo_event.getFloat() => tempo; //making the decision to combine this into one shred.
+        
+        seconds_per_beat =  (1.0 / (tempo / 60.0))::second;
+		seconds_per_beat_as_float = (1.0 / (tempo / 60.0));
     }
 }
 
-function void wait_and_kill(float beat_alignment, Shred this_shread[2]){
+function void wait_and_kill(float beat_alignment, Shred this_shred){
 	Math.floor(beat_alignment) => int event_offest;
 	Math.floor((beat_alignment - event_offset) * BEAT_RESOLUTION_DIVIDER) => int event_fraction_offset;
 	for(0 => int count; count < event_offset; count++){
@@ -428,10 +433,10 @@ function void wait_and_kill(float beat_alignment, Shred this_shread[2]){
 	for(0 => int count; count < event_fraction_offset - 1; count++){
 		 seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
 	}
-    this_shread[0].exit();
-	me @=> this_shread[0];
+    this_shred[0].exit();
+	me @=> this_shred[0];
 	Shred @ foo;
-	foo @=> this_shread[1];
+	foo @=> this_shred[1];
 	seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
 }
 
@@ -443,7 +448,7 @@ int should_loop_flag, float beat_alignment) {
 	string address;
 	int pitch;
 
-	wait_and_kill(beat_alignment, voice_shreads[voice]);
+	wait_and_kill(beat_alignment, voice_shreds[voice]);
 	
 	while(true){
 		for (0 => int i; i < 128; i++) {
@@ -595,21 +600,6 @@ function int bit_value_at(int input_number, int index) {
 // ====================================================
 // ||                HELPER FUNCTIONS                ||
 // ====================================================
-
-// seconds_per_beat()
-// Returns the number of seconds per beat based on the
-// current tempo.
-function dur seconds_per_beat() {
-	return (1.0 / (tempo / 60.0))::second;
-}
-
-// seconds_per_beat_as_float()
-// As above, but returns a float rather than a
-// time duration type.
-function float seconds_per_beat_as_float() {
-	return (1.0 / (tempo / 60.0));
-}
-
 // beat_fraction_to_seconds(int duration)
 // Converts internally-represented duration in beat
 // fractions (BEAT_RESOLUTION_FRACTION) to a float
