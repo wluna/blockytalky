@@ -14,15 +14,6 @@
 // make global effect as well if voice value is 9
 // init removed so new blocky talky does not stop whole rest
 
-
-
-
-
-
-
-
-
-
 // ====================================================
 // ||           CONSTANTS & CONFIGURATION            ||
 // ====================================================
@@ -75,11 +66,8 @@
 // 1 - Message-send receipts only
 // 2 - Full debug printing
 
-
-
 // Assign current tempo in BPM
 DEFAULT_TEMPO => float tempo;
-
 
 // ====================================================
 // ||               OSC INITIALIZATION               ||
@@ -131,7 +119,6 @@ OSC_receiver.event("/lpc/maestro/drums/volume, i")
 OSC_receiver.event("/lpc/maestro/init, i")
                    @=> OscEvent init_event;
 
-
 spork ~ watch_drum_events_shread();
 spork ~ watch_voice_even_shred();
 spork ~ watch_tempo_event_shred();
@@ -143,9 +130,6 @@ spork ~ watch_drums_volume_shred();
 
 Shred voice_shreds[8][2];
 Shred drum_shreds[2];//1 = active / 2 = upcoming
-<<< "Watched!" >>>;
-
-
 
 function void watch_drum_events_shread() {
 		// Initialize message data buffers.
@@ -171,9 +155,7 @@ function void watch_drum_events_shread() {
 		if (DEBUG_PRINTING == 2) {
 			<<< "Received drums_play_event." >>>;
 		}
-		
-		
-		
+			
 		// Process each message.
 		while (drums_play_event.nextMsg() != 0) {
 			
@@ -338,7 +320,6 @@ function void watch_set_voice_volume_shred() {
     }
 }
 
-
 function void set_voice_instrument_message_handler_shred() {
     while (true) {
         // Receive message(s).
@@ -391,7 +372,7 @@ function void set_drums_volume_message_handler_shred() {
     		OSC_sender.addInt(message_value);
     		if (DEBUG_PRINTING) {
        			<<< "Drum volume message sent with value " + message_value >>>;
-    }
+    		}
         }
     }
 }
@@ -404,12 +385,10 @@ function void set_voice_bandpassfilter_message_handler_shred() {
         // DEBUG Print message recept.
         if (DEBUG_PRINTING == 2) {
             <<< "Received voice_bandpassfilter_event." >>>;
-        }
-        
+        }  
         // Initialize message data buffers.
         int message_voice;
         int message_value;
-
         
         // Process each message in the queue.
         while (voice_bandpassfilter_event.nextMsg() != 0) {
@@ -429,18 +408,35 @@ function void set_voice_bandpassfilter_message_handler_shred() {
             }
         }
     }
-
 }
 
 function void watch_tempo_event_shred(){
     while(true){
         tempo_event => now;
-        if(DEBUG_PRINTING)
-        {
+        if(DEBUG_PRINTING){
             <<< "received tempo event.">>>;
         }
         tempo_event.getFloat() => tempo; //making the decision to combine this into one shred.
     }
+}
+
+function void wait_and_kill(float beat_alignment, Shred this_shread[2]){
+	Math.floor(beat_alignment) => int event_offest;
+	Math.floor((beat_alignment - event_offset) * BEAT_RESOLUTION_DIVIDER) => int event_fraction_offset;
+	for(0 => int count; count < event_offset; count++){
+		beat_event=>now;
+	}
+	for(0 => int count; count < event_fraction_offset - 1; count++){
+		 seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
+	}
+    this_shread[0].exit();
+	me @=> this_shread[0];
+	Shred @ foo;
+	foo @=> this_shread[1];
+	seconds_per_beat_as_float() * BEAT_RESOLUTION_FRACTION :: seconds =>now;
+
+
+
 }
 
 function void play_voice_message_processor(
@@ -451,29 +447,7 @@ int should_loop_flag, float beat_alignment) {
 	string address;
 	int pitch;
 
-	if(beat_alignment > 0){
-		get_timed_event(Math.ceil(beat_alignment-1)) => Event almost_ready;
-		get_timed_event(Math.ceil(beat_alignment)) => Event ready;
-
-		//wait till half way through beat just before start;
-		almost_ready  => now;
-		(seconds_per_beat_as_float() / 2) :: second => now;
-		voice_shreds[voice][0].exit();
-		me @=> voice_shreds[voice][0];
-		Shred @ foo;
-		foo @=> voice_shreds[voice][1];
-
-		//wait till exact time to play
-		ready =>now;
-	} else {
-		beat_fractions_to_seconds(beat_alignment)
-    	::second
-                 => now;
-		voice_shreds[voice][0].exit();
-		me @=> voice_shreds[voice][0];
-		Shred @ foo;
-		foo @=> voice_shreds[voice][1];
-	}
+	wait_and_kill(beat_alignment, voice_shreads[voice]);
 	
 	while(true){
 		for (0 => int i; i < 128; i++) {
@@ -603,8 +577,6 @@ function Event get_timed_event (int beat_offset){
 	return events[start + beat_offset];
 }
 
-
-
 // bit_value_at
 // Returns a 1 or a 0 depending on the bit-state of the
 // binary representation of the integer at the specified
@@ -622,8 +594,6 @@ function int bit_value_at(int input_number, int index) {
 	}
 	return bit;
 }
-
-
 
 // ====================================================
 // ||                HELPER FUNCTIONS                ||
