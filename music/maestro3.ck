@@ -126,6 +126,7 @@ spork ~ watch_set_voice_instrument_shred();
 spork ~ watch_set_voice_bandpassfilter_shred();//Should become even shred
 spork ~ watch_set_drums_volume_shred();
 spork ~ watch_stop_event_shred();
+spork ~ broadcast();
 
 
 
@@ -138,7 +139,9 @@ Event beat_event;
 function void watch_drum_event_shred() {
 		// Initialize message data buffers.
 		8 => int ints_per_drum; //  the number of 32-bit integers used
-		//  to store phrase data for each drum
+	
+	while (true) {
+        //  to store phrase data for each drum
 		int message_bass_data[ints_per_drum];
 		int message_snare_data[ints_per_drum];
 		int message_conga_data[ints_per_drum];
@@ -150,8 +153,6 @@ function void watch_drum_event_shred() {
 		int message_should_loop_flag;
 		int message_phrase_length;
 		float message_beat_alignment;
-	
-	while (true) {
 		// Receive messages.
 		drums_play_event => now;
 		
@@ -427,6 +428,7 @@ function void watch_set_tempo_event_shred(){
         
         (1.0 / (tempo / 60.0))::second => seconds_per_beat;
 		(1.0 / (tempo / 60.0)) =>seconds_per_beat_as_float ;
+        4 :: second => now;
     }
 }
 
@@ -443,10 +445,10 @@ int should_loop_flag, float beat_alignment) {
 	while(true){
 		for (0 => int i; i < 128; i++) {
 			if (note_package[i][1] != 0) {
-				"/lpc/sound/voice" + (i+1) + "/play" => 
+				"/lpc/sound/voice" + (voice+1) + "/play" => 
 				address;
 				note_package[i][0] => pitch;
-				beat_fractions_to_seconds(note_package[i][1]) =>
+				beat_fractions_to_seconds(note_package[i][1])*BEAT_RESOLUTION_FRACTION =>
 				duration;
 				OSC_sender.startMsg(address + ", i, f");
 				OSC_sender.addInt(pitch);
@@ -472,12 +474,16 @@ int snare_data[], int conga_data[], int tom_data[],
 int hat_data[], int hit_data[], int ride_data[],
 int should_loop, int voice, int length,
 float beat_alignment){  
-
+    if (DEBUG_PRINTING == 2) {
+        <<< "Drum Message Processor." >>>;
+    }
 	int drum_package[NUM_DRUMS];
 	string address;
 
 	wait_and_kill(beat_alignment, drum_shreds[voice]);
-			 
+    if (DEBUG_PRINTING == 2) {
+        <<< "Play some drums" >>>;
+    }
 	while(true){
 		for (0 => int i; i < 16 * length; i++) {
 			// Get whether to trigger the bass.
@@ -555,19 +561,29 @@ function void stop_voice(
 }
 
 function void wait_and_kill(float beat_alignment, Shred this_shred[]){
-	Math.floor(beat_alignment) $ int => int event_offset;
-	Math.floor((beat_alignment - event_offset) * BEAT_RESOLUTION_DIVIDER) $ int => int event_fraction_offset;
-	for(0 => int count; count < event_offset; count++){
+    Math.max(0.0,beat_alignment - BEAT_RESOLUTION_FRACTION) => float beat_alignment_adj;
+    Math.floor(beat_alignment_adj) $ int => int event_offset;
+	Math.floor((beat_alignment_adj - event_offset) * BEAT_RESOLUTION_DIVIDER) $ int => int event_fraction_offset;
+    if (DEBUG_PRINTING == 2) {
+        <<< "w&k beat alignment:" + beat_alignment_adj + ", event offset: " + event_offset + ", event_fraction_offset: " + event_fraction_offset   >>>;
+    }
+    
+    for(0 => int count; count < event_offset; count++){
 		beat_event=>now;
 	}
-	for(0 => int count; count < event_fraction_offset - 1; count++){
+	for(0 => int count; count < event_fraction_offset; count++){
 		 seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION :: second =>now;
 	}
     this_shred[0].exit();
 	me @=> this_shred[0];
 	Shred @ foo;
 	foo @=> this_shred[1];
-	seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION :: second =>now;
+    if(beat_alignment_adj != 0){
+        seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION :: second =>now;
+    }
+    if (DEBUG_PRINTING == 2) {
+        <<< "finished w&k"  >>>;
+    }
 }
 
 
@@ -619,6 +635,7 @@ function float beat_fractions_to_seconds(float duration) {
 function int parse_duration(float duration_in_beats) {
 	return ((duration_in_beats * BEAT_RESOLUTION_DIVIDER) $ int);
 }
+
 
 // ====================================================
 // ||                END OF PROGRAM                  ||
