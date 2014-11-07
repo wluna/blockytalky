@@ -424,11 +424,15 @@ function void watch_set_tempo_event_shred(){
         if(DEBUG_PRINTING){
             <<< "received tempo event.">>>;
         }
-        tempo_event.getFloat() => tempo; //making the decision to combine this into one shred.
-        
-        (1.0 / (tempo / 60.0))::second => seconds_per_beat;
-		(1.0 / (tempo / 60.0)) =>seconds_per_beat_as_float ;
-        4 :: second => now;
+        while(tempo_event.nextMsg() != 0){
+            tempo_event.getFloat() => tempo; //making the decision to combine this into one shred.
+            
+            (1.0 / (tempo / 60.0))::second => seconds_per_beat;
+            (1.0 / (tempo / 60.0)) =>seconds_per_beat_as_float ;
+        }
+        if(DEBUG_PRINTING){
+            <<< "processed tempo event.">>>;
+        }
     }
 }
 
