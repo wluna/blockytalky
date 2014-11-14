@@ -47,5 +47,6 @@ sudo chmod 775 /home/pi/blockytalky/backend/user_script.py
 python /home/pi/blockytalky/backend/blockly_webserver.py &>/dev/null
 python /home/pi/blockytalky/backend/code_uploader.py &>/dev/null
 python /home/pi/blockytalky/backend/comms_module.py &>/dev/null
+python /home/pi/blockytalky/backend/hardware_daemon.py &>/dev/null
 
 echo BlockyTalky running.
