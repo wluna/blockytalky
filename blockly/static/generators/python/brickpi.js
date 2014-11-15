@@ -802,7 +802,7 @@ Blockly.Python.events_when_touch = function() {
     var value = this.getTitleValue('touch_val');
     var code = 'def '+'wnt'+port+unique_id+'(self):'+'\n';
     if (value == 1) {
-	code += '  if self.robot["sensors"]['+ (port-1) + '] == 1 and self.last_robot["sensors"]['+(port-1)+'] == 0: \n'+ branch;
+	code += '  if self.robot["sensors"]['+ (port-1) + '] == 1 and self.last_robot["sensors"]['+(port-1)+'] != 1: \n'+ branch;
     } else if (value == 0) {
 	code += '  if self.robot["sensors"]['+ (port-1) + '] == 0 and self.last_robot["sensors"]['+(port-1)+'] == 1: \n'+ branch;
 
