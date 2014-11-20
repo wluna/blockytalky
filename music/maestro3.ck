@@ -13,6 +13,10 @@
 // ====================================================
 // ||           CONSTANTS & CONFIGURATION            ||
 // ====================================================
+class BeatEvent extends Event
+{
+    float beat_fraction;
+}
 
 // The number of voices Maestro will track
 8 => int NUM_VOICES;
@@ -133,7 +137,7 @@ spork ~ broadcast();
 Shred voice_shreds[8][2];
 Shred drum_shreds[8][2];//1 = active / 2 = upcoming
 
-Event beat_event;
+BeatEvent beat_event;
 
 
 function void watch_drum_event_shred() {
@@ -541,7 +545,17 @@ float beat_alignment){
 function void stop_voice(
         int voice, float beat_alignment) {
         
-		wait_n_broadcast(beat_alignment);
+        if(beat_alignment != 0.0){
+            float beat_f_adj;
+            do{
+                beat_event => now;
+                beat_event.beat_fraction + BEAT_RESOLUTION_FRACTION => beat_f_adj;
+                if(beat_f_adj == 0.0){
+                    beat_alignment - 1.0 => beat_alignment;
+                }
+            }
+            while(beat_alignment > 1 || beat_f_adj % beat_alignment != 0.0);        
+        }
     
     if (DEBUG_PRINTING == 2) {
         <<< "Stop message done waiting. ">>>;
@@ -558,34 +572,36 @@ function void stop_voice(
 }
 
 function void wait_and_kill(float beat_alignment, Shred this_shred[]){
-    
-    wait_n_broadcast(beat_alignment);
+    if(beat_alignment != 0.0){
+        float beat_f_adj;
+        do{
+            beat_event => now;
+            (beat_event.beat_fraction + BEAT_RESOLUTION_FRACTION) % 1.0 => beat_f_adj;
+            if(beat_f_adj == 0.0){
+                beat_alignment - 1.0 => beat_alignment;
+            }
+        }
+        while(beat_alignment > 1 || beat_f_adj % beat_alignment != 0.0);        
+    }
+    //possibly wait half a 1/32nd
     this_shred[0].exit();
 	me @=> this_shred[0];
 	Shred @ foo;
 	foo @=> this_shred[1];
     if(beat_alignment != 0){
-        seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION :: second =>now;
+        beat_event =>now;
     }
     if (DEBUG_PRINTING == 2) {
         <<< "finished w&k"  >>>;
     }
 }
-
-function void wait_n_broadcast(float beat_alignment){
-    while(beat_alignment >= 1)
-    {
-        beat_event => now;
-        beat_alignment -1 => beat_alignment;
-    }
-    seconds_per_beat_as_float * BEAT_RESOLUTION_FRACTION * beat_alignment :: second => now;
-}
-
 function void broadcast(){
-	while(true){
+	0.0 => float beat_f;
+    while(true){
+        beat_f =>beat_event.beat_fraction;
 		beat_event.broadcast();
-		
-		seconds_per_beat => now;
+		(beat_f + BEAT_RESOLUTION_FRACTION) % 1.0 => beat_f;
+		seconds_per_beat * BEAT_RESOLUTION_FRACTION => now;
     }
 }
 
