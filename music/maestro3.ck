@@ -482,6 +482,7 @@ int snare_data[], int conga_data[], int tom_data[],
 int hat_data[], int hit_data[], int ride_data[],
 int should_loop, int voice, int length,
 float beat_alignment){  
+    BEAT_RESOLUTION_FRACTION * 2 => float DRUM_RESOLUTION; 
     if (DEBUG_PRINTING == 2) {
         <<< "Drum Message Processor." >>>;
     }
@@ -532,7 +533,7 @@ float beat_alignment){
 			
 			//THIS IS WHEN WE NEED TO WAIT 
 			//TODO This could be optimized by placing earlier in the code
-			seconds_per_beat * BEAT_RESOLUTION_FRACTION
+			seconds_per_beat * DRUM_RESOLUTION
             => now;
 			
 		}
