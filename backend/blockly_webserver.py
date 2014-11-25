@@ -270,7 +270,7 @@ def stop():
     logger.info('Issuing kill command')
     stop_user_script()
     try:
-        channel2.queue_purge(queue='Message')
+        channel.queue_purge(queue='Message')
     except Exception as e:
         logger.exception('Failed to purge Message queue:')
     try:
