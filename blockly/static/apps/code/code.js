@@ -449,7 +449,7 @@ function finishUpload()
   }
     });
     
-    $("#status").text("Code uploaded to robot");
+    $("#status").text("Code uploaded to BTU");
 }
 
 function runRobot() {
@@ -467,7 +467,7 @@ function runRobot() {
   }
     });
 
-  $("#status").text("Code running on robot...");
+  $("#status").text("Code running on BTU!");
 }
 
 function getIP() {
@@ -527,7 +527,7 @@ function updateSensors(){
 }
 
 function stopRobot() {
-    $("#status").text("Robot stopped");
+    $("#status").text("BTU stopped");
     var url = getIP()+"stop";
    var xml = "a"
     $.ajax({
@@ -571,7 +571,7 @@ function removeWhite(data) {
 }
 
 function loadCode() {
-    $("#status").text("Code loaded from robot");
+    $("#status").text("Code loaded from BTU");
 
     $.get('/load', function(data) {
   $("#tab_xml").click();
