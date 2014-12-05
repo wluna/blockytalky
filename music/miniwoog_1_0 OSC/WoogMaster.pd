@@ -1,4 +1,4 @@
-#N canvas 98 112 835 551 10;
+#N canvas 542 112 835 551 10;
 #X declare -path presets;
 #X declare -lib mrpeach;
 #X declare -path data;
@@ -250,6 +250,7 @@
 #X obj 18 303 loadbang;
 #X msg 18 328 100;
 #X obj -120 373 s drmvol;
+#X obj 261 319 print;
 #X connect 1 0 3 0;
 #X connect 1 0 6 0;
 #X connect 3 0 5 0;
@@ -262,6 +263,7 @@
 #X connect 4 0 171 0;
 #X connect 4 0 193 0;
 #X connect 4 0 97 0;
+#X connect 4 0 221 0;
 #X connect 5 0 4 0;
 #X connect 7 0 12 0;
 #X connect 7 0 13 0;
