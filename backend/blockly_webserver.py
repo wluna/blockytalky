@@ -273,10 +273,10 @@ def stop():
         channel.queue_purge(queue='Message')
     except Exception as e:
         logger.exception('Failed to purge Message queue:')
-    try:
-        subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
-    except Exception as e:
-        logger.exception('Failed to stop Blockly code:')
+    #try: #this process is already in the stop_user_script() function
+    #    subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
+    #except Exception as e:
+    #    logger.exception('Failed to stop Blockly code:')
     #commands.getstatusoutput('python /home/pi/blockytalky/code/kill.py')
     toSend = Message('name', None, 'HwCmd', Message.createImage(motor1=0, motor2=0, motor3=0, motor4=0, pin13=0))
     toSend = Message.encode(toSend)
@@ -317,13 +317,14 @@ def update():
 @app.route('/run', methods = ['GET', 'POST'])
 # @requires_auth
 def start():
-    logger.info('Running code on robot')
+    stop();
+    logger.info('Running code on BTU')
     # commands.getstatusoutput('python /home/pi/code/test.py')
     cmd = ['sudo python /home/pi/blockytalky/backend/user_script.py']
     try:
         p = subprocess.Popen(cmd, shell = True)
     except:
-        logger.exception('Failed to run code on robot:')
+        logger.exception('Failed to run code on BTU:')
     return 'OK'
 
 @app.route('/load', methods = ['GET', 'POST'])
