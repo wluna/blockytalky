@@ -467,7 +467,7 @@ function runRobot() {
   }
     });
 
-  $("#status").text("Code running on BTU!");
+  $("#status").text("Code running on BTU! :) ");
 }
 
 function getIP() {
