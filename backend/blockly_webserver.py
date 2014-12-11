@@ -317,7 +317,7 @@ def update():
 @app.route('/run', methods = ['GET', 'POST'])
 # @requires_auth
 def start():
-    #stop();
+    stop_user_script();
     logger.info('Running code on BTU')
     # commands.getstatusoutput('python /home/pi/code/test.py')
     cmd = ['sudo python /home/pi/blockytalky/backend/user_script.py']
