@@ -143,7 +143,7 @@ def index():
 def blockly():
     startMsg = Message('name', None, 'HwCmd', Message.createImage(pin13=0))
     startMsg = Message.encode(startMsg)
-    try:    
+    try:
         channel.basic_publish(exchange='HwCmd', routing_key='', body=startMsg)
     except:
         logger.exception('Failed to start Blockly:')
@@ -214,7 +214,7 @@ def convert_usercode(python_code):
         elif python_code[i][-7:] == " = None":
             comment = False
             var = python_code[i][:python_code[i].index('=')-1]
-            variables += var + ", "            
+            variables += var + ", "
 
         elif python_code[i][:4] == "def ":
             func = python_code[i][python_code[i].find(" ")+1:python_code[i].find("(")]
@@ -222,19 +222,19 @@ def convert_usercode(python_code):
                 if variables != "\n      global ":
                     python_code[i] += variables[:-2]
                 if func == "run_continuously":
-                    python_code[i] += "\n      for f in self.whiles: \n        f() \n"    
+                    python_code[i] += "\n      for f in self.whiles: \n        f() \n"
                 if func[:2] == "wl":
                     while_functions += "        self.whiles.append(self." + func + ") \n"
                 if func[:2] == "wm":
                     msg_functions += "        self.msg_functions.append(self." + func + ") \n"
-                else:    
+                else:
                     callback_functions += "        self.callbacks.append(self." + func + ") \n"
             comment = False
             while not (python_code[i].isspace() or python_code[i] == ""):
                 i += 1
         else:
             comment = True
-                
+
         if comment == True:
             python_code[i] = "#" + python_code[i]
         i += 1
@@ -245,16 +245,16 @@ def convert_usercode(python_code):
     callback_functions += "        if self.run_on_start in self.callbacks: self.callbacks.remove(self.run_on_start) \n        if self.run_continuously in self.callbacks: self.callbacks.remove(self.run_continuously) \n"
 
     while_functions += "        True \n"
-    
+
     msg_functions += "        True \n"
 
     python_code += "\n" + callback_functions + "\n" + while_functions + "\n" + msg_functions + "\n"
 
     print python_code
-    
+
     user_script_header = open('backend/us_header', 'r')
     header_text = user_script_header.read()
-    
+
     footer_text = ('if __name__ == "__main__": \n'
                    '    handle_logging(logger) \n'
                    '    uscript = UserScript() \n'
@@ -262,22 +262,13 @@ def convert_usercode(python_code):
                    '    uscript.start() \n')
 
 
-    return header_text + python_code + footer_text 
+    return header_text + python_code + footer_text
 
 @app.route('/stop', methods = ['GET', 'POST'])
 #@requires_auth
 def stop():
     logger.info('Issuing kill command')
     stop_user_script()
-    try:
-        channel.queue_purge(queue='Message')
-    except Exception as e:
-        logger.exception('Failed to purge Message queue:')
-    #try:
-    #    subprocess.call(['sudo pkill -9 -f user_script.py'], shell = True)
-    #except Exception as e:
-    #    logger.exception('Failed to stop Blockly code:')
-    #commands.getstatusoutput('python /home/pi/blockytalky/code/kill.py')
     toSend = Message('name', None, 'HwCmd', Message.createImage(motor1=0, motor2=0, motor3=0, motor4=0, pin13=0))
     toSend = Message.encode(toSend)
     try:
@@ -291,7 +282,7 @@ def update_sensors(sensors, num_tries=0):
         assert len(sensors) == 4
     except AssertionError as e:
         logging.exception('Update request didn\'t contain 4 sensors:')
-    sensorMsg = Message('name', None, 'Sensor', 
+    sensorMsg = Message('name', None, 'Sensor',
                 Message.createImage(sensor1=sensors[0],
                 sensor2=sensors[1],
                 sensor3=sensors[2],
