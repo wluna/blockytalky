@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 class HardwareDaemon(object):
     PUBLISH_INTERVAL = 0.01
-    
+
     def __init__(self):
         logger.info('Initializing hardware daemon')
         self.hostname = BlockyTalkyID()
@@ -49,29 +49,29 @@ class HardwareDaemon(object):
         BrickPi.SensorType = processedlist
         os.chdir("/home/pi/blockytalky/")
 
-        
+
         initPins()
         BrickPiSetup()
         BrickPi.MotorEnable[PORT_A] = 1
         BrickPi.MotorEnable[PORT_B] = 1
         BrickPi.MotorEnable[PORT_C] = 1
-        BrickPi.MotorEnable[PORT_D] = 1    
+        BrickPi.MotorEnable[PORT_D] = 1
 
         BrickPiSetupSensors()
-        
+
         parameters = pika.ConnectionParameters()
         self.connection = pika.BlockingConnection(parameters)
         self.setup_hwval_channel()
         self.setup_hwcmd_channel()
-      
-        
+
+
     def start(self):
         self.schedule_check_status()
         self.hwcmd_channel.start_consuming()
-    
+
     def schedule_check_status(self):
         logger.debug("Scheduling a check_status in %s seconds" % self.__class__.PUBLISH_INTERVAL)
-        self.connection.add_timeout(self.__class__.PUBLISH_INTERVAL, self.check_status_and_reschedule)   
+        self.connection.add_timeout(self.__class__.PUBLISH_INTERVAL, self.check_status_and_reschedule)
 
     def check_status_and_reschedule(self):
         self.check_status()
@@ -83,7 +83,7 @@ class HardwareDaemon(object):
         channel every time a hardware value changes on the robot.
         """
         valuesChanged = False
-        
+
         if self.hwval_channel is None:
             logger.info("skipping check_status because channel is None")
             return
@@ -96,7 +96,7 @@ class HardwareDaemon(object):
             BrickPi.MotorSpeed[3] = int(float(self.robot["motors"][3]) * 2.55)
         except Exception as e:
             logger.exception('Error occurred while reading motor values:')
-       
+
         BrickPi.Gpio = self.robot["pins"]
         logger.debug("Calling BrickPiUpdateValues")
         BrickPiUpdateValues()
@@ -140,7 +140,7 @@ class HardwareDaemon(object):
             logger.debug('Sensor values requested')
             valuesChanged = True
             self.sensorsRequested = False
-        
+
         #if not valuesChanged: print "no values seem to have changed"
 
         if valuesChanged:
@@ -209,18 +209,18 @@ class HardwareDaemon(object):
     def setup_hwval_channel(self):
         ##fixme:  document what the below line of code is for.  Joe???
         self.prevMessage = Message("none", None, "HwCmd", Message.createImage(pin11=2))
-        
+
         self.hwval_channel = self.connection.channel()
         logger.info("Creating sensors exchange...")
         self.hwval_channel.exchange_declare(exchange='sensors', type='fanout')
-    
+
     def setup_hwcmd_channel(self):
         self.hwcmd_channel = self.connection.channel()
         self.hwcmd_channel.exchange_declare(exchange='HwCmd', type='fanout')
         result = self.hwcmd_channel.queue_declare(exclusive=True)
         queue_name = result.method.queue
         self.hwcmd_channel.queue_bind(exchange='HwCmd', queue=queue_name)
-        self.hwcmd_channel.basic_consume(self.handle_in_delivery, 
+        self.hwcmd_channel.basic_consume(self.handle_in_delivery,
                                     queue=queue_name, no_ack = True)
 
     def handle_in_delivery(self, channel, method, header, body):
@@ -231,15 +231,15 @@ class HardwareDaemon(object):
             print traceback.format_exc()
             print "*** now re-raising the exception. pika exception to follow ***"
             raise real_exception
-        
-        
+
+
     def handle_hwcmd_delivery(self, channel, method, header, body):
         logger.info("hwcmd command received: " + body)
         command = Message.decode(body)
         if command.channel == "handshake":
-            self.encoder_offsets = [self.robot["encoders"][0], 
+            self.encoder_offsets = [self.robot["encoders"][0],
                                     self.robot["encoders"][1],
-                                    self.robot["encoders"][2], 
+                                    self.robot["encoders"][2],
                                     self.robot["encoders"][3]]
             print self.encoder_offsets
             content = Message.createImage(
@@ -248,12 +248,12 @@ class HardwareDaemon(object):
                 encoder3 = self.robot["encoders"][2]-self.encoder_offsets[2],
                 encoder4 = self.robot["encoders"][3]-self.encoder_offsets[3],
                 sensor1 =  self.robot["sensors"][0],
-                sensor2 =  self.robot["sensors"][0],
-                sensor3 =  self.robot["sensors"][0],
-                sensor4 =  self.robot["sensors"][0])
+                sensor2 =  self.robot["sensors"][1],
+                sensor3 =  self.robot["sensors"][2],
+                sensor4 =  self.robot["sensors"][3])
             statusMessage = Message(self.hostname, None, "HwVal", content)
             statusMessage = Message.encode(statusMessage)
-            self.hwval_channel.basic_publish(exchange='sensors', 
+            self.hwval_channel.basic_publish(exchange='sensors',
                                              routing_key='', body=statusMessage)
 
         elif command.channel == "Sensor":
@@ -276,13 +276,13 @@ class HardwareDaemon(object):
                         if value == "light_off":
                             newType = TYPE_SENSOR_LIGHT_OFF
 
-                        BrickPi.SensorType[index] = newType 
+                        BrickPi.SensorType[index] = newType
                         self.sensorList[index] = newType
                         os.chdir("/home/pi/blockytalky/backend/")
                         sensorString = ""
                         for item in self.sensorList:
                             sensorString = sensorString + "," + str(item)
-                        
+
                         sensorString = sensorString[1:]
                         print "sensorString: " + str(sensorString)
                         fo = open("sensors", "wb")
@@ -320,7 +320,6 @@ if __name__ == "__main__":
     logger.addHandler(handler)
     #logger.addHandler(globalHandler)
     logger.setLevel(logging.INFO)
-    
+
     hd = HardwareDaemon()
     hd.start()
-
