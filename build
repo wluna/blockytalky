@@ -48,6 +48,10 @@ cd wiringPi
 echo "Setting up serial pins..."
 gpio load i2c 10
 sudo echo init_uart_clock=32000000 >> /boot/config.txt
+sudo echo '#for real-time kernel' >> /boot/config.txt
+sudo echo 'disable_splash=1' >> /boot/config.txt
+sudo echo 'kernel=kernel-rt.img' >> /boot/config.txt
+sudo sed -i 's/arm_freq=[0-9]*/arm_freq=900/g' /boot/config.txt
 sudo sed -i -e 's,T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100,#T0:23:respawn:/sbin/getty -L ttyAMA0 115200 t100,' /etc/inittab
 sudo sed -i -e 's/console=ttyAMA0,115200 kgdboc=ttyAMA0,115200//g' /boot/cmdline.txt
 sudo sed -i -e 's,blacklist i2c-bcm2708,#blacklist i2c-bcm2708,' /etc/modprobe.d/raspi-blacklist.conf
@@ -57,7 +61,7 @@ echo "Installing customizations..."
 sudo sed -i -e 's/XKBLAYOUT="gb"/XKBLAYOUT="us"/g' /etc/default/keyboard
 sudo sed -i -e 's,exit 0,sh /home/pi/blockytalky/start.sh,' /etc/rc.local
 sudo echo exit 0 >> /etc/rc.local
-if [ "$setup" == "y" ] || [ "$setup" == "Y" ]; then    
+if [ "$setup" == "y" ] || [ "$setup" == "Y" ]; then
     if [ -n "$password" ]; then
 	sudo echo "network={" >> /etc/wpa_supplicant/wpa_supplicant.conf
 	sudo echo "ssid=\"$ssid\"" >> /etc/wpa_supplicant/wpa_supplicant.conf
@@ -77,11 +81,6 @@ if [ "$host" == "y" ] || [ "$host" == "Y" ]; then
     sudo sed -i -e "s/raspberrypi/$hostname/g" /etc/hosts
 fi
 
-sudo echo "sh /home/pi/blockytalky/update.sh" > /etc/rc.local
-sudo echo "sh /home/pi/blockytalky/start.sh &" > /etc/rc.local  
-
-
-
 echo "BlockyTalky installed! Restart required. System restart in 5 seconds (press CTRL-C to cancel)"
 sleep 1
 echo "4"
@@ -92,4 +91,4 @@ echo "2"
 sleep 1
 echo "1"
 sleep 1
-sudo shutdown -r now 
+sudo shutdown -r now
