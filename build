@@ -88,6 +88,9 @@ if [[ -f /home/coder/coder-dist/coder-base/server.js ]]; then
   sudo a2dissite default
   sudo a2ensite blockly_ws.conf
   sudo apt-get install -y samba #for windows dns lookup
+
+  #not for automated scripting, but the server.js needs to be poked at a little bit
+  #in order for the routing to work correctly
 fi
 
 cd ~

@@ -15,6 +15,7 @@ sudo sed -i -e "s/\"device\_name\": \"[a-zA-Z0-9]*\",/\"device\_name\": \"$nhost
 sudo sed -i -e "s/BT-$chost/BT-$nhost/g" /etc/wpa_supplicant/wpa_supplicant.conf
 sudo sed -i -e "s/sentinel/$nhost/g" /etc/wpa_supplicant/wpa_supplicant.conf
 
+sudo sed -i -e "s/$chost/$nhost/g" /home/coder/coder-dist/coder-base/server.js
 echo "Hostname change complete. Restarting your BlockyTalky unit. To cancel, press CTRL-C"
 echo "5..."
 sleep 1
