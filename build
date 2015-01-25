@@ -26,6 +26,7 @@ echo "Installing dependencies..."
 sudo apt-get update
 sudo apt-get install -y python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus avahi-daemon
 cd ~
+sudo apt-get install -y samba #for windows dns lookup
 sudo pip install flask
 sudo pip install tornado
 sudo pip install jsonpickle
@@ -42,7 +43,47 @@ sudo dpkg -i rabbitmq-server_3.2.2-1_all.deb
 sudo rabbitmq-plugins enable rabbitmq_web_stomp
 sudo rabbitmqctl set_policy TTL ".*" '{"message-ttl":3000}' --apply-to queues
 
+#install daemon tools
+sudo mkdir -p /package
+sudo chmod 755 /package
+cd /package
 
+wget http://cr.yp.to/daemontools/daemontools-0.76.tar.gz
+tar -xpf daemontools-0.76.tar.gz
+rm -f daemontools-0.76.tar.gz
+cd admin/daemontools-0.76
+package/install
+ed ./src/conf-cc
+ls/$/ -include errno.h/
+wq
+
+sudo apt-get install csh
+sudo csh -cf '/command/svscanboot &'
+
+sudo sed -i "1 a\csh -cf '/command/svscanboot &'" /etc/rc.local
+sudo chmod +x /etc/rc.local
+
+sudo mkdir /service/hd
+sudo cp /home/pi/blockytalky/build.d/run /service/hd
+
+echo 'wins server =wlan0:0.0.0.0' > /etc/samba/dhcp.conf
+if [[ -f /home/coder/coder-dist/coder-base/server.js ]]; then
+  sudo cp /home/coder/coder-dist/coder-base/server.js /home/coder/coder-dist/coder-base/server.js.bkup
+  sudo cp /home/coder/coder-dist/coder-base/localserver.js /home/coder/coder-dist/coder-base/server.js
+  sudo /home/coder/coder-dist/coder-base/config.js.localhost /home/coder/coder-dist/coder-base/config.js
+  #this runs coder on :8080 for our proxy config later
+  #virtual host for blockly+coder
+  sudo apt-get install -y libapache2-mod-wsgi
+  sudo a2enmod wsgi
+  sudo a2enmod rewrite
+  sudo a2enmod proxy
+  sudo a2enmod proxy_http
+  sudo a2enmod ssl
+  #make wsgi and httpd conf
+  sudo cp /home/pi/blockytalky/build.d/blockly_ws.wsgi /etc/apache2/blockly_ws.wsgi
+  sudo cp /home/pi/blockytalky/build.d/blockly_ws.conf /etc/apache2/sites-available/blockly_ws.conf
+  sudo a2ensite blockly_ws.conf
+fi
 
 cd ~
 git clone git://git.drogon.net/wiringPi
