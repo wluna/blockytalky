@@ -26,7 +26,6 @@ echo "Installing dependencies..."
 sudo apt-get update
 sudo apt-get install -y python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus avahi-daemon
 cd ~
-sudo apt-get install -y samba #for windows dns lookup
 sudo pip install flask
 sudo pip install tornado
 sudo pip install jsonpickle
@@ -40,6 +39,7 @@ sudo pip install flask-bcrypt
 sudo pip install requests
 wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.2.2/rabbitmq-server_3.2.2-1_all.deb
 sudo dpkg -i rabbitmq-server_3.2.2-1_all.deb
+sudo apt-get -f -y install
 sudo rabbitmq-plugins enable rabbitmq_web_stomp
 sudo rabbitmqctl set_policy TTL ".*" '{"message-ttl":3000}' --apply-to queues
 
@@ -52,15 +52,18 @@ wget http://cr.yp.to/daemontools/daemontools-0.76.tar.gz
 tar -xpf daemontools-0.76.tar.gz
 rm -f daemontools-0.76.tar.gz
 cd admin/daemontools-0.76
-package/install
-ed ./src/conf-cc
-ls/$/ -include errno.h/
-wq
+sudo ed ./src/conf-cc
+#if install fails:
+1s/$/ -include errno.h/
+w
+q
+sudo package/install
 
-sudo apt-get install csh
+
+sudo apt-get install -y csh
 sudo csh -cf '/command/svscanboot &'
 
-sudo sed -i "1 a\csh -cf '/command/svscanboot &'" /etc/rc.local
+#sudo sed -i "1 a\csh -cf '/command/svscanboot &'" /etc/rc.local
 sudo chmod +x /etc/rc.local
 
 sudo mkdir /service/hd
@@ -80,9 +83,11 @@ if [[ -f /home/coder/coder-dist/coder-base/server.js ]]; then
   sudo a2enmod proxy_http
   sudo a2enmod ssl
   #make wsgi and httpd conf
-  sudo cp /home/pi/blockytalky/build.d/blockly_ws.wsgi /etc/apache2/blockly_ws.wsgi
-  sudo cp /home/pi/blockytalky/build.d/blockly_ws.conf /etc/apache2/sites-available/blockly_ws.conf
+  sudo cp /home/pi/blockytalky/build.d/blockly_ws.wsgi /etc/apache2/
+  sudo cp /home/pi/blockytalky/build.d/blockly_ws.conf /etc/apache2/sites-available/
+  sudo a2dissite default
   sudo a2ensite blockly_ws.conf
+  sudo apt-get install -y samba #for windows dns lookup
 fi
 
 cd ~
@@ -128,7 +133,8 @@ fi
 if [ "$host" == "y" ] || [ "$host" == "Y" ]; then
     sudo echo $hostname > /etc/hostname
     sudo sed -i -e "s/raspberrypi/$hostname/g" /etc/hosts
-    sudo echo $hostname > /etc/hos
+    sudo sed -i -e "s/coder/$hostname/g" /etc/hosts
+    sudo export HOSTNAME=$hostname
 fi
 
 echo "BlockyTalky installed! Restart required. System restart in 5 seconds (press CTRL-C to cancel)"
