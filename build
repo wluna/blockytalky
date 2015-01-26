@@ -24,6 +24,7 @@ fi
 
 echo "Installing dependencies..."
 sudo apt-get update
+sudo apt-get clean
 sudo apt-get install -y python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus avahi-daemon
 cd ~
 sudo pip install flask
@@ -42,6 +43,9 @@ sudo dpkg -i rabbitmq-server_3.2.2-1_all.deb
 sudo apt-get -f -y install
 sudo rabbitmq-plugins enable rabbitmq_web_stomp
 sudo rabbitmqctl set_policy TTL ".*" '{"message-ttl":3000}' --apply-to queues
+sudo apt-get clean
+sudo apt-get upgrade
+sudo apt-get clean #reduces memory footprint from unused dependencies. (keeps image ~2.2GB)
 
 #install daemon tools
 sudo mkdir -p /package
@@ -53,10 +57,11 @@ tar -xpf daemontools-0.76.tar.gz
 rm -f daemontools-0.76.tar.gz
 cd admin/daemontools-0.76
 sudo ed ./src/conf-cc
-#if install fails:
+#if install fails, which it does on coder out of the box:
 1s/$/ -include errno.h/
 w
 q
+#install:
 sudo package/install
 
 
