@@ -24,6 +24,7 @@ fi
 
 echo "Installing dependencies..."
 sudo apt-get update
+sudo apt-get clean
 sudo apt-get install -y python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus avahi-daemon
 cd ~
 sudo pip install flask
@@ -33,12 +34,69 @@ sudo pip install pyttsx
 sudo pip install pyOSC
 sudo pip install websocket-client
 sudo pip install pika
+sudo apt-get install -y python-dev
+sudo apt-get install -y libffi-dev
+sudo pip install flask-bcrypt
+sudo pip install requests
 wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.2.2/rabbitmq-server_3.2.2-1_all.deb
 sudo dpkg -i rabbitmq-server_3.2.2-1_all.deb
+sudo apt-get -f -y install
 sudo rabbitmq-plugins enable rabbitmq_web_stomp
 sudo rabbitmqctl set_policy TTL ".*" '{"message-ttl":3000}' --apply-to queues
+sudo apt-get clean
+sudo apt-get upgrade
+sudo apt-get clean #reduces memory footprint from unused dependencies. (keeps image ~2.2GB)
+
+#install daemon tools
+sudo mkdir -p /package
+sudo chmod 755 /package
+cd /package
+
+wget http://cr.yp.to/daemontools/daemontools-0.76.tar.gz
+tar -xpf daemontools-0.76.tar.gz
+rm -f daemontools-0.76.tar.gz
+cd admin/daemontools-0.76
+sudo ed ./src/conf-cc
+#if install fails, which it does on coder out of the box:
+1s/$/ -include errno.h/
+w
+q
+#install:
+sudo package/install
 
 
+sudo apt-get install -y csh
+sudo csh -cf '/command/svscanboot &'
+
+#sudo sed -i "1 a\csh -cf '/command/svscanboot &'" /etc/rc.local
+sudo chmod +x /etc/rc.local
+
+sudo mkdir /service/hd
+sudo cp /home/pi/blockytalky/build.d/run /service/hd
+
+echo 'wins server =wlan0:0.0.0.0' > /etc/samba/dhcp.conf
+if [[ -f /home/coder/coder-dist/coder-base/server.js ]]; then
+  sudo cp /home/coder/coder-dist/coder-base/server.js /home/coder/coder-dist/coder-base/server.js.bkup
+  sudo cp /home/coder/coder-dist/coder-base/localserver.js /home/coder/coder-dist/coder-base/server.js
+  sudo /home/coder/coder-dist/coder-base/config.js.localhost /home/coder/coder-dist/coder-base/config.js
+  #this runs coder on :8080 for our proxy config later
+  #virtual host for blockly+coder
+  sudo apt-get install -y libapache2-mod-wsgi
+  sudo a2enmod wsgi
+  sudo a2enmod rewrite
+  sudo a2enmod proxy
+  sudo a2enmod proxy_http
+  sudo a2enmod ssl
+  #make wsgi and httpd conf
+  sudo cp /home/pi/blockytalky/build.d/blockly_ws.wsgi /etc/apache2/
+  sudo cp /home/pi/blockytalky/build.d/blockly_ws.conf /etc/apache2/sites-available/
+  sudo a2dissite default
+  sudo a2ensite blockly_ws.conf
+  sudo apt-get install -y samba #for windows dns lookup
+
+  #not for automated scripting, but the server.js needs to be poked at a little bit
+  #in order for the routing to work correctly
+fi
 
 cd ~
 git clone git://git.drogon.net/wiringPi
@@ -48,14 +106,18 @@ cd wiringPi
 echo "Setting up serial pins..."
 gpio load i2c 10
 sudo echo init_uart_clock=32000000 >> /boot/config.txt
-sudo echo '#for real-time kernel' >> /boot/config.txt
-sudo echo 'disable_splash=1' >> /boot/config.txt
-sudo echo 'kernel=kernel-rt.img' >> /boot/config.txt
 sudo sed -i 's/arm_freq=[0-9]*/arm_freq=900/g' /boot/config.txt
 sudo sed -i -e 's,T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100,#T0:23:respawn:/sbin/getty -L ttyAMA0 115200 t100,' /etc/inittab
 sudo sed -i -e 's/console=ttyAMA0,115200 kgdboc=ttyAMA0,115200//g' /boot/cmdline.txt
 sudo sed -i -e 's,blacklist i2c-bcm2708,#blacklist i2c-bcm2708,' /etc/modprobe.d/raspi-blacklist.conf
 sudo echo i2c-dev >> /etc/modules
+
+
+#  sudo echo '#for real-time kernel' >> /boot/config.txt
+#  sudo echo 'disable_splash=1' >> /boot/config.txt
+#  sudo echo 'kernel=kernel-rt.img' >> /boot/config.txt
+#  sudo echo 'force_turbo=1' >> /boot/config.txt
+
 
 echo "Installing customizations..."
 sudo sed -i -e 's/XKBLAYOUT="gb"/XKBLAYOUT="us"/g' /etc/default/keyboard
@@ -79,6 +141,8 @@ fi
 if [ "$host" == "y" ] || [ "$host" == "Y" ]; then
     sudo echo $hostname > /etc/hostname
     sudo sed -i -e "s/raspberrypi/$hostname/g" /etc/hosts
+    sudo sed -i -e "s/coder/$hostname/g" /etc/hosts
+    sudo export HOSTNAME=$hostname
 fi
 
 echo "BlockyTalky installed! Restart required. System restart in 5 seconds (press CTRL-C to cancel)"

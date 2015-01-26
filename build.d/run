@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "Starting Hardware_daemon.py"
+exec "python /home/pi/blockytalky/backend/hardware_daemon.py"
