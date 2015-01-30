@@ -38,9 +38,10 @@ sudo apt-get install -y python-dev
 sudo apt-get install -y libffi-dev
 sudo pip install flask-bcrypt
 sudo pip install requests
-wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.2.2/rabbitmq-server_3.2.2-1_all.deb
-sudo dpkg -i rabbitmq-server_3.2.2-1_all.deb
+wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.4.3/rabbitmq-server_3.4.3-1_all.deb
+sudo dpkg -i rabbitmq-server_3.4.3-1_all.deb
 sudo apt-get -f -y install
+sudo echo "[{rabbit, [{loopback_users,[]}]}]" > /etc/rabbitmq/rabbitmq.config
 sudo rabbitmq-plugins enable rabbitmq_web_stomp
 sudo rabbitmqctl set_policy TTL ".*" '{"message-ttl":3000}' --apply-to queues
 sudo apt-get clean
