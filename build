@@ -41,7 +41,7 @@ sudo pip install requests
 wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.4.3/rabbitmq-server_3.4.3-1_all.deb
 sudo dpkg -i rabbitmq-server_3.4.3-1_all.deb
 sudo apt-get -f -y install
-sudo echo "[{rabbit, [{loopback_users,[]}]}]" > /etc/rabbitmq/rabbitmq.config
+sudo echo "[{rabbit, [{loopback_users,[]}]}]" > /etc/rabbitmq/rabbitmq.config #enables guest:guest
 sudo rabbitmq-plugins enable rabbitmq_web_stomp
 sudo rabbitmqctl set_policy TTL ".*" '{"message-ttl":3000}' --apply-to queues
 sudo apt-get clean
@@ -82,14 +82,16 @@ if [[ -f /home/coder/coder-dist/coder-base/server.js ]]; then
   sudo /home/coder/coder-dist/coder-base/config.js.localhost /home/coder/coder-dist/coder-base/config.js
   #this runs coder on :8080 for our proxy config later
   #virtual host for blockly+coder
-  sudo apt-get install -y libapache2-mod-wsgi
-  sudo a2enmod wsgi
+
+  #note: WSGI has permission strictness (webserver writes to home directory, no good!), maybe another time/sprint
+  #sudo apt-get install -y libapache2-mod-wsgi
+  #sudo a2enmod wsgi
   sudo a2enmod rewrite
   sudo a2enmod proxy
   sudo a2enmod proxy_http
   sudo a2enmod ssl
   #make wsgi and httpd conf
-  sudo cp /home/pi/blockytalky/build.d/blockly_ws.wsgi /etc/apache2/
+  #sudo cp /home/pi/blockytalky/build.d/blockly_ws.wsgi /etc/apache2/
   sudo cp /home/pi/blockytalky/build.d/blockly_ws.conf /etc/apache2/sites-available/
   sudo a2dissite default
   sudo a2ensite blockly_ws.conf
