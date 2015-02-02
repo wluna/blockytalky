@@ -592,7 +592,8 @@ var xmlDict ={};
 function handleFileSelect(evt) {
   xmlDict ={};
   var files = evt.target.files; // FileList object
-  $('#files-selected').innerHTML = '';
+  alert(files.length);
+  $('#files-selected').innerHTML[0] = "";
   for (var i = 0, f; f = files[i]; i++) {
     var reader = new FileReader();
     reader.onload = function(e) {
@@ -611,6 +612,14 @@ function handleFileChoose(evt){
   fn = evt.options[evt.selectedIndex].value;
   plainxml = xmlDict[fn];
   loadXml(plainxml);
+
+}
+
+function sortByName(){
+
+}
+function sortByDate(){
+
 }
 
 
