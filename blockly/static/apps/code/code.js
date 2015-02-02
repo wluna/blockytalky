@@ -38,7 +38,7 @@ document.write('<script type="text/javascript" src="static/' +
                BlocklyApps.LANG + '.js"></script>\n');
 
 /*
- * Get jquery 
+ * Get jquery
  */
 function getScript(url, success) {
     var script = document.createElement('script');
@@ -65,7 +65,6 @@ document.writeln('<link rel="stylesheet" type="text/css" href="/static/hopscotch
 document.writeln("<script src='/static/hopscotch-0.1.1.js' type='text/javascript'></script>");
 document.writeln("<script src='/static/stomp.js' type='text/javascript'></script>");
 document.writeln("<script src='/static/sockjs.js' type='text/javascript'></script>");
-
 
 // Blockly tour (with hopscotch)
 var tour = {
@@ -209,7 +208,7 @@ steps: [
   target: "btimg",
   placement: "right"
     }
-      
+
   ]
 };
 
@@ -353,7 +352,7 @@ var on_message = function(m) {
 	$("#encval2").val(values.content.encoders[1]);
 	$("#encval3").val(values.content.encoders[2]);
 	$("#encval4").val(values.content.encoders[3]);
-	
+
         previousTime = d.getTime(); }
 
 }
@@ -379,6 +378,7 @@ client.connect('guest', 'guest', on_connect, on_error, '/');
   tabClick('tab_' + selected);
   document.getElementById('tab_xml').style.display = 'none';
   document.getElementById('tab_python').style.display = 'none';
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
 }
 
@@ -424,7 +424,7 @@ function discard() {
 function uploadToRobot() {
     $("#status").text("Uploading code...");
     setTimeout(finishUpload, 1)
-    
+
     //alert("Code uploaded to robot");
 }
 
@@ -448,13 +448,13 @@ function finishUpload()
       console.log(response);
   }
     });
-    
+
     $("#status").text("Code uploaded to BTU");
 }
 
 function runRobot() {
     var xml = "a";
-    var url = getIP()+"run";   
+    var url = getIP()+"run";
     $.ajax({
   type: 'POST',
   url: url,
@@ -544,7 +544,7 @@ function stopRobot() {
 
   document.getElementById('tab_xml').style.display = 'none';
 
-    
+
 }
 
 function runTour(){
@@ -580,6 +580,40 @@ function loadCode() {
   $("#tab_blocks").click();
     });
 }
+function loadXml(plainxml) {
+  $("#status").text("Code loaded from XML file");
+  $("#tab_xml").click();
+  $("#textarea_xml").val(plainxml);
+    //alert(data);
+  $("#tab_blocks").click();
+}
+var xmlDict ={};
+//loading 1+ file from system
+function handleFileSelect(evt) {
+  xmlDict ={};
+  var files = evt.target.files; // FileList object
+  $('#files-selected').innerHTML = '';
+  for (var i = 0, f; f = files[i]; i++) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var result = e.target.result;
+      xmlDict[e.target["file"].name] = result;
+      var key = e.target["file"].name;
+      $('#files-selected').append('<option value="' + key + '">' + key + '</option>');
+    };
+    reader["file"] = f;
+    reader.readAsText(f,'UTF-8');
+  }
+
+}
+//choosing one in a dropdown
+function handleFileChoose(evt){
+  fn = evt.options[evt.selectedIndex].value;
+  plainxml = xmlDict[fn];
+  loadXml(plainxml);
+}
+
+
 
 function loadEventBlocks() {
     event_block_xml = '<xml xmlns="http://www.w3.org/1999/xhtml"><block type="events_on_start" x="7" y="-10"></block><block type="events_on_sensor_change" x="312" y="-10"></block><block type="events_run_continuously" deletable="false" x="146" y="-10"></block></xml>'
