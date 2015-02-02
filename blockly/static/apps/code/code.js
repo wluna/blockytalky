@@ -592,8 +592,8 @@ var xmlDict ={};
 function handleFileSelect(evt) {
   xmlDict ={};
   var files = evt.target.files; // FileList object
-  alert(files.length);
-  $('#files-selected').innerHTML[0] = "";
+  //alert(files.length);
+  $('#files-selected')[0].innerHTML = "";
   for (var i = 0, f; f = files[i]; i++) {
     var reader = new FileReader();
     reader.onload = function(e) {
