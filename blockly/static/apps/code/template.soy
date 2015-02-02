@@ -85,7 +85,7 @@
                 <!--<img src='static/media/1x1.gif' class="run icon21">-->
                 <input type="file" id="files" multiple="multiple" />
               </button>
-              <select id="files-selected" onchange="handleFileChoose(this);" ></select>
+              <select id="files-selected" onchange="handleFileChoose(this);" onfocus="if(this.selectedIndex == 0) this.selectedIndex = -1;"></select>
             </td>
           </tr>
         </table>
